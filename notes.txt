@@ -1,0 +1,29 @@
+When a sprite dies or has to be removed, use the .remove() method??? You can check if the sprite is still alive with the 'alive()' method.
+The different sprites for the player:
+    Idle:
+        front, left, right, back.
+    Walking:
+        Walking-right: front, right-side, right-side-down,right-side, right-side-up.
+        Walking-left: front, left-side, left-side-down, left-side, left-side-up.
+        Walking-top: back, back-left-leg-up, back-left-right-leg-up.
+        Walking-down: front, front-leg-up, front-leg-down.
+    Attacking-Knife:
+        Attacking-right: right, right-pull-knife-half, right-stab-with-knife, right-pull-knife-half, right.
+        Attacking-left: left, left-pull-knife-half, left-stab-with-knife, left-pull-knife-half, left.
+        Attacking-top: back, back-pull-knife-half, back-stab-with-knife, back-pull-knife-half, back.
+        Attacking-down: front, front-pull-knife-half, front-stab-with-knife, front-pull-knife-half, front.
+    Attacking-gun (bullet will be a killable sprite):
+        Attacking-right: right, right-pull-gun, right-shoot-gun1, right-shoot-gun2, right-pull-gun.
+        Attacking-left: left, left-pull-gun, left-shoot-gun1, left-shoot-gun2, left-pull-gun.
+        Attacking-top: back, back-pull-gun, back-shoot-gun1, back-shoot-gun2, back-pull-gun.
+        Attacking-down: front, front-pull-gun, front-shoot-gun1, front-shoot-gun2, front-pull-gun.
+    Healing-potion:
+        Healing-right: right-potion-appears, right-potion-pull-up, right-potion-drinks, right-potion-pull-up, right-potion-appears, right.
+        Healing-left: left-potion-appears, left-potion-pull-up, left-potion-drinks, left-potion-pull-up, left-potion-appears, left.
+        Healing-top: top-potion-appears, top-potion-pull-up, top-potion-drinks, top-potion-pull-up, top-potion-appears, top.
+        Healing-down: down-potion-appears, down-potion-pull-up, down-potion-drinks, down-potion-pull-up, down-potion-appears, down.
+    Healing-herbs:
+        Healing-right: right-herb-appears, right-herb-moves1, right-herb-moves2, right-herb-appears, right.
+        Healing-left: left-herb-appears, left-herb-moves1, left-herb-moves2, left-herb-appears, left.
+        Healing-top: top-herb-appears, top-herb-moves1, top-herb-moves2, top-herb-appears, top.
+        Healing-down: down-herb-appears, down-herb-moves1, down-herb-moves2, down-herb-appears, down.

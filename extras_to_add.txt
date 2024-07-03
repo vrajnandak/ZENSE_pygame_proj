@@ -1,1 +1,8 @@
+-> Make a file to change the settings. This file will interact with the user and take their required settings values.
+->Any sprite/image/visible/invisible object has to have dimensions that are multiples of 32. 'BASE_UNIT=32' will be the main unit used throughout.
 self.WINDOW = pygame.display.set_mod((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
+-> A functionality to record and be able to play the video?
+->If the player rect is colliding with a obstacle rect, also handle the case when the player is not moving at all(i.e., handle when the player is sitting idle so that the player doesn't move at all).
+->For the offset part, show a small diagram describing why the values are what they are.
+->Put the sizes of the different images in their names only. This makes it easier to get the size by just using one 'parse_sizes' function to get their size.
+-> Dijkstra's algorithm that the enemy can take to get to the user in case there are obstacles. This will be implemented by maintaining a list of tiles(will be empty if it's an obstacle) and the enemy calculates the shorted path to the player. This algo will always be calculated by the enemy. (If you decide to use this only when obstacle hits, then if the obstacle doesn't hit u'd go back to hitting the obstacle with the normal direction to player).
