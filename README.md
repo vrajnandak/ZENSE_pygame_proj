@@ -9,14 +9,18 @@ Now, in the third ruin, he finds 2 zombies standing as guard near the ruin entra
 Now, the protagonist escapes from this island, never caring to find the time machine, and becomes famous yet again.
 (A monkey that slipped in when the door was opened by the protagonist, finds the time machine and presses the "red button". This activates the time machine and we go back to the start of the game).
 
-
-1. A small video of the 3 scientists going from a helicopter towards the island. A small cut scene showing them getting lost and each going into a ruin. A small cut scene, the protaganist gets a call to rescue them. A small cutscene to show the 3rd scientist's evil giggling.
-
+SOFTWARES USED:
+1. GIMP (2.10.30) to make sprites
+2. Tiled to make map layouts, manage different levels with csv files.
+3. VS code for writing pygame code.
 
 
 CONTROLS: 
 1. Player movement: [up-arrow, down-arrow, left-arrow, right-arrow] and [w,a,s,d].
-2. Camera movement: 
+2. Camera movement: [hovering mouse towards end of screen] and [i(top),j(left),k(down),l(right)]
+3. Attack: [left-click(when attack mode is on)] and [t]
+4. Healing: [left-click(when healing mode is on)] and [h]
+
 
 Naming formats:
 1. The names of the different images of obstacles(rocks, trees, etc) will be 'Ruin<x>_<name_of_obstacle>_<elem_id_in_Tiled_map>_<img_width>_<img_height>.png' where 'x' is the ruin number(check the README.md for knowing which ruin corresponds to which) and 'elem_id_in_Tiled_map' is the id of the element in the csv file obtained from Tiled software, the rest of the fields are as implied.
@@ -24,17 +28,21 @@ Naming formats:
 2. The additional hidden rooms or extra rooms will be named in the following format: 'Ruin<x>_<extra_type><num>'. The 'extra_type' can be from ['hidden', 'extension'] only where 'hidden' represents the map to be discovered (can be opened only after protagonist unlocks the room, like the treasure room), 'extension' represents the doorway to other rooms which are basically open and don't need a special lock(They are loaded when the level itself is loaded).
     ex: 'Ruin2_hidden2', 'Ruin2_extension2'
 
+
 RUINS:
 1. Ruin0 - Is the main island.
 2. Ruin1 - Is the 1st ruin that the protagonist has to conquer.
 3. Ruin2 - Is the 2nd ruin that the protagonist has to conquer.
 4. Ruin3 - Is the 3rd ruin that the protagonist has to conquer.
 
+
 DESCRIPTION OF FILES:
 ->Hierarchy of folders:
 1. Settings.py: Contains the basic settings like dimensions(screen sizes, player sizes, basic units, basic colors, movement speeds etc)
 2. Helpers.py: Contains the helper functions like loading graphics, parsing sizes etc.
 3. Quests.py: Contains the Quest items for the game.
+
+
 
 
 
