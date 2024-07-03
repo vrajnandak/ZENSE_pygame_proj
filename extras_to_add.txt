@@ -1,0 +1,1 @@
+self.WINDOW = pygame.display.set_mod((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
