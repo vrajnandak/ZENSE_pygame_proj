@@ -15,6 +15,10 @@ SOFTWARES USED:
 3. VS code for writing pygame code.
 
 
+TO RUN THE GAME:
+1. Open the 'ZENSE_PROJECT_PYGAME' folder in VScode and not any other folder. This is because 'os.getcwd()' is used in 'Settings.py' file and all the paths will fail if this folder is not the working directory.
+
+
 CONTROLS: 
 1. Player movement: [up-arrow, down-arrow, left-arrow, right-arrow] and [w,a,s,d].
 2. Camera movement: [hovering mouse towards end of screen] and [i(top),j(left),k(down),l(right)]
@@ -23,9 +27,10 @@ CONTROLS:
 
 
 Naming formats:
-1. The names of the different images of obstacles(rocks, trees, etc) will be 'Ruin<x>_<name_of_obstacle>_<elem_id_in_Tiled_map>_<img_width>_<img_height>.png' where 'x' is the ruin number(check the README.md for knowing which ruin corresponds to which) and 'elem_id_in_Tiled_map' is the id of the element in the csv file obtained from Tiled software, the rest of the fields are as implied.
-    ==>The 'invisible boundary' blocks that restrict the player's movement in the map must have the same id(will have id='0'). This is to make the code easy to write.
-2. The additional hidden rooms or extra rooms will be named in the following format: 'Ruin<x>_<extra_type><num>'. The 'extra_type' can be from ['hidden', 'extension'] only where 'hidden' represents the map to be discovered (can be opened only after protagonist unlocks the room, like the treasure room), 'extension' represents the doorway to other rooms which are basically open and don't need a special lock(They are loaded when the level itself is loaded).
+1. The names of the different images of obstacles(rocks, trees, etc) will be '<name_of_obstacle>_<elem_id_in_Tiled_map>_<img_width>_<img_height>.png' where 'elem_id_in_Tiled_map' is the id of the element in the csv file obtained from Tiled software, the rest of the fields are as implied.
+    ==>The 'invisible boundary' blocks that restrict the player's movement in the map must have the same id(will have id='1000'). This is to make the code easy to write. When you get the csv file from Tiled, it is best to manually change every occurance of the invisible tile to '1000' and '1001', etc as needed. This will make it easy to load graphics since different images in tiled can have same id's
+2. Every folder in 'graphics/Ruins/' folder has a layout.txt file which contains the <elem_id>:<name_of_obstacle>. The level's layout will be using a dictionary(key is elem_id and the value is the name_of_obstacle). While iterating through the csv file, every id will be replaced by that image.
+3. The additional hidden rooms or extra rooms will be named in the following format: 'Ruin<x>_<extra_type><num>'. The 'extra_type' can be from ['hidden', 'extension'] only where 'hidden' represents the map to be discovered (can be opened only after protagonist unlocks the room, like the treasure room), 'extension' represents the doorway to other rooms which are basically open and don't need a special lock(They are loaded when the level itself is loaded).
     ex: 'Ruin2_hidden2', 'Ruin2_extension2'
 
 
@@ -43,8 +48,28 @@ DESCRIPTION OF FILES:
 3. Quests.py: Contains the Quest items for the game.
 
 
+EXTRAS:
+->The way the get_player_based_offset() works: The below diagram is the level. For the player, the offsets are abvious. The below values are for the images.
+         ___________________________________
+        |__|_____________________________|__|           ==>Offset_y will be '0' in this row. This height is the 'SCREEN_HEIGHT//2'
+        |  |                             |  | 
+        |  |                             |  | 
+        |  |                             |  | 
+        |  |                             |  |
+        |  |                             |  | 
+        |  |                             |  | 
+        |  |                             |  | 
+        |__|_____________________________|__|
+        |__|_____________________________|__|           ==>Offset_y should be capped at 'LEVEL_HEIGHT'-'SCREEN_HEIGHT//2'
+
+         ||                               ||  
+         \/                               \/  
+        This col will have              This col will have
+        offset_x '0'                    offset_x as 'LEVEL_WIDTH-SCREEN_WIDTH//2'
 
 
+IMAGE REFERENCES:
+https://elthen.itch.io/2d-pixel-art-archaeologist
 
 
 CHATGPT DESCRIPTION BASED ON ABOVE DESCRIPTION:
