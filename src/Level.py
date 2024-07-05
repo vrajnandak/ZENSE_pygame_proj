@@ -43,12 +43,10 @@ class Level:
         self.keyboard_offset_counter=pygame.math.Vector2()      #'.x' is used for x-axis controlling, '.y' is used for y-axis controlling.
             #The below variables are used for calculating the offsets based on mouse positions.
         self.mouse_offset_counter=pygame.math.Vector2()         #'.x' is used for x-axis controlling, '.y' is used for y-axis controlling.
-        # self.MOUSE_RIGHT_LIMIT=
-        # self.MOUSE_LEFT_LIMIT=
-        # self.MOUSE_TOP_LIMIT=
-        # self.MOUSE_BOTTOM_LIMIT=
-
-
+        self.MOUSE_RIGHT_LIMIT=SCREEN_WIDTH-30
+        self.MOUSE_LEFT_LIMIT=30
+        self.MOUSE_TOP_LIMIT=30
+        self.MOUSE_BOTTOM_LIMIT=SCREEN_HEIGHT-30
 
 
 
@@ -141,26 +139,39 @@ class Level:
     #A method to add the offset accumulated by keyboard keys to the final offset used for blitting sprites.
     def get_keyboard_based_offset(self,keys):
         # if(keys[pygame.K_i]):
-        if(keys[pygame.K_i] and ((self.offset.y + self.keyboard_offset_counter.y*KEYBOARD_CAMERA_SPEED)>0)):
+        if(keys[pygame.K_i] and ((self.offset.y + (self.keyboard_offset_counter.y-1)*KEYBOARD_CAMERA_SPEED)>0)):
             self.keyboard_offset_counter.y-=1
             pass
         # if(keys[pygame.K_j]):
-        if(keys[pygame.K_j] and ((self.offset.x + self.keyboard_offset_counter.x*KEYBOARD_CAMERA_SPEED)>0)):
+        if(keys[pygame.K_j] and ((self.offset.x + (self.keyboard_offset_counter.x-1)*KEYBOARD_CAMERA_SPEED)>0)):
             self.keyboard_offset_counter.x-=1
             pass
         # if(keys[pygame.K_k]):
-        if(keys[pygame.K_k] and ((self.offset.y + self.keyboard_offset_counter.y*KEYBOARD_CAMERA_SPEED) < self.UPPER_YOFFSET_LIM)):
+        if(keys[pygame.K_k] and ((self.offset.y + (self.keyboard_offset_counter.y+1)*KEYBOARD_CAMERA_SPEED) < self.UPPER_YOFFSET_LIM)):
             self.keyboard_offset_counter.y+=1
             pass
         # if(keys[pygame.K_l]):
-        if(keys[pygame.K_l] and ((self.offset.x + self.keyboard_offset_counter.x*KEYBOARD_CAMERA_SPEED) < self.UPPER_XOFFSET_LIM)):
+        if(keys[pygame.K_l] and ((self.offset.x + (self.keyboard_offset_counter.x+1)*KEYBOARD_CAMERA_SPEED) < self.UPPER_XOFFSET_LIM)):
             self.keyboard_offset_counter.x+=1
             pass
-        pass
+        
         self.offset=self.offset+self.keyboard_offset_counter*KEYBOARD_CAMERA_SPEED
 
     #A method to add the offset accumulated by mouse position to the final offset used for blitting sprites.
     def get_mouse_based_offset(self):
+        mouse_pos=pygame.math.Vector2(pygame.mouse.get_pos())
+        if(mouse_pos.x<=self.MOUSE_LEFT_LIMIT and (self.offset.x+(self.mouse_offset_counter.x-1)*MOUSE_CAMERA_SPEED)>0):
+            self.mouse_offset_counter.x-=1
+        elif(mouse_pos.x>=self.MOUSE_RIGHT_LIMIT and (self.offset.x+(self.mouse_offset_counter.x-1)*MOUSE_CAMERA_SPEED)<self.UPPER_XOFFSET_LIM):
+            self.mouse_offset_counter.x+=1
+        if(mouse_pos.y<=self.MOUSE_TOP_LIMIT and (self.offset.y+(self.mouse_offset_counter.y-1)*MOUSE_CAMERA_SPEED)>0):
+            self.mouse_offset_counter.y-=1
+        elif(mouse_pos.y>=self.MOUSE_BOTTOM_LIMIT and (self.offset.y+(self.mouse_offset_counter.y+1)*MOUSE_CAMERA_SPEED)<self.UPPER_YOFFSET_LIM):
+            self.mouse_offset_counter.y+=1
+        #Can uncomment the below line but for best effects, it's better if you can set the values of self.MOUSE_LEFT_LIMIT and self.MOUSE_TOP_LIMIT to '0' and the values of self.MOUSE_RIGHT_LIMIT and self.MOUSE_BOTTOM_LIMIT so that the value subtracted is 0.
+        # pygame.mouse.set_pos(min(max(self.MOUSE_LEFT_LIMIT,mouse_pos.x),self.MOUSE_RIGHT_LIMIT),min(max(self.MOUSE_TOP_LIMIT,mouse_pos.y),self.MOUSE_BOTTOM_LIMIT))     #Setting the mouse on the borders if it tries to go outside the borders, else it is set in it's current place.
+
+        self.offset=self.offset+self.mouse_offset_counter*MOUSE_CAMERA_SPEED
         pass
     
     def apply_offset_limits(self):
@@ -189,7 +200,6 @@ class Level:
         #Move the Player
         self.player.move(keys,self)
         #Get the Offset
-        #self.get_player_based_offset()
         self.get_offset(keys)
 
         #Draw the BaseMap Image after considering offset
