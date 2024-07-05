@@ -4,7 +4,8 @@ from Level import Level
 
 class Game:
     def __init__(self):
-        self.screen=pygame.display.set_mode(SCREEN_SIZE,pygame.RESIZABLE)
+        # self.screen=pygame.display.set_mode(SCREEN_SIZE,pygame.RESIZABLE)
+        self.screen=pygame.display.set_mode(SCREEN_SIZE)
         pygame.display.set_caption(GAME_TITLE)
 
         self.clock=pygame.time.Clock()

@@ -21,7 +21,7 @@ TO RUN THE GAME:
 
 CONTROLS: 
 1. Player movement: [up-arrow, down-arrow, left-arrow, right-arrow] and [w,a,s,d].
-2. Camera movement: [hovering mouse towards end of screen] and [i(top),j(left),k(down),l(right)]
+2. Camera movement: [hovering mouse towards end of screen] and [i(top),j(left),k(down),l(right)]. [u] to reset the camera back to the player.
 3. Attack: [left-click(when attack mode is on)] and [t]
 4. Healing: [left-click(when healing mode is on)] and [h]
 
@@ -29,8 +29,7 @@ CONTROLS:
 Naming formats:
 1. The names of the different images of obstacles(rocks, trees, etc) will be '<name_of_obstacle>_<elem_id_in_Tiled_map>_<img_width>_<img_height>.png' where 'elem_id_in_Tiled_map' is the id of the element in the csv file obtained from Tiled software, the rest of the fields are as implied.
     ==>The 'invisible boundary' blocks that restrict the player's movement in the map must have the same id(will have id='1000'). This is to make the code easy to write. When you get the csv file from Tiled, it is best to manually change every occurance of the invisible tile to '1000' and '1001', etc as needed. This will make it easy to load graphics since different images in tiled can have same id's
-2. Every folder in 'graphics/Ruins/' folder has a layout.txt file which contains the <elem_id>:<name_of_obstacle>. The level's layout will be using a dictionary(key is elem_id and the value is the name_of_obstacle). While iterating through the csv file, every id will be replaced by that image.
-3. The additional hidden rooms or extra rooms will be named in the following format: 'Ruin<x>_<extra_type><num>'. The 'extra_type' can be from ['hidden', 'extension'] only where 'hidden' represents the map to be discovered (can be opened only after protagonist unlocks the room, like the treasure room), 'extension' represents the doorway to other rooms which are basically open and don't need a special lock(They are loaded when the level itself is loaded).
+2. The additional hidden rooms or extra rooms will be named in the following format: 'Ruin<x>_<extra_type><num>'. The 'extra_type' can be from ['hidden', 'extension'] only where 'hidden' represents the map to be discovered (can be opened only after protagonist unlocks the room, like the treasure room), 'extension' represents the doorway to other rooms which are basically open and don't need a special lock(They are loaded when the level itself is loaded).
     ex: 'Ruin2_hidden2', 'Ruin2_extension2'
 
 
@@ -49,7 +48,8 @@ DESCRIPTION OF FILES:
 
 
 EXTRAS:
-->The way the get_player_based_offset() works: The below diagram is the level. For the player, the offsets are abvious. The below values are for the images.
+->OFFSETS: The same offset value is used for all sprites, player etc.
+    ->The way the get_player_based_offset() works: The below diagram is the level. For the player, the offsets are abvious. The below values are for the images. Both the offsets are obviously the same.
          ___________________________________
         |__|_____________________________|__|           ==>Offset_y will be '0' in this row. This height is the 'SCREEN_HEIGHT//2'
         |  |                             |  | 
@@ -66,6 +66,8 @@ EXTRAS:
          \/                               \/  
         This col will have              This col will have
         offset_x '0'                    offset_x as 'LEVEL_WIDTH-SCREEN_WIDTH//2'
+    ->The way the get_keyboard_based_offset() works: The idea is to maintain a counter, one for [j,l](keyboard keys for left, right camera movement) and another for [i,k](keyboard keys for up, down camera movement). This offset will be maintained so that the use can move the player itself and also the camera at the same time. The offset caused by keyboard keys are added to the final offset being used for blitting the sprites. If you remove the extra conditions(based on the offset.x, offset.y values in the if statements), then suppose you go to the right most side of the screen and then try to go more right using keyboard controls. Then you would notice that on trying to go left, it would take a bit of time and this is because the counter accumulates instead of not counting at that point of time. Hence, the extra conditions based on those offset vals are important.
+    ->The way the get_mouse_based_offset() works: The idea is to again maintain a counter, one for x-axis movement, and another for y-axis movement. When the mouse hits the set mouse limit positions of the screen, these counters will be incremented/decremented as needed and this offset value will be added to the final offset used for blitting the sprites. This is an additional functionality that the user may use if he doesn't want to use the keyboard keys.
 
 
 IMAGE REFERENCES:

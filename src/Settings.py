@@ -5,10 +5,11 @@ from csv import reader
 #Others
 GAME_TITLE="Time Rift Rescue"
 
-
 #Speeds
 GAME_FPS=30
-PLAYER_SPEED=10
+PLAYER_SPEED=25
+KEYBOARD_CAMERA_SPEED=25
+MOUSE_CAMERA_SPEED=25
 
 #Sizes
 BASE_SIZE=32
