@@ -4,7 +4,7 @@
 ->self.WINDOW = pygame.display.set_mod((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE) ==>You have to handle the offset values because on resizing it, offset limits changes based on screen size.
 -> A functionality to record and be able to play the video?
 -> A zoom-out, zoom-in option. Show a small map on the bottom right corner of screen.
--> Ability to move the camera with the mouse(by dragging the mouse to the end of the screen).
+##################-> Ability to move the camera with the mouse(by dragging the mouse to the end of the screen).
 -> When player comes to a ruin entrance in the 'Ruin0' map, the rocks should move and make way.
 ->All the transportation portals are to rotate at a constant speed to give it a good look 
 ->If the player rect is colliding with a obstacle rect, also handle the case when the player is not moving at all(i.e., handle when the player is sitting idle so that the player doesn't move at all).

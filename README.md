@@ -24,6 +24,7 @@ CONTROLS:
 2. Camera movement: [hovering mouse towards end of screen] and [i(top),j(left),k(down),l(right)]. [u] to reset the camera back to the player.
 3. Attack: [left-click(when attack mode is on)] and [t]
 4. Healing: [left-click(when healing mode is on)] and [h]
+5. Pause Screen: [esc]
 
 
 Naming formats:

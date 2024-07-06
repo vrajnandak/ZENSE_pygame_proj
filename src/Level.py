@@ -2,6 +2,7 @@ import pygame
 from Settings import *
 from Obstacle import *
 from Player import *
+from Button import *
 
 class Level:
     def __init__(self,level_id):
