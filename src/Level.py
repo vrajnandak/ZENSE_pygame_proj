@@ -140,19 +140,23 @@ class Level:
     #A method to add the offset accumulated by keyboard keys to the final offset used for blitting sprites.
     def get_keyboard_based_offset(self,keys):
         # if(keys[pygame.K_i]):
-        if(keys[pygame.K_i] and ((self.offset.y + (self.keyboard_offset_counter.y-1)*KEYBOARD_CAMERA_SPEED)>0)):
+        # if(keys[pygame.K_i] and ((self.offset.y + (self.keyboard_offset_counter.y-1)*KEYBOARD_CAMERA_SPEED)>0)):
+        if(keys[pygame.K_i] and ((self.offset.y + (self.mouse_offset_counter.y*MOUSE_CAMERA_SPEED) + (self.keyboard_offset_counter.y-1)*KEYBOARD_CAMERA_SPEED)>0)):
             self.keyboard_offset_counter.y-=1
             pass
         # if(keys[pygame.K_j]):
-        if(keys[pygame.K_j] and ((self.offset.x + (self.keyboard_offset_counter.x-1)*KEYBOARD_CAMERA_SPEED)>0)):
+        # if(keys[pygame.K_j] and ((self.offset.x + (self.keyboard_offset_counter.x-1)*KEYBOARD_CAMERA_SPEED)>0)):
+        if(keys[pygame.K_j] and ((self.offset.x + (self.mouse_offset_counter.x*MOUSE_CAMERA_SPEED) + (self.keyboard_offset_counter.x-1)*KEYBOARD_CAMERA_SPEED)>0)):
             self.keyboard_offset_counter.x-=1
             pass
         # if(keys[pygame.K_k]):
-        if(keys[pygame.K_k] and ((self.offset.y + (self.keyboard_offset_counter.y+1)*KEYBOARD_CAMERA_SPEED) < self.UPPER_YOFFSET_LIM)):
+        # if(keys[pygame.K_k] and ((self.offset.y + (self.keyboard_offset_counter.y+1)*KEYBOARD_CAMERA_SPEED) < self.UPPER_YOFFSET_LIM)):
+        if(keys[pygame.K_k] and ((self.offset.y + (self.mouse_offset_counter.y*MOUSE_CAMERA_SPEED) + (self.keyboard_offset_counter.y+1)*KEYBOARD_CAMERA_SPEED) < self.UPPER_YOFFSET_LIM)):
             self.keyboard_offset_counter.y+=1
             pass
         # if(keys[pygame.K_l]):
-        if(keys[pygame.K_l] and ((self.offset.x + (self.keyboard_offset_counter.x+1)*KEYBOARD_CAMERA_SPEED) < self.UPPER_XOFFSET_LIM)):
+        # if(keys[pygame.K_l] and ((self.offset.x + (self.keyboard_offset_counter.x+1)*KEYBOARD_CAMERA_SPEED) < self.UPPER_XOFFSET_LIM)):
+        if(keys[pygame.K_l] and ((self.offset.x + (self.mouse_offset_counter.x*MOUSE_CAMERA_SPEED) + (self.keyboard_offset_counter.x+1)*KEYBOARD_CAMERA_SPEED) < self.UPPER_XOFFSET_LIM)):
             self.keyboard_offset_counter.x+=1
             pass
         

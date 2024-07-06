@@ -2,14 +2,12 @@ import pygame
 import os
 from csv import reader
 
+pygame.init()
+pygame.font.init()
+
+
 #Others
 GAME_TITLE="Time Rift Rescue"
-
-#Speeds
-GAME_FPS=30
-PLAYER_SPEED=25
-KEYBOARD_CAMERA_SPEED=25
-MOUSE_CAMERA_SPEED=25
 
 #Sizes
 BASE_SIZE=32
@@ -22,6 +20,29 @@ PLAYER_SIZE=(2*BASE_SIZE,3*BASE_SIZE)
 ENEMY_SIZE=(2*BASE_SIZE,3*BASE_SIZE)
 STRONG_ENEMY_SIZE=(3*BASE_SIZE,3*BASE_SIZE)
 
+
+
+#Colors
+SCREEN_BG_SHADE_COLOR=(127,127,127,0)
+SCREEN_BG_DARK_COLOR=(0,255,0)
+TEXT_COLOR=(255,255,255)
+BUTTON_BACKGROUND_COLOR=(133,133,133)
+BUTTON_HOVER_COLOR=(83,83,83)
+BUTTON_CLICK_COLOR=(0,0,0)
+
+
+#The Background Shade when a Screen is active. These are the default values used.
+SCREEN_BG_SHADE_SURF=pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
+SCREEN_BG_SHAD_POS=(0,0)
+
+
+#Speeds
+GAME_FPS=30
+PLAYER_SPEED=25
+KEYBOARD_CAMERA_SPEED=25
+MOUSE_CAMERA_SPEED=25
+
+
 #Folder Paths
 WORKING_DIRECTORY_PATH=os.getcwd()
 GRAPHICS_DIR_PATH=os.path.join(WORKING_DIRECTORY_PATH,"graphics")
@@ -29,6 +50,12 @@ MAPS_DIRECTORY_PATH=os.path.join(GRAPHICS_DIR_PATH,"Ruins")            #Folder p
 BASEMAP_NAME="BaseMap.png"                          #Name of Floor maps which are basically the 1st drawn image.
 FLOORINFO_DIR_NAME="FloorInfo"
 BLOCKS_PATH=os.path.join(GRAPHICS_DIR_PATH,"Blocks.png")
+
+
+#Function to draw a half-transparent background with a shade of the given color. Used only when displaying a screen.
+def drawShadedBGScreen(display_surf,shaded_color=SCREEN_BG_SHADE_COLOR):
+    pygame.draw.rect(SCREEN_BG_SHADE_SURF,shaded_color,[0,0,SCREEN_WIDTH,SCREEN_HEIGHT])       #Fills the rectangle with specified color and draws this on the surface.
+    display_surf.blit(SCREEN_BG_SHADE_SURF,SCREEN_BG_SHAD_POS)
 
 #Function to get a single sprite from the given spritesheet.
 def getSpriteFromSpriteSheet(spritesheet_path,sprite_width,sprite_height,sprite_location_left,sprite_location_top,colorKey=None):

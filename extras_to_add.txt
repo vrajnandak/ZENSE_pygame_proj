@@ -1,10 +1,14 @@
+-> Add sys.exit() statement instead of using variables to handle the quit event. sys.exit() throws an exception so you have to specify the try catch blocks and handle the exceptions properly.
+->Have to add a GoodImage for the screen whenever one of the display screens is active. Because the buttons are moving, you can't really achieve the half-shaded background of the game and then the buttons on that.
 -> Make a file to change the settings. This file will interact with the user and take their required settings values.
 ->Any sprite/image/visible/invisible object has to have dimensions that are multiples of 32. 'BASE_UNIT=32' will be the main unit used throughout.
 -> A small video of the 3 scientists going from a helicopter towards the island. A small cut scene showing them getting lost and each going into a ruin. A small cut scene, the protaganist gets a call to rescue them. A small cutscene to show the 3rd scientist's evil giggling.
 ->self.WINDOW = pygame.display.set_mod((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE) ==>You have to handle the offset values because on resizing it, offset limits changes based on screen size.
 -> A functionality to record and be able to play the video?
 -> A zoom-out, zoom-in option. Show a small map on the bottom right corner of screen.
+-> An extra "Do you want to Quit" screen to appear if the user decides to quit.(Just like the one that appears when you try to quit some movei streaming app).
 ##################-> Ability to move the camera with the mouse(by dragging the mouse to the end of the screen).
+-> The offset mechanism has to be a bit more better.
 -> When player comes to a ruin entrance in the 'Ruin0' map, the rocks should move and make way.
 ->All the transportation portals are to rotate at a constant speed to give it a good look 
 ->If the player rect is colliding with a obstacle rect, also handle the case when the player is not moving at all(i.e., handle when the player is sitting idle so that the player doesn't move at all).

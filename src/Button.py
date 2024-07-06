@@ -1,73 +1,103 @@
 import pygame
+from Settings import *
 
+#Each button will be basically 2 rectangles with the top rectangle having the text and the bottom being a lighter shade of the background color.
 class Button:
-    def __init__(self,pos,button_width,button_height,text,font,text_color,background_color,hover_color,click_color):
-        self.pos=pos                    #We're going to let this be a tuple.
-        self.button_width=button_width
-        self.button_height=button_height
+    def __init__(self,pos,width,height,text,font,text_color=TEXT_COLOR,bg_color=BUTTON_BACKGROUND_COLOR,hover_color=BUTTON_HOVER_COLOR,click_color=BUTTON_CLICK_COLOR):
+        #Initializing the arguments.
+        self.pos=pos
+        self.width=width
+        self.height=height
         self.text=text
         self.font=font
         self.text_color=text_color
-        self.background_color=background_color
+        self.normal_bg_color=bg_color
         self.hover_color=hover_color
         self.click_color=click_color
 
+        #A variable which is set to the button's text when the pygame.MOUSEUP event is triggered on this button.
+        self.button_chosen=""
 
-        #For animation purposes. The idea is to make the button appear from the left side of the screen. The second button appears only when the first button has come to final position.
-        self.animation_speed=0.1
-        self.final_left_pos=self.pos[0]
-        self.curr_left_pos=0
+        #Rendering the text into a surface, getting it's width,height(inorder to position the surface properly)
+        self.text_surf=self.font.render(text,True,self.text_color)          #Renders 'self.text' with anti-aliasing(smooth appearance of text) and text is of color 'self.text_color'.
+        self.text_width=self.text_surf.get_width()
+        self.text_height=self.text_surf.get_height()
 
-        # #For animation purposes. The idea is to inflate the button when the mouse hovers on the screen.
-        # self.hover_stat="Forward"           #Set to 'Forward' when mouse hovers on button, else it is set to 'Backward'.
-        # self.inflate_width=0.1
-        # self.inflate_height=0.1
-        # self.hover_width=self.button_width + 50
-        # self.hover_height=(self.hover_width*self.button_height)//self.button_width          #This is to try to maintain the aspect ratio.
-        # self.inflate_counter=0
-        # self.inflate_max_count=self.inflate_width*(self.hover_width-self.button_width)
-        # self.new_width=self.button_width
-        # self.new_height=self.button_height
+        #Rectangles
+        self.border_radius=int(min(self.width,self.height)//3)
+        self.border_thickness=3
+            #Top Rectangle - Is the smaller rectangle, contains the text
+        self.top_color=self.normal_bg_color
+        self.top_rect=pygame.rect.Rect(self.pos,(self.width,(4*self.height)//5))           #The color to be drawn on this rect will be chosen in the draw() method itself.
+        self.top_rect_bottom_left_radius=self.border_radius//5
+        self.top_rect_bottom_right_radius=int(self.border_radius*1.5)
+            #Bottom Rectangle - Is the larger rectangle.
+        self.bottom_rect=pygame.rect.Rect(self.pos,(self.width,self.height))               #The color,border-radius to be drawn on this rect will be chosen in the draw() method itself
+        self.bottom_color=tuple(min(c + 50, 255) for c in self.top_color)
+        self.bottom_rect_bottom_left_radius=self.border_radius
+        self.bottom_rect_bottom_right_radius=self.border_radius
 
+        #Animation variables - To make the button appear from left to it's specified position. It has 2 phases (1st from outside screen to a right position) and (2nd from right position to specified position)
+        self.animation_phase=1          #Will be 'None' when the animation is done.
+        self.curr_left=-self.width
+            #Phase 1 variables.
+        self.phase1_left_pos=self.pos[0]+50
+        self.pase1_animation_movement_speed=1
+            #Phase 2 variables.
+        self.phase2_left_pos=self.pos[0]
+        self.phase2_animate_movement_speed=-1.8         #This is negative as the box has to move left.
 
-        #Top rectangle.
-        self.top_rect=pygame.Rect((self.curr_left_pos,self.pos[1]),(self.button_width,self.button_height))
-        # self.top_rect=pygame.Rect((0,self.pos[1]),(self.button_width,self.button_height))
-        self.top_color=self.background_color
-
-        #Text
-        self.text_surf=self.font.render(text,True,self.text_color)          #The text to be rendered, antialias, color_of_text, bg=none. The documentation says newline characters not allowed so we'd have to physically place the text on the button surface.
-            #The below text_rect is to get the rectangle to place the text surface. From this rectangle, we get the width and height of the surface. Now, we use these along with the center position of the top_rect inorder to display the text properly and be able to move it as well.
-        self.text_rect=self.text_surf.get_rect(center=self.top_rect.center)
-        self.text_rect_width=self.text_rect.right-self.text_rect.left
-        self.text_rect_height=self.text_rect.bottom-self.text_rect.top
-        print('self.text_rect_height: ', self.text_rect.height)
-        # self.img=pygame.Surface((self.button_width,self.button_height),pygame.SRCALPHA)
-        # self.rect=self.image.get_rect(topleft=self.pos)
+    def starting_button_animation(self):
+        #The button_sliding animation. Since the rect's need to have int values, we cannot directly increment them with a decimal value(Hence the need for self.curr_left).
+        if(self.animation_phase!=None):
+            if(self.animation_phase==1):
+                if(self.curr_left<self.phase1_left_pos):
+                    self.curr_left+=self.pase1_animation_movement_speed
+                else:
+                    self.animation_phase=2
+            elif(self.animation_phase==2):
+                if(self.curr_left>self.phase2_left_pos):
+                    self.curr_left+=self.phase2_animate_movement_speed
+                else:
+                    self.animation_phase=None
+                pass
+            self.top_rect.left=self.curr_left
+            self.bottom_rect.left=self.curr_left
+            pass
         pass
+    
+    #Method to set the self.top_color based on whether or not the mouse is on the button and clicking or not.
+    def set_top_color(self):
+        mouse_pos=pygame.mouse.get_pos()
 
-    def chk_mousepos(self):
-        #If mouse hovers i.e., self.hover_stat=='Forward'.
-            #if(self.inflate_counter<self.):
-                #self.
-        #When mouse is not hovering on the button, inflate_ip again but only if the rect was inflate previously.
-        pass
-
-    def animate(self):          #We could add like a linear equation and decide how fast the animation should by setting the self.curr_left_pos based on the current number of ticks and set this value to self.curr_left_pos(This would be only to smoothen the animation)
-        if(self.curr_left_pos<self.final_left_pos):
-            self.curr_left_pos+=self.animation_speed
-            self.top_rect.left=self.curr_left_pos
-        
-        #The below code doesn't work as top_rect cannot be a decimal i think.
-        # if(self.top_rect.left<self.final_left_pos):
-        #     self.top_rect.left+=self.animation_speed
-        #     print(self.top_rect.left)
-        pass
-
+        #Mouse is on the button. So by default, set the colors to the hover color. If the mouse has been clicked on, set the top color accordingly.
+        self.top_rect.height=(4*self.height)//5
+        self.top_rect_bottom_left_radius=self.border_radius//5
+        self.top_rect_bottom_right_radius=int(self.border_radius*1.5)
+        if(self.bottom_rect.collidepoint(mouse_pos)):
+            self.top_color=self.hover_color
+            if(pygame.mouse.get_pressed()[0]):      #If you've done a left click
+                self.top_color=self.click_color
+                self.top_rect.height=self.bottom_rect.height
+                self.top_rect_bottom_left_radius=self.bottom_rect_bottom_left_radius
+                self.top_rect_bottom_right_radius=self.bottom_rect_bottom_right_radius
+            else:
+                # self.top_rect.height=(4*self.height)//5
+                pass
+        else:
+            self.top_color=self.normal_bg_color
+    
     def draw(self,display_surf):
-        self.animate()
-        pygame.draw.rect(display_surf, self.top_color, self.top_rect)           #Drawing the top rectangle on the screen.
-        display_surf.blit(self.text_surf,(self.top_rect.centerx-self.text_rect_width//2,self.top_rect.centery-self.text_rect_height//2))
-        # print('self.top_rect.centery: ', self.top_rect.centery)
-        # print('top of the text: ',self.top_rect.centery - self.text_rect_height)
-        # display_surf.blit(self.text_surf, self.text_rect)
+        self.starting_button_animation()
+
+        #Setting the top color based on mouse position (Color for hover, click, or normal background color)
+        self.set_top_color()                                                    #We ignore the return value as we only want to set the top_color here.
+        self.bottom_color=tuple(min(c + 50, 255) for c in self.top_color)       #Updating the bottom color to be a lighter shade of top_color.
+
+        #Drawing the Bottom rectangle, then Top rectangle, then text surface.
+        pygame.draw.rect(display_surf, self.bottom_color, self.bottom_rect,0,self.border_radius,border_bottom_left_radius=self.bottom_rect_bottom_left_radius,border_bottom_right_radius=self.bottom_rect_bottom_right_radius)           #The '0' represents to fill the self.bottom_rect with self.bottom_color.
+        pygame.draw.rect(display_surf, self.top_color, self.top_rect,0,self.border_radius,border_bottom_left_radius=self.top_rect_bottom_left_radius,border_bottom_right_radius=self.top_rect_bottom_right_radius)
+        display_surf.blit(self.text_surf,(self.top_rect.centerx-self.text_width//2,self.top_rect.centery-self.text_height//3))
+        pygame.draw.rect(display_surf,(0,0,0),self.bottom_rect,self.border_thickness,self.border_radius)   #The '2'(is >0) means to draw a border with the color (0,0,0) i.e., black.
+
+        pass
