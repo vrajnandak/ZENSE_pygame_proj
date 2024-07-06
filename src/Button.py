@@ -15,9 +15,6 @@ class Button:
         self.hover_color=hover_color
         self.click_color=click_color
 
-        #A variable which is set to the button's text when the pygame.MOUSEUP event is triggered on this button.
-        self.button_chosen=""
-
         #Rendering the text into a surface, getting it's width,height(inorder to position the surface properly)
         self.text_surf=self.font.render(text,True,self.text_color)          #Renders 'self.text' with anti-aliasing(smooth appearance of text) and text is of color 'self.text_color'.
         self.text_width=self.text_surf.get_width()

@@ -118,23 +118,6 @@ class MyGame:
                 break
             
             #Displaying the appropriate screen after Choosing the required buttons based on current game state.
-            # buttons=None
-            # if(self.curr_screen=="Start"):
-            #     buttons=self.StartButtons
-            # elif(self.curr_screen=="Pause"):
-            #     buttons=self.PauseButtons
-            # elif(self.curr_screen=="Settings"):
-            #     buttons=self.SettingsButtons
-            #     pass
-            # elif(self.curr_screen=="Victory"):
-            #     buttons=self.VictoryButtons
-            #     pass
-            # elif(self.curr_screen=="Lose"):
-            #     buttons=self.LossButtons
-            #     pass
-            # elif(self.curr_screen=="AreYouSureYouWantToQuit"):
-            #     buttons=self.AreYouSureYouWantToQuitButtons
-            #     pass
             self.chooseWhichButtons()
             self.action=self.displayScreen(self.screen_shade_color,self.curr_buttons)
 
@@ -143,7 +126,6 @@ class MyGame:
                 break
 
             #Performing the Actions.
-            # "New Game", "Saved Games","Quit","Settings","Resume","Save","Back To Home","Restart", "Yes","No"
             if(self.action=="Resume"):
                 self.curr_screen=self.curr_Game.run()       #Returns either of ["Pause","Victory","Lose","Quit"]
                 continue
@@ -164,35 +146,10 @@ class MyGame:
                 pass
             elif(self.action=="Restart"):
                 pass
-            
-        # running=1
-        # while running:
-        #     for event in pygame.event.get():
-        #         if event.type==pygame.QUIT:
-        #             running=0
-        #             break
-        #         if event.type==pygame.MOUSEBUTTONUP:
-        #             for button in self.StartButtons:
-        #                 if(button.bottom_rect.collidepoint(pygame.mouse.get_pos())):
-        #                     self.button_chosen_text=button.text
-        #                     print(self.button_chosen_text)
-        #             pass
-            
-            #The Actual Start screen being displayed.
-            # self.screen.fill('red')
-            # drawShadedBGScreen(self.screen,(0,0,0,100))
-            # for button in self.StartButtons:
-            #     button.draw(self.screen)
-            # pygame.display.flip()
-        
-        # if(running==0):
-        #     pygame.quit()
-            #If New Game.
-        # self.curr_game=Game(self.clock)
-            #If one of the saved Games, Then the select the one and set it to be the self.curr_Game.
-
-
-        # self.curr_game.run()
+            elif(self.action=="Yes"):
+                pass
+            elif(self.action=="No"):
+                pass
         pass
 
 
