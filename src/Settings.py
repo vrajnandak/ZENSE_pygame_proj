@@ -8,6 +8,15 @@ pygame.font.init()
 
 #Others
 GAME_TITLE="Time Rift Rescue"
+GAME_START_PLAYER_POS=(1979,1206)
+STARTING_LEVEL_ID=0
+TELEPORTATION_MAP={             #A dictionary of key (<level_id>_<teleportation_portal_top_left>) and value (a list of form [new_level_to_transport_to, new_player_pos])
+    '0': [],
+    '1': [],
+    '2': [],
+    '3': []
+}
+ENEMY_ATTACK_RADIUS=300         #A radius of 100 pixels.
 
 #Sizes
 BASE_SIZE=32
@@ -19,8 +28,6 @@ SCREEN_SIZE=(SCREEN_WIDTH,SCREEN_HEIGHT)
 PLAYER_SIZE=(2*BASE_SIZE,3*BASE_SIZE)
 ENEMY_SIZE=(2*BASE_SIZE,3*BASE_SIZE)
 STRONG_ENEMY_SIZE=(3*BASE_SIZE,3*BASE_SIZE)
-
-
 
 #Colors
 SCREEN_BG_SHADE_COLOR=(127,127,127,0)
@@ -38,13 +45,15 @@ SCREEN_BG_SHAD_POS=(0,0)
 
 #Speeds
 GAME_FPS=30
-PLAYER_SPEED=5
+PLAYER_SPEED=10
+ENEMY_SPEED=5
 KEYBOARD_CAMERA_SPEED=25
 MOUSE_CAMERA_SPEED=25
 
 
 #Folder Paths
 WORKING_DIRECTORY_PATH=os.getcwd()
+SAVED_DATA_DIR_PATH=os.path.join(WORKING_DIRECTORY_PATH,"SavedData")
 GRAPHICS_DIR_PATH=os.path.join(WORKING_DIRECTORY_PATH,"graphics")
 MAPS_DIRECTORY_PATH=os.path.join(GRAPHICS_DIR_PATH,"Ruins")            #Folder path to getting Maps and Other Graphics
 BASEMAP_NAME="BaseMap.png"                          #Name of Floor maps which are basically the 1st drawn image.

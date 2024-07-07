@@ -12,9 +12,7 @@ class Obstacle(pygame.sprite.Sprite):
             self.img.fill('black')
         self.rect=self.img.get_rect(topleft=self.pos)
         self.mask=pygame.mask.from_surface(self.img)
-        # self.update()
 
     def update(self,display_surf,offset):
         new_offset=self.rect.topleft-offset
         display_surf.blit(self.img,new_offset)
-        # pygame.display.flip()

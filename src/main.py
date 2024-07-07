@@ -3,6 +3,7 @@ from Settings import *
 from Game import *
 from Level import Level
 from Button import Button
+# from LoadDataManager import *
 
 
 class MyGame:
@@ -24,19 +25,19 @@ class MyGame:
         #Buttons. Every screen has a separate button due to having different sizes, positions in the screen. We could've otherwise re-used the same buttons.
             #Start Screen - "New Game","Saved Games", "Quit", "Settings"
         # self.startNewGame=Button((100,100),200,60,"New Game","white",self.gui_font,"red","gray","blue")
-        self.startNewGame=Button((200,100),200,60,"New Game",self.gui_font)
-        self.startSavedGames=Button((400,200),200,60,"Saved Games", self.gui_font)
-        self.startQuit=Button((600,300),200,60,"Quit",self.gui_font)
-        self.startSettings=Button((800,400),200,60,"Settings",self.gui_font)
+        self.startNewGame=Button((200,100),200,60,"New Game",self.gui_font,-200)
+        self.startSavedGames=Button((400,200),200,60,"Saved Games", self.gui_font,-300)
+        self.startQuit=Button((600,300),200,60,"Quit",self.gui_font,-400)
+        self.startSettings=Button((800,400),200,60,"Settings",self.gui_font,-500)
         self.StartButtons=[self.startNewGame,self.startSavedGames,self.startQuit,self.startSettings]
             #Pause Screen - "Resume", "Save", "Quit", "Settings", "Back To Home", "Restart"
-        self.pauseResume=Button((200,100),200,60,"Resume",self.gui_font)
-        self.pauseSave=Button((400,200),200,60,"Save", self.gui_font)
-        self.pauseQuit=Button((600,300),200,60,"Quit",self.gui_font)
-        self.pauseSettings=Button((800,400),200,60,"Settings",self.gui_font)
-        self.pauseBackToHome=Button((1000,500),200,60,"Back To Home",self.gui_font)
-        self.pauseRestart=Button((1200,600),200,60,"Restart", self.gui_font)
-        self.PauseButtons=[self.pauseResume,self.pauseSave,self.pauseQuit,self.pauseSettings]
+        self.pauseResume=Button((200,100),200,60,"Resume",self.gui_font,-100)
+        self.pauseSave=Button((200,250),200,60,"Save", self.gui_font,-200)
+        self.pauseQuit=Button((200,400),200,60,"Quit",self.gui_font,-300)
+        self.pauseSettings=Button((800,100),200,60,"Settings",self.gui_font,-100)
+        self.pauseBackToHome=Button((800,250),200,60,"Back To Home",self.gui_font,-200)
+        self.pauseRestart=Button((800,400),200,60,"Restart", self.gui_font,-300)
+        self.PauseButtons=[self.pauseResume,self.pauseSave,self.pauseQuit,self.pauseSettings,self.pauseBackToHome,self.pauseRestart]
         for button in self.PauseButtons:                #This is because we don't want the animation on pausing the game.
             button.animation_phase=None
             #Settings Screen -
@@ -46,13 +47,14 @@ class MyGame:
             #Loss Screen -
         self.LossButtons=[]
             #Are you sure you want to Quit Screen - "Yes", "No"
-        self.AreYouSureYouWantToQuitYes=Button((400,SCREEN_HEIGHT_HALF),200,60,"Yes",self.gui_font)
-        self.AreYouSureYouWantToQuitNo=Button((700,SCREEN_HEIGHT_HALF),200,60,"No",self.gui_font)
+        self.AreYouSureYouWantToQuitYes=Button((400,SCREEN_HEIGHT_HALF),200,60,"Yes",self.gui_font,-200)
+        self.AreYouSureYouWantToQuitNo=Button((700,SCREEN_HEIGHT_HALF),200,60,"No",self.gui_font,-200)
         self.AreYouSureYouWantToQuitButtons=[self.AreYouSureYouWantToQuitYes,self.AreYouSureYouWantToQuitNo]
 
         #The Games available.
         self.curr_Game=None
         self.savedGames=[]
+        # self.gameDataManager=LoadDataManager()
 
         #Starting the Code.
         self.curr_screen="Start"         #Can be ["Start","Pause","Settings","Victory","Loss","AreYouSureYouWantToQuit"]
@@ -60,7 +62,6 @@ class MyGame:
         self.screen_shade_color=SCREEN_BG_SHAD_POS
         self.action=None                 #Can be ["New Game", "Saved Games","Quit","Settings","Resume","Save","Back To Home","Restart", "Yes","No"]
         self.startGame()
-        # self.displayScreen((255,0,0,125),self.StartButtons)
 
     def chooseWhichButtons(self):
         if(self.curr_screen=="Start"):
@@ -105,7 +106,7 @@ class MyGame:
                 button.draw(self.screen)
             pygame.display.flip()
         return ""
-
+    
     #A method to display the Starting Screen.
     def startGame(self):
         running=True
@@ -113,8 +114,12 @@ class MyGame:
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
                     running=False
-                    break
             if(running==False):
+                #Call the "Are you Sure you want to Quit?" screen
+                    #If yes
+                self.gameDataManager.saveTheGame(self.curr_Game)
+                    #If no
+                #self.quit_game=0
                 break
             
             #Displaying the appropriate screen after Choosing the required buttons based on current game state.
@@ -128,7 +133,6 @@ class MyGame:
             #Performing the Actions.
             if(self.action=="Resume"):
                 self.curr_screen=self.curr_Game.run()       #Returns either of ["Pause","Victory","Lose","Quit"]
-                continue
             elif(self.action=="New Game"):
                 newGame=Game(self.clock)
                 self.curr_Game=newGame
@@ -137,19 +141,28 @@ class MyGame:
             elif(self.action=="Saved Games"):
                 pass
             elif(self.action=="Quit"):
+                pygame.quit()
+                break
                 pass
             elif(self.action=="Settings"):
                 pass
             elif(self.action=="Save"):
+                # self.gameDataManager.saveTheGame(self.curr_Game)
+                # self.curr_screen="Start"
+                # self.curr_Game=None
                 pass
             elif(self.action=="Back To Home"):
+                self.curr_screen="Start"
                 pass
             elif(self.action=="Restart"):
+                self.curr_Game=Game(self.clock)
+                self.curr_Game.run()
                 pass
             elif(self.action=="Yes"):
                 pass
             elif(self.action=="No"):
                 pass
+        pass
         pass
 
 

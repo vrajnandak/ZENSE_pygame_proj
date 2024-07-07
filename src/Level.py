@@ -2,10 +2,12 @@ import pygame
 from Settings import *
 from Obstacle import *
 from Player import *
+from Enemy import *
 from Button import *
+from Portal import *
 
 class Level:
-    def __init__(self,level_id):
+    def __init__(self,level_id,player):
         self.level_id=level_id
 
         #Sprite groups of the level.
@@ -15,7 +17,7 @@ class Level:
         self.transport_sprites=pygame.sprite.Group()
 
         #Player of the level.
-        self.player=None
+        self.player=player
 
         #Graphics of the level.
         self.graphics_path=os.path.join(MAPS_DIRECTORY_PATH,f'Ruin{self.level_id}')
@@ -97,12 +99,14 @@ class Level:
                             elif(val==1000):
                                 Obstacle(img_pos,None,[self.obstacle_sprites])
                                 pass
-                            elif(val==1001):
-                                self.player=Player(img_pos)
-                                pass
+                            # elif(val==1001):
+                            #     self.player=Player(img_pos)
+                            #     pass
                             elif(val==1002):
+                                Enemy(img_pos,[self.enemy_sprites])
                                 pass
                             elif(val==1003):
+                                Portal(img_pos,[self.visible_sprites,self.transport_sprites], os.path.join(self.graphics_path,"Portals"))
                                 pass
                             elif(val==1004):
                                 pass
@@ -203,7 +207,9 @@ class Level:
 
     def run(self,keys):
         #Move the Player
-        self.player.move(keys,self)
+        shd_transport=self.player.move(keys,self)
+        if(shd_transport==1):
+            return shd_transport
         #Get the Offset
         self.get_offset(keys)
 
@@ -214,5 +220,7 @@ class Level:
 
         #Draw the visible sprites after considering offset
         self.visible_sprites.update(display_surf,self.offset)
+        self.transport_sprites.update(display_surf,self.offset)
+        self.enemy_sprites.update(display_surf,self.offset,self)
         self.player.draw(display_surf)
-        pass
+        return 0

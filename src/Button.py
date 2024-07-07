@@ -3,13 +3,14 @@ from Settings import *
 
 #Each button will be basically 2 rectangles with the top rectangle having the text and the bottom being a lighter shade of the background color.
 class Button:
-    def __init__(self,pos,width,height,text,font,text_color=TEXT_COLOR,bg_color=BUTTON_BACKGROUND_COLOR,hover_color=BUTTON_HOVER_COLOR,click_color=BUTTON_CLICK_COLOR):
+    def __init__(self,pos,width,height,text,font,start_left_pos,text_color=TEXT_COLOR,bg_color=BUTTON_BACKGROUND_COLOR,hover_color=BUTTON_HOVER_COLOR,click_color=BUTTON_CLICK_COLOR):
         #Initializing the arguments.
         self.pos=pos
         self.width=width
         self.height=height
         self.text=text
         self.font=font
+        self.start_left_pos=start_left_pos
         self.text_color=text_color
         self.normal_bg_color=bg_color
         self.hover_color=hover_color
@@ -36,7 +37,7 @@ class Button:
 
         #Animation variables - To make the button appear from left to it's specified position. It has 2 phases (1st from outside screen to a right position) and (2nd from right position to specified position)
         self.animation_phase=1          #Will be 'None' when the animation is done.
-        self.curr_left=-self.width
+        self.curr_left=self.start_left_pos
             #Phase 1 variables.
         self.phase1_left_pos=self.pos[0]+50
         self.pase1_animation_movement_speed=1

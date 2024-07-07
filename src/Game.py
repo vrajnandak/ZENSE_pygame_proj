@@ -2,12 +2,32 @@ import pygame
 from Settings import *
 from Level import Level
 from Button import Button
+from Player import Player
 
 class Game:
     def __init__(self,clock):
         self.clock=clock
+
+        #The player for the Game.
+        self.player=Player(GAME_START_PLAYER_POS)
+
+        #All the levels unlocked till now
         self.levels=[]
-        self.curr_level=Level(0)
+        self.curr_level=Level(STARTING_LEVEL_ID,self.player)
+        self.levels.append(self.curr_level)
+
+    def changeMap(self):
+        #Have to Transport the player
+            #If the level to teleport to doesn't exist in the self.levels.
+                #Create the New Level.
+                #Append this New Level to the self.levels
+                #Set this New Level to the curr_level.
+                #put 'continue'
+            #If level already exists
+                #set level_found to be the level to be teleported to.
+                #self.curr_level=level_found
+                #put 'continue'
+        pass
 
     def run(self):
         running=True
@@ -27,8 +47,12 @@ class Game:
             if(keys[pygame.K_ESCAPE]):          #Pause screen has to be visible if the user hits 'esc'
                 return "Pause"
             
-
-            self.curr_level.run(keys)
+            #Running the Level logic.
+            shd_transport=self.curr_level.run(keys)
             pygame.display.flip()
             self.clock.tick(GAME_FPS)
+
+            if(shd_transport==1):
+                self.changeMap()
+                pass
         pass

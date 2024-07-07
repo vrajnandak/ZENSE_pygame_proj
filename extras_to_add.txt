@@ -1,4 +1,5 @@
 -> Add sys.exit() statement instead of using variables to handle the quit event. sys.exit() throws an exception so you have to specify the try catch blocks and handle the exceptions properly.
+-> Any object is blit only if it's newpos lies in the specified limits of 'VISIBLE_SCREEN_LEFT','VISIBLE_SCREEN_RIGHT','VISIBLE_SCREEN_TOP','VISIBLE_SCREEN_BOTTOM'. This will reduce the load a bit.
 ->Have to add a GoodImage for the screen whenever one of the display screens is active. Because the buttons are moving, you can't really achieve the half-shaded background of the game and then the buttons on that.
 -> Make a file to change the settings. This file will interact with the user and take their required settings values.
 ->Any sprite/image/visible/invisible object has to have dimensions that are multiples of 32. 'BASE_UNIT=32' will be the main unit used throughout.

@@ -10,9 +10,11 @@ Now, the protagonist escapes from this island, never caring to find the time mac
 (A monkey that slipped in when the door was opened by the protagonist, finds the time machine and presses the "red button". This activates the time machine and we go back to the start of the game).
 
 SOFTWARES USED:
-1. GIMP (2.10.30) to make sprites
+1. GIMP (2.10.30) to make sprites.
 2. Tiled to make map layouts, manage different levels with csv files.
-3. VS code for writing pygame code.
+3. VS code for writing the pygame code.
+4. pygame  (pip install pygame).
+5. pathfinding (pip install pygame) for finding the shortest paths.
 
 
 TO RUN THE GAME:
@@ -30,6 +32,7 @@ CONTROLS:
 Naming formats:
 1. The names of the different images of obstacles(rocks, trees, etc) will be '<name_of_obstacle>_<elem_id_in_Tiled_map>_<img_width>_<img_height>.png' where 'elem_id_in_Tiled_map' is the id of the element in the csv file obtained from Tiled software, the rest of the fields are as implied.
     ==>The 'invisible boundary' blocks that restrict the player's movement in the map must have the same id(will have id='1000'). This is to make the code easy to write. When you get the csv file from Tiled, it is best to manually change every occurance of the invisible tile to '1000' and '1001', etc as needed. This will make it easy to load graphics since different images in tiled can have same id's
+    ==>The Portal images have a naming convention of <x> where 'x' represents the frame number in the portal's animation. The size of portals is fixed to 96x96.
 2. The additional hidden rooms or extra rooms will be named in the following format: 'Ruin<x>_<extra_type><num>'. The 'extra_type' can be from ['hidden', 'extension'] only where 'hidden' represents the map to be discovered (can be opened only after protagonist unlocks the room, like the treasure room), 'extension' represents the doorway to other rooms which are basically open and don't need a special lock(They are loaded when the level itself is loaded).
     ex: 'Ruin2_hidden2', 'Ruin2_extension2'
 
@@ -73,6 +76,10 @@ EXTRAS:
 
 IMAGE REFERENCES:
 https://elthen.itch.io/2d-pixel-art-archaeologist
+
+
+
+
 
 
 CHATGPT DESCRIPTION BASED ON ABOVE DESCRIPTION:
