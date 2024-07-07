@@ -40,6 +40,7 @@ class Player(pygame.sprite.Sprite):
     
     #A method to check collisions
     def handle_collisions(self,direction, level):
+        self.helper_methods.handle_spritegroup_collision(direction,level.enemy_sprites,0)
         self.helper_methods.handle_spritegroup_collision(direction,level.obstacle_sprites,0)
         ret_val=self.helper_methods.handle_spritegroup_collision(direction,level.transport_sprites,1)       #We would only check transportation for the teleportation sprites.
         return ret_val
