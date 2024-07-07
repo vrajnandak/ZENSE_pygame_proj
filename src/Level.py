@@ -5,6 +5,7 @@ from Player import *
 from Enemy import *
 from Button import *
 from Portal import *
+from CollisionHelper import CollisionHelper
 
 class Level:
     def __init__(self,level_id,player):
@@ -18,6 +19,9 @@ class Level:
 
         #Player of the level.
         self.player=player
+
+        #Collision Detecting class (Has all the functions needed for detecting collisions)
+        self.collision_detector=CollisionHelper()
 
         #Graphics of the level.
         self.graphics_path=os.path.join(MAPS_DIRECTORY_PATH,f'Ruin{self.level_id}')
