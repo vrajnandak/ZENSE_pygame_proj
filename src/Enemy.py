@@ -2,7 +2,7 @@ import pygame
 from Settings import *
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
-from pathfinding.core.diagonal_movement import DiagonalMovement     #To allow the enemies to move diagonally as well while searching the path.
+# from pathfinding.core.diagonal_movement import DiagonalMovement     #To allow the enemies to move diagonally as well while searching the path.
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self,pos,groups):
@@ -60,6 +60,10 @@ class Enemy(pygame.sprite.Sprite):
         start_y=int(self.rect.y//BASE_SIZE)-start_row
         end_x=min(max(int(player.rect.x//BASE_SIZE)-start_col, 0),end_col-start_col-1)
         end_y=min(max(int(player.rect.y//BASE_SIZE)-start_row, 0),end_row-start_row-1)
+        self.start_x=start_x
+        self.start_y=start_y
+        self.end_x=end_x
+        self.end_y=end_y
         # print('The cell indices: ',end_x, end_y)
         start_cell=grid.node(start_x,start_y)
         end_cell=grid.node(end_x,end_y)
@@ -97,6 +101,8 @@ class Enemy(pygame.sprite.Sprite):
         #Moving the enemy sprite if player within range.
         # if(self.direction.magnitude()<=self.attack_radius):
         if(pygame.math.Vector2(level.player.rect.left-self.rect.left, level.player.rect.top-self.rect.top).magnitude()<=self.attack_radius):
+            print(f'starting cell: ', self.start_x,self.start_y)
+            print(f'ending cell: ', self.end_x,self.end_y)
             print(self.path)
             if(self.direction.magnitude()!=0):
                 self.direction=self.direction.normalize()

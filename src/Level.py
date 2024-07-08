@@ -23,7 +23,8 @@ class Level:
         #Collision Detecting class (Has all the functions needed for detecting collisions)
         self.collision_detector=CollisionHelper(self)
         self.detection_tiles=[]             #Will be filled with in createMap() itself. Used for pathfinding.
-        self.finder=AStarFinder(diagonal_movement=DiagonalMovement.always)
+        # self.finder=AStarFinder(diagonal_movement=DiagonalMovement.always)
+        self.finder=AStarFinder()
 
         #Graphics of the level.
         self.graphics_path=os.path.join(MAPS_DIRECTORY_PATH,f'Ruin{self.level_id}')
