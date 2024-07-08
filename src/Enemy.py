@@ -90,24 +90,24 @@ class Enemy(pygame.sprite.Sprite):
             #Prioritizing the horizontal movement of the sprite over the vertical movement. Sprite can move either in horizontal or vertical only
             self.direction.x=next_cell_col-self.rect.x
             self.direction.y=next_cell_row-self.rect.y
-            print('before updating the directions,next direction: ', self.direction)
-            if(self.direction.x<0):
-                if(path[1].y<path[0].y):
-                    if(self.rect.bottom//BASE_SIZE!=self.rect.top//BASE_SIZE):
-                        self.direction.x=0
-                        self.direction.y=-1
-                    pass
-                elif(path[1].y>path[0].y):
-                    if(self.rect.bottom//BASE_SIZE!=self.rect.top//BASE_SIZE):
-                        self.direction.x=0
-                        self.direction.y=1
-                    pass
-                pass
+            # print('before updating the directions,next direction: ', self.direction)
+            # if(self.direction.x<0):
+            #     if(path[1].y<path[0].y):
+            #         if(self.rect.bottom//BASE_SIZE!=self.rect.top//BASE_SIZE):
+            #             self.direction.x=0
+            #             self.direction.y=-1
+            #         pass
+            #     elif(path[1].y>path[0].y):
+            #         if(self.rect.bottom//BASE_SIZE!=self.rect.top//BASE_SIZE):
+            #             self.direction.x=0
+            #             self.direction.y=1
+            #         pass
+            #     pass
             # if(cell_cols_different):
             #     self.direction.y=0
             # elif(cell_rows_different):
             #     self.direction.x=0
-            print('next direction: ', self.direction)
+            # print('next direction: ', self.direction)
         pass
 
     def handle_collisions(self,direction,level):
@@ -136,12 +136,8 @@ class Enemy(pygame.sprite.Sprite):
                 self.direction=self.direction.normalize()
             self.rect.x+=self.direction.x*ENEMY_SPEED
             ret_val=self.handle_collisions("Horizontal",level)
-            if(ret_val==0):
-                level.collision_detector.update_detection_tiles_horizontal(self,self.direction.x*ENEMY_SPEED)
             self.rect.y+=self.direction.y*ENEMY_SPEED
             ret_val=self.handle_collisions("Vertical",level)
-            if(ret_val==0):
-                level.collision_detector.update_detection_tiles_horizontal(self,self.direction.y*ENEMY_SPEED)
             pass
         else:   #If there is even a bit of residual movement or a lag, there should still be collision detection done.
             # ret_val=self.handle_collisions("horizontal",level)

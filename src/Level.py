@@ -118,9 +118,9 @@ class Level:
                                 Obstacle(img_pos,img,[self.visible_sprites,self.obstacle_sprites])      #The instance of this class created is added to the given spriteGroups.
                                 img_width=int(img.get_rect().width//BASE_SIZE)
                                 img_height=int(img.get_rect().height//BASE_SIZE)
-                                for i in range(img_width):
-                                    for j in range(img_height):
-                                        self.detection_tiles[row_index+j][col_index+i]=0
+                                for i in range(img_width+2):
+                                    for j in range(img_height+2):
+                                        self.detection_tiles[row_index-1+j][col_index-1+i]=0
                                 pass
                             elif(val==500):             #A dummy val to ensure that the self.level_tiles are made '0'.
                                 pass
@@ -259,9 +259,9 @@ class Level:
         self.player.draw(display_surf)
 
         #Blitting the detection tiles.
-        # for row_index,row in enumerate(self.detection_tiles):
-        #     for col_index,val in enumerate(row):
-        #         pos=(col_index*BASE_SIZE,row_index*BASE_SIZE)
-        #         newpos=pos-self.offset
-        #         debug_print(val,newpos,display_surf)
+        for row_index,row in enumerate(self.detection_tiles):
+            for col_index,val in enumerate(row):
+                pos=(col_index*BASE_SIZE,row_index*BASE_SIZE)
+                newpos=pos-self.offset
+                debug_print(val,newpos,display_surf)
         return 0

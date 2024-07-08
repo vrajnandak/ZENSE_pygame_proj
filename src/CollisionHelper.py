@@ -5,49 +5,6 @@ class CollisionHelper:
         self.the_level=level
         pass
 
-    def update_detection_tiles_horizontal(self,entity,distance_moved):
-        return
-        #Getting the entity's positions.
-        if((entity.rect.top/BASE_SIZE==int(entity.rect.top//BASE_SIZE)) and (entity.rect.left/BASE_SIZE==int(entity.rect.left//BASE_SIZE))):        #This line is so that the tiles are updated only if the sprite is properly aligned with a tile. Thus, the speeds would have to be a factor of the BASE_SIZE for it to be possible to trigger this function.
-            top_row=int(entity.rect.top//BASE_SIZE)
-            bottom_row=int(top_row+entity.height_tiles)
-            left_col_old=int((entity.rect.x-distance_moved)//BASE_SIZE)             #Should subtract first and then divide, else it is possible that we count the wrong number of tiles.
-            left_col_curr=int((entity.rect.x)//BASE_SIZE)
-
-            #Setting the loop iterator val, level's vals.
-            step_val=1 if distance_moved > 0 else -1
-            val1=1 if distance_moved > 0 else 0
-            val2=0 if distance_moved > 0 else 1
-
-            #The for loop to change the values.
-            for i in range(left_col_old,left_col_curr,step_val):
-                for j in range(top_row,bottom_row,1):
-                    self.the_level.detection_tiles[j][i]=val1
-                    self.the_level.detection_tiles[j][i+entity.width_tiles]=val2
-        pass
-
-    def update_detection_tiles_vertical(self,entity,distance_moved):
-        return
-        #Getting the entity's positions
-        if((entity.rect.top/BASE_SIZE==int(entity.rect.top//BASE_SIZE)) and (entity.rect.left/BASE_SIZE==int(entity.rect.left//BASE_SIZE))):        #This line is so that the tiles are updated only if the sprite is properly aligned with a tile. Thus, the speeds would have to be a factor of the BASE_SIZE for it to be possible to trigger this function.
-            left_col=int(entity.rect.left//BASE_SIZE)
-            right_col=int(left_col+entity.width_tiles)
-            top_row_old=int((entity.rect.y-distance_moved)//BASE_SIZE)      #Should subtract first and then divide else we count the wrong number of tiles.
-            top_row_curr=int(entity.rect.y//BASE_SIZE)
-
-            #Setting the loop iterator val, level's vals
-            step_val=1 if distance_moved>0 else -1
-            val1=1 if distance_moved>0 else 0
-            val2=0 if distance_moved>0 else 1
-            
-            #The for loop to change the values.
-            for i in range(top_row_old,top_row_curr,step_val):
-                for j in range(left_col,right_col,1):
-                    # print(f'Vertical, row:{i}, col:{j}')
-                    self.the_level.detection_tiles[i][j]=val1
-                    self.the_level.detection_tiles[i+entity.height_tiles][j]=val2
-        pass
-
     #A method to get the max number of pixels that the player can move without having collision.
     def get_pixel_counter(self,entity,sprite,movement,distance_moved,is_horizontal,is_vertical):
         lower_lim=0
@@ -105,12 +62,8 @@ class CollisionHelper:
                     distance_moved=0
                     if(direction=="Horizontal"):
                         distance_moved=self.handle_horizontal_collision(entity,sprite,speed)
-                        if(distance_moved!=0):
-                            self.update_detection_tiles_horizontal(entity,distance_moved)
                     elif(direction=="Vertical"):
                         distance_moved=self.handle_vertical_collision(entity,sprite,speed)
-                        if(distance_moved!=0):
-                            self.update_detection_tiles_vertical(entity,distance_moved)
                     has_entity_moved+=distance_moved
         if(has_entity_moved!=0):
             return 2                    #Indicates that the entity has moved and tiles have been updated already.

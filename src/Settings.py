@@ -16,7 +16,7 @@ TELEPORTATION_MAP={             #A dictionary of key (<level_id>_<teleportation_
     '2': [],
     '3': []
 }
-ENEMY_ATTACK_RADIUS=4         #A radius 5 BASE_SIZE's
+ENEMY_ATTACK_RADIUS=8         #A radius 5 BASE_SIZE's
 
 #Sizes
 BASE_SIZE=32

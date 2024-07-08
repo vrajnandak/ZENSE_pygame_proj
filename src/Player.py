@@ -59,9 +59,9 @@ class Player(pygame.sprite.Sprite):
     
     #A method to check collisions
     def handle_collisions(self,direction, level):
-        ret1=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.enemy_sprites,0,collision_type="rect_collision")
-        ret2=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.obstacle_sprites,0,collision_type="rect_collision")
-        ret_val=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.transport_sprites,1,collision_type="rect_collision")
+        ret1=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.enemy_sprites,0)
+        ret2=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.obstacle_sprites,0)
+        ret_val=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.transport_sprites,1)
         if(ret_val==1):
             return ret_val
         elif(ret1==2 or ret2==2):
@@ -81,17 +81,12 @@ class Player(pygame.sprite.Sprite):
             if(shd_transport==1):
                 self.rect.x=self.rect.x-PLAYER_SPEED*self.direction.x           #Undoing movement as we have to transport. Next time we load back into this map, no collision happens.
                 return shd_transport
-            elif(shd_transport==0):
-                level.collision_detector.update_detection_tiles_horizontal(self,PLAYER_SPEED*self.direction.x)
-                pass
             #Move player Vertically and then check collisions. If player has to transport, then return '1'.
             self.rect.y=self.rect.y+PLAYER_SPEED*self.direction.y
             shd_transport=self.handle_collisions("Vertical",level)
             if(shd_transport==1):
                 self.rect.y=self.rect.y-PLAYER_SPEED*self.direction.y
                 return shd_transport
-            elif(shd_transport==0):
-                level.collision_detector.update_detection_tiles_vertical(self,PLAYER_SPEED*self.direction.y)
         pass
 
     def draw(self,display_surf):
