@@ -44,9 +44,9 @@ SCREEN_BG_SHAD_POS=(0,0)
 
 
 #Speeds
-GAME_FPS=30
+GAME_FPS=20
 PLAYER_SPEED=10
-ENEMY_SPEED=5
+ENEMY_SPEED=4
 KEYBOARD_CAMERA_SPEED=25
 MOUSE_CAMERA_SPEED=25
 
@@ -74,6 +74,12 @@ def getSpriteFromSpriteSheet(spritesheet_path,sprite_width,sprite_height,sprite_
     if(colorKey==None):
         sprite.set_colorkey(colorKey)
     return sprite
+
+debug_font=pygame.font.Font(None,30)
+def debug_print(text,pos,display_surf):
+    debug_surf=debug_font.render(str(text),'True','Black')
+    display_surf.blit(debug_surf,pos)
+    pass
 
 # Just realized this isn't needed as long as we follow the below format.
 # #ALL_BLOCKS - Has 'elem_id' as key, the block 'img' as value. This will be initialized in the Level object's using 'load_ALL_BLOCKS()'.

@@ -1,5 +1,9 @@
 -> Add sys.exit() statement instead of using variables to handle the quit event. sys.exit() throws an exception so you have to specify the try catch blocks and handle the exceptions properly.
 -> Any object is blit only if it's newpos lies in the specified limits of 'VISIBLE_SCREEN_LEFT','VISIBLE_SCREEN_RIGHT','VISIBLE_SCREEN_TOP','VISIBLE_SCREEN_BOTTOM'. This will reduce the load a bit.
+->As all sprites are using same piece of code for blitting themselves, we can just make this the method of the Game.py and call it 'draw_sprite(self,entity,display_surf,offset)'(However, it is important that each of these entity sprites have their image as 'img' only and rect as 'rect'):
+    def draw(self,display_surf,offset):                             ==> Will be replaced by:        def draw_sprites(self,entity,display_surf,offset):
+        new_offset=self.rect.topleft-offset                                                             newpos=entity.rect.topleft-offset
+        display_surf.blit(self.img,new_offset)                                                          display_surf.blit(entity.img,newpos)
 ->Have to add a GoodImage for the screen whenever one of the display screens is active. Because the buttons are moving, you can't really achieve the half-shaded background of the game and then the buttons on that.
 -> Make a file to change the settings. This file will interact with the user and take their required settings values.
 ->Any sprite/image/visible/invisible object has to have dimensions that are multiples of 32. 'BASE_UNIT=32' will be the main unit used throughout.

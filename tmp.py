@@ -85,29 +85,47 @@
 #     # screen.blit(img,(0,0))
 #     pygame.display.flip()
 
-import time
-my_timer_start=time.time()
-from pathfinding.core.grid import Grid
-from pathfinding.finder.a_star import AStarFinder
+# import time
+# my_timer_start=time.time()
+# from pathfinding.core.grid import Grid
+# from pathfinding.finder.a_star import AStarFinder
 
-my_matrix=[
-    [1,1,1,0,1,1],
-    [1,0,1,1,1,1],
-    [1,0,0,1,1,1]
-]
-my_grid=Grid(matrix=my_matrix)
-start_x=0       #Starting cell col number
-start_y=0       #Starting cell row number
-start_cell=my_grid.node(start_x,start_y)
-end_x=5
-end_y=2
-end_cell=my_grid.node(end_x,end_y)
+# my_matrix=[
+#     [1,1,1,0,1,1],
+#     [1,0,1,1,1,1],
+#     [1,0,0,1,1,1]
+# ]
+# my_grid=Grid(matrix=my_matrix)
+# start_x=0       #Starting cell col number
+# start_y=0       #Starting cell row number
+# start_cell=my_grid.node(start_x,start_y)
+# end_x=5
+# end_y=2
+# end_cell=my_grid.node(end_x,end_y)
 
-#Create a finder with a movement style.
-finder=AStarFinder()
+# #Create a finder with a movement style.
+# finder=AStarFinder()
 
-#path is as implied, runs is the number of cells you have to go through
-path,runs=finder.find_path(start_cell,end_cell,my_grid)
-my_timer_end=time.time()
-print(path,runs)
-print("Total time: ", my_timer_end-my_timer_start)
+# #path is as implied, runs is the number of cells you have to go through
+# path,runs=finder.find_path(start_cell,end_cell,my_grid)
+# my_timer_end=time.time()
+# print(path,runs)
+# print("Total time: ", my_timer_end-my_timer_start)
+
+# import pygame
+# pygame.init()
+# clock=pygame.time.Clock()
+# screen=pygame.display.set_mode((500,500))
+# while True:
+#     for event in pygame.event.get():
+#         if event.type==pygame.QUIT:
+#             pygame.quit()
+#     screen.fill('black')
+#     keys=pygame.key.get_pressed()
+#     a=(keys[pygame.K_UP]+keys[pygame.K_w])-(keys[pygame.K_DOWN]+keys[pygame.K_s])
+#     print(a)
+#     clock.tick(30)
+
+
+for i in range(5,3,-1):
+    print(i)

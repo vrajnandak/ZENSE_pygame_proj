@@ -21,7 +21,12 @@ class Level:
         self.player=player
 
         #Collision Detecting class (Has all the functions needed for detecting collisions)
-        self.collision_detector=CollisionHelper()
+        self.collision_detector=CollisionHelper(self)
+
+        ###################
+        #Creating the matrix of the level
+        self.detection_tiles=[]             #Will be filled with in createMap() itself.
+        # self.createDetectionTiles()
 
         #Graphics of the level.
         self.graphics_path=os.path.join(MAPS_DIRECTORY_PATH,f'Ruin{self.level_id}')
@@ -55,9 +60,7 @@ class Level:
         self.MOUSE_TOP_LIMIT=30
         self.MOUSE_BOTTOM_LIMIT=SCREEN_HEIGHT-30
 
-
-
-    #A function to simply store the unique graphics for this level.
+    #A method to simply store the unique graphics for this level.
     def loadGraphics(self):
         #There is no need to load 'ALL_BLOCKS' as we already have the id's and the things we're going to follow.
         # Loading the ALL_BLOCKS dictionary.
@@ -74,7 +77,7 @@ class Level:
             pass
         pass
 
-    #A function to create the map.
+    #A method to create the map.
     def createMap(self):
         #Figure out the Base Map.
         self.baseFloorImg=pygame.image.load(os.path.join(self.graphics_path,BASEMAP_NAME))
@@ -89,10 +92,13 @@ class Level:
             with open(os.path.join(FloorinfoPath,file)) as map:
                 layout=reader(map,delimiter=',')
                 for row_index,row in enumerate(layout):
+                    ####################
+                    detect_tiles_row=[]
                     for col_index,val in enumerate(row):
                         x=col_index*BASE_SIZE
                         y=row_index*BASE_SIZE
                         if(val!='-1'):
+                            detect_tiles_row.append(0)
                             val=int(val)
                             img_pos=(x,y)
                             if(val<1000):
@@ -100,12 +106,15 @@ class Level:
                                 img=img[0]
                                 Obstacle(img_pos,img,[self.visible_sprites,self.obstacle_sprites])      #The instance of this class created is added to the given spriteGroups.
                                 pass
+                            elif(val==500):             #A dummy val to ensure that the self.level_tiles are made '0'.
+                                pass
                             elif(val==1000):
                                 Obstacle(img_pos,None,[self.obstacle_sprites])
                                 pass
-                            # elif(val==1001):
+                            elif(val==1001):
+                                #This is to update the detection tiles properly so that the player's tiles are marked as '0'.
                             #     self.player=Player(img_pos)
-                            #     pass
+                                pass
                             elif(val==1002):
                                 Enemy(img_pos,[self.enemy_sprites])
                                 pass
@@ -114,6 +123,11 @@ class Level:
                                 pass
                             elif(val==1004):
                                 pass
+                        ##############
+                        else:
+                            detect_tiles_row.append(1)
+                    ############
+                    self.detection_tiles.append(detect_tiles_row)
             pass
         pass
 
@@ -227,4 +241,10 @@ class Level:
         self.transport_sprites.update(display_surf,self.offset)
         self.enemy_sprites.update(display_surf,self.offset,self)
         self.player.draw(display_surf)
+
+        for row_index,row in enumerate(self.detection_tiles):
+            for col_index,val in enumerate(row):
+                pos=(col_index*BASE_SIZE,row_index*BASE_SIZE)
+                newpos=pos-self.offset
+                debug_print(val,newpos,display_surf)
         return 0

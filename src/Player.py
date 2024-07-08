@@ -20,9 +20,14 @@ class Player(pygame.sprite.Sprite):
         self.offset=pygame.math.Vector2()   #A vector to hold the position at which the player has to be blit at. The value is set in the get_offset() in Level.
         # self.helper_methods=Player.PlayerHelperMethods(self)
 
+        self.dum_counter=0
+
     #A method to set the direction of player, attack mode, heal mode etc.
     def use_controls(self,keys):
         #Using the normal movement controls.
+            #We could also set the direction in just 2 lines but then you would have to do a separate logic for the w,a,s,d keys.
+            # self.direction.x=(keys[pygame.K_DOWN]-keys[pygame.K_UP])
+            # self.direction.y=(keys[pygame.K_RIGHT]-keys[pygame.K_LEFT])
         self.direction.x=0
         self.direction.y=0
         if(keys[pygame.K_w] or keys[pygame.K_UP]):
@@ -40,18 +45,30 @@ class Player(pygame.sprite.Sprite):
     
     #A method to check collisions
     def handle_collisions(self,direction, level):
-        level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.enemy_sprites,0)
-        level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.obstacle_sprites,0)
+        ret1=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.enemy_sprites,0)
+        ret2=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.obstacle_sprites,0)
         ret_val=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.transport_sprites,1)
-        return ret_val
-        # self.helper_methods.handle_spritegroup_collision(direction,level.enemy_sprites,0)
-        # self.helper_methods.handle_spritegroup_collision(direction,level.obstacle_sprites,0)
-        # ret_val=self.helper_methods.handle_spritegroup_collision(direction,level.transport_sprites,1)       #We would only check transportation for the teleportation sprites.
+        if(ret_val==1):
+            return ret_val
+        elif(ret1==2 or ret2==2):
+            return 2
+        else:
+            return 0
         # return ret_val
         
     def move(self,keys,level):
         self.use_controls(keys)
-
+        ########################################################
+        # if(self.dum_counter<100):
+        #     print('self.dum_counter: ',self.dum_counter)
+        #     left_col=self.rect.x//32
+        #     top_col=self.rect.y//32
+        #     for i in range(-self.rect.width//32,self.rect.width//32,1):
+        #         print('col number: ',i)
+        #         for j in range(self.rect.height//32):
+        #             print(level.detection_tiles[j+top_col][i+left_col])
+        #     self.dum_counter+=1
+        # print('')
         if(self.direction.magnitude()!=0):
             self.direction=self.direction.normalize()
 
@@ -59,74 +76,22 @@ class Player(pygame.sprite.Sprite):
             self.rect.x=self.rect.x+PLAYER_SPEED*self.direction.x
             shd_transport=self.handle_collisions("Horizontal",level)
             if(shd_transport==1):
-                self.rect.x=self.rect.x-PLAYER_SPEED*self.direction.x           #Undoing the transportation since the next time we load into this level, we might end up transporting again as there would be a collision with the teleportation portal.
+                self.rect.x=self.rect.x-PLAYER_SPEED*self.direction.x           #Undoing movement as we have to transport. Next time we load back into this map, no collision happens.
                 return shd_transport
+            elif(shd_transport==0):
+                level.collision_detector.update_detection_tiles_horizontal(self,PLAYER_SPEED*self.direction.x)
+                pass
             #Move player Vertically and then check collisions. If player has to transport, then return '1'.
             self.rect.y=self.rect.y+PLAYER_SPEED*self.direction.y
             shd_transport=self.handle_collisions("Vertical",level)
             if(shd_transport==1):
                 self.rect.y=self.rect.y-PLAYER_SPEED*self.direction.y
                 return shd_transport
+            elif(shd_transport==0):
+                # print('updating directly from player')
+                level.collision_detector.update_detection_tiles_vertical(self,PLAYER_SPEED*self.direction.y)
         pass
 
     def draw(self,display_surf):
         newpos=self.rect.topleft-self.offset
         display_surf.blit(self.img,newpos)
-
-    #This function isn't needed as player doesn't belong to any spriteGroup. We handle him separetly.
-    # def update(self):
-    #     display_surf=pygame.display.get_surface()
-    #     # display_surf.blit(self.image,self.rect.topleft)
-    #     display_surf.blit(self.image,(0,0))
-    
-    # class PlayerHelperMethods:
-    #     def __init__(self,player_instance):
-    #         self.player=player_instance
-
-    #     #A method to get the max number of pixels that the player can move without having collision.
-    #     def get_pixel_counter(self,sprite,movement,player_moved,is_horizontal,is_vertical):
-    #         lower_lim=0
-    #         upper_lim=abs(int(player_moved))
-    #         left=lower_lim
-    #         right=upper_lim
-    #         while left<=right:
-    #             mid=left+(right-left)//2
-    #             #If you were to calculate the offset for only horizontal movement then you would'nt want to consider the movement for y-axis and similarily vice-versa. So, this variable offest term that we're adding would be the same if written separately for horizontal, vertical collisions but since we've wrote them in one function, we set them to 0 appropriately.
-    #             offset_x=sprite.rect.left-self.player.rect.left-mid*movement*is_horizontal      #Considering only to add horizontal movement.
-    #             offset_y=sprite.rect.top-self.player.rect.top-mid*movement*is_vertical          #Considering only to add vertical movement.
-    #             offset=(offset_x,offset_y)
-    #             if self.player.mask.overlap(sprite.mask,offset):
-    #                 right=mid-1
-    #             else:
-    #                 left=mid+1
-    #                 pass
-    #         return right
-
-    #     def handle_horizontal_collision(self,sprite):
-    #         movement= 1 if self.player.direction.x > 0 else -1
-    #         player_moved=self.player.direction.x*PLAYER_SPEED
-    #         self.player.rect.x-=player_moved        #Undoing the added direction in x-axis as this caused mask collision.
-    #         can_move_pixel=self.get_pixel_counter(sprite,movement,player_moved,1,0)
-    #         self.player.rect.x+=movement*can_move_pixel
-    #         pass
-
-    #     def handle_vertical_collision(self,sprite):
-    #         movement=1 if self.player.direction.y > 0 else -1
-    #         player_moved=self.player.direction.y*PLAYER_SPEED
-    #         self.player.rect.y-=player_moved        #Undoing the added direction in y-axis as this caused the mask collision.
-    #         can_move_pixel=self.get_pixel_counter(sprite,movement,player_moved,0,1)
-    #         self.player.rect.y+=movement*can_move_pixel
-    #         pass
-
-    #     def handle_spritegroup_collision(self,direction, spriteGroup, is_transportation_portal):
-    #         for sprite in spriteGroup:
-    #             if sprite.rect.colliderect(self.player.rect):
-    #                 if(is_transportation_portal):
-    #                     #Transport the player
-    #                     return 1
-    #                 elif(self.player.mask.overlap(sprite.mask,(sprite.rect.left-self.player.rect.left, sprite.rect.top-self.player.rect.top))):
-    #                     if(direction=="Horizontal"):
-    #                         self.handle_horizontal_collision(sprite)
-    #                     elif(direction=="Vertical"):
-    #                         self.handle_vertical_collision(sprite)
-    #         return 0

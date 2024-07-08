@@ -1,5 +1,8 @@
 import pygame
 from Settings import *
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
+from pathfinding.core.diagonal_movement import DiagonalMovement     #To allow the enemies to move diagonally as well while searching the path.
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self,pos,groups):
@@ -27,60 +30,11 @@ class Enemy(pygame.sprite.Sprite):
         self.direction.y=player.rect.centery-self.rect.centery
         pass
 
-    # def get_pixel_counter(self,sprite,movement,enemy_moved,is_horizontal,is_vertical):
-    #     lower_lim=0
-    #     upper_lim=abs(int(enemy_moved))
-    #     left=lower_lim
-    #     right=upper_lim
-    #     while left<=right:
-    #         mid=left+(right-left)//2
-    #         offset_x=sprite.rect.left-self.rect.left-mid*movement*is_horizontal      #Considering only to add horizontal movement.
-    #         offset_y=sprite.rect.top-self.rect.top-mid*movement*is_vertical          #Considering only to add vertical movement.
-    #         offset=(offset_x,offset_y)
-    #         if self.mask.overlap(sprite.mask,offset):
-    #             right=mid-1
-    #         else:
-    #             left=mid+1
-    #             pass
-    #     return right
-    #     pass
-
-    # def handle_horizontal_collision(self,sprite):
-    #     movement= 1 if self.vector_to_player.x > 0 else -1
-    #     enemy_moved=self.vector_to_player.x*ENEMY_SPEED
-    #     self.rect.x-=enemy_moved        #Undoing the added direction in x-axis as this caused mask collision.
-    #     can_move_pixel=self.get_pixel_counter(sprite,movement,enemy_moved,1,0)
-    #     self.rect.x+=movement*can_move_pixel
-    #     pass
-
-    # def handle_vertical_collision(self,sprite):
-    #     movement=1 if self.vector_to_player.y > 0 else -1
-    #     enemy_moved=self.vector_to_player.y*ENEMY_SPEED
-    #     self.rect.y-=enemy_moved        #Undoing the added direction in y-axis as this caused the mask collision.
-    #     can_move_pixel=self.get_pixel_counter(sprite,movement,enemy_moved,0,1)
-    #     self.rect.y+=movement*can_move_pixel
-    #     pass
-
-    # def handle_spriteGroup_collisions(self,direction,spriteGroup):
-    #     for sprite in spriteGroup:
-    #         if sprite.rect.colliderect(self.rect) and (sprite.rect.center!=self.rect.center):       #The second condition is to check if it is the sprite calling this function itself.
-    #             if(self.mask.overlap(sprite.mask,(sprite.rect.left-self.rect.left, sprite.rect.top-self.rect.top))):
-    #                 if(direction=="Horizontal"):
-    #                     self.handle_horizontal_collision(sprite)
-    #                 elif(direction=="Vertical"):
-    #                     self.handle_vertical_collision(sprite)
-    #             pass
-    #     pass
-
     def handle_collisions(self,direction,level):
         level.collision_detector.handle_spritegroup_collision(self,ENEMY_SPEED,direction,level.transport_sprites,1)
         level.collision_detector.handle_spritegroup_collision(self,ENEMY_SPEED,direction,level.obstacle_sprites,0)
         level.collision_detector.handle_spritegroup_collision(self,ENEMY_SPEED,direction,level.enemy_sprites,0)
         level.collision_detector.handle_spritegroup_collision(self,ENEMY_SPEED,direction,[level.player],0)
-        # self.handle_spriteGroup_collisions(direction,level.transport_sprites)
-        # self.handle_spriteGroup_collisions(direction,level.obstacle_sprites)
-        # self.handle_spriteGroup_collisions(direction,level.enemy_sprites)
-        # self.handle_spriteGroup_collisions(direction,[level.player])
         pass
 
     def update(self,display_surf,offset,level):
@@ -105,5 +59,20 @@ class Enemy(pygame.sprite.Sprite):
     def draw(self,display_surf,offset):
         newpos=self.rect.topleft-offset
         display_surf.blit(self.img,newpos)
-        # print(newpos)
         pass
+
+    class ToPlayerPathFinder:
+        def __init__(self,map_matrix):
+            self.matrix=map_matrix
+            self.grid=Grid(matrix=map_matrix)
+            self.img=pygame.Surface((BASE_SIZE,BASE_SIZE))
+            self.img.fill('black')
+
+        def draw_active_cell(self,display_surf):
+            mouse_pos=pygame.mouse.get_pos()
+            col=mouse_pos[0]//BASE_SIZE
+            row=mouse_pos[1]//BASE_SIZE
+            display_surf.blit(self.img,(col,row))
+
+        def update(self):
+            self.draw_active_cell()
