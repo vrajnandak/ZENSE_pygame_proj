@@ -22,11 +22,8 @@ class Level:
 
         #Collision Detecting class (Has all the functions needed for detecting collisions)
         self.collision_detector=CollisionHelper(self)
-
-        ###################
-        #Creating the matrix of the level
-        self.detection_tiles=[]             #Will be filled with in createMap() itself.
-        # self.createDetectionTiles()
+        self.detection_tiles=[]             #Will be filled with in createMap() itself. Used for pathfinding.
+        self.finder=AStarFinder(diagonal_movement=DiagonalMovement.always)
 
         #Graphics of the level.
         self.graphics_path=os.path.join(MAPS_DIRECTORY_PATH,f'Ruin{self.level_id}')
@@ -242,6 +239,7 @@ class Level:
         self.enemy_sprites.update(display_surf,self.offset,self)
         self.player.draw(display_surf)
 
+        #Blitting the detection tiles.
         for row_index,row in enumerate(self.detection_tiles):
             for col_index,val in enumerate(row):
                 pos=(col_index*BASE_SIZE,row_index*BASE_SIZE)

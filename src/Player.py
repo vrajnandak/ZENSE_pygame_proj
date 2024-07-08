@@ -8,11 +8,13 @@ class Player(pygame.sprite.Sprite):
         self.pos=pos
 
         # ***************************************HAS TO BE REPLACED BY THE PROPER STARTING IMAGE***********************************
-        self.img=pygame.image.load(
-                        os.path.join(
-                            os.path.join((GRAPHICS_DIR_PATH),"Player"),"player.png"
-                            )
-                        )
+        self.img=pygame.Surface((BASE_SIZE,BASE_SIZE))
+        self.img.fill('green')
+        # self.img=pygame.image.load(
+        #                 os.path.join(
+        #                     os.path.join((GRAPHICS_DIR_PATH),"Player"),"player.png"
+        #                     )
+        #                 )
         self.rect=self.img.get_rect(topleft=self.pos)
         self.mask=pygame.mask.from_surface(self.img)
 
@@ -22,9 +24,8 @@ class Player(pygame.sprite.Sprite):
 
         self.direction=pygame.math.Vector2()        #A vector to only get the directions of the player.
         self.offset=pygame.math.Vector2()   #A vector to hold the position at which the player has to be blit at. The value is set in the get_offset() in Level.
-        # self.helper_methods=Player.PlayerHelperMethods(self)
 
-        self.dum_counter=0
+        # self.dum_counter=0
 
     #A method to set the direction of player, attack mode, heal mode etc.
     def use_controls(self,keys):
@@ -49,9 +50,9 @@ class Player(pygame.sprite.Sprite):
     
     #A method to check collisions
     def handle_collisions(self,direction, level):
-        ret1=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.enemy_sprites,0)
-        ret2=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.obstacle_sprites,0)
-        ret_val=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.transport_sprites,1)
+        ret1=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.enemy_sprites,0,collision_type="rect_collision")
+        ret2=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.obstacle_sprites,0,collision_type="rect_collision")
+        ret_val=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.transport_sprites,1,collision_type="rect_collision")
         if(ret_val==1):
             return ret_val
         elif(ret1==2 or ret2==2):
@@ -62,17 +63,6 @@ class Player(pygame.sprite.Sprite):
         
     def move(self,keys,level):
         self.use_controls(keys)
-        ########################################################
-        # if(self.dum_counter<100):
-        #     print('self.dum_counter: ',self.dum_counter)
-        #     left_col=self.rect.x//32
-        #     top_col=self.rect.y//32
-        #     for i in range(-self.rect.width//32,self.rect.width//32,1):
-        #         print('col number: ',i)
-        #         for j in range(self.rect.height//32):
-        #             print(level.detection_tiles[j+top_col][i+left_col])
-        #     self.dum_counter+=1
-        # print('')
         if(self.direction.magnitude()!=0):
             self.direction=self.direction.normalize()
 
@@ -92,7 +82,6 @@ class Player(pygame.sprite.Sprite):
                 self.rect.y=self.rect.y-PLAYER_SPEED*self.direction.y
                 return shd_transport
             elif(shd_transport==0):
-                # print('updating directly from player')
                 level.collision_detector.update_detection_tiles_vertical(self,PLAYER_SPEED*self.direction.y)
         pass
 

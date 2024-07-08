@@ -20,42 +20,10 @@ class CollisionHelper:
         #The for loop to change the values.
         for i in range(left_col_old,left_col_curr,step_val):
             for j in range(top_row,bottom_row,1):
+                # print(f'horizontal, row:{j}, col:{i}')
                 self.the_level.detection_tiles[j][i]=val1
                 self.the_level.detection_tiles[j][i+entity.width_tiles]=val2
         pass
-
-    #A method to update the detection tiles of the level whenever the sprite moves horizontally.
-    # def old_update_detection_tiles_horizontal(self,entity,distance_moved):
-    #     top_row=int(entity.rect.top//BASE_SIZE)
-    #     bottom_row=int(top_row+(entity.rect.height//BASE_SIZE))
-    #     entity_width=entity.width_tiles
-    #     left_col_old=int((entity.rect.x-distance_moved)//BASE_SIZE)
-    #     left_col_curr=int((entity.rect.x)//BASE_SIZE)
-    #     if(distance_moved>0):
-    #         # left_col_old=int((entity.rect.x-distance_moved)//BASE_SIZE)
-    #         # left_col_curr=int((entity.rect.x)//BASE_SIZE)
-    #         # print(f'moved right, entity_width: {entity_width}, left old: {left_col_old} and left curr: {left_col_curr}')
-    #         # print(f'left old:{left_col_old} and left curr:{left_col_curr}')
-    #         # right_col_old=(entity.rect.right-distance_moved)//32
-    #         # right_col_curr=(entity.rect.right)//32
-    #         for i in range(left_col_old,left_col_curr,1):
-    #             for j in range(top_row,bottom_row,1):
-    #                 # print(f'before updation, self.the_level[{j}][{i}]: {self.the_level.detection_tiles[j][i]}')
-    #                 self.the_level.detection_tiles[j][i]=1
-    #                 # print(f'after having updated, self.the_level[{j}][{i}]: {self.the_level.detection_tiles[j][i]}')
-    #                 self.the_level.detection_tiles[j][i+entity_width]=0
-    #                 # print('updated',end='')
-    #         pass
-    #     elif(distance_moved<0):
-    #         # left_col_old=int((entity.rect.x-distance_moved)//BASE_SIZE)
-    #         # left_col_curr=int((entity.rect.x)//BASE_SIZE)
-    #         # print(f'moved left, entity_width: {entity_width}, left old: {left_col_old} and left curr: {left_col_curr}')
-    #         for i in range(left_col_old,left_col_curr,-1):
-    #             for j in range(top_row,bottom_row,1):
-    #                 self.the_level.detection_tiles[j][i]=0
-    #                 self.the_level.detection_tiles[j][i+entity_width]=1
-    #         pass
-    #     pass
 
     def update_detection_tiles_vertical(self,entity,distance_moved):
         #Getting the entity's positions
@@ -72,32 +40,10 @@ class CollisionHelper:
         #The for loop to change the values.
         for i in range(top_row_old,top_row_curr,step_val):
             for j in range(left_col,right_col,1):
+                # print(f'Vertical, row:{i}, col:{j}')
                 self.the_level.detection_tiles[i][j]=val1
                 self.the_level.detection_tiles[i+entity.height_tiles][j]=val2
         pass
-
-    #A method to update the detection tiles of the level whenever the sprite moves vertically.
-    # def old_update_detection_tiles_vertical(self,entity,distance_moved):
-    #     left_col=int(entity.rect.left//BASE_SIZE)
-    #     right_col=int(left_col+entity.width_tiles)
-    #     top_row_old=int((entity.rect.y-distance_moved)//BASE_SIZE)      #Should subtract first and then divide else we count the wrong number of tiles.
-    #     top_row_curr=int(entity.rect.y//BASE_SIZE)
-    #     if(distance_moved>0):
-    #         for i in range(top_row_old,top_row_curr,1):
-    #             for j in range(left_col,right_col,1):
-    #                 # print(f'before having updating level.detection_tiles[{i}][{j}]: ', self.the_level.detection_tiles[i][j])
-    #                 self.the_level.detection_tiles[i][j]=1
-    #                 # print(f'after updating level.detection_tiles[{i}][{j}]: ', self.the_level.detection_tiles[i][j])
-    #                 self.the_level.detection_tiles[i+entity.height_tiles][j]=0
-    #             pass
-    #         pass
-    #     elif(distance_moved<0):
-    #         for i in range(top_row_old,top_row_curr,-1):
-    #             for j in range(left_col,right_col,1):
-    #                 self.the_level.detection_tiles[i][j]=0
-    #                 self.the_level.detection_tiles[i+entity.height_tiles][j]=1
-    #         pass
-    #     pass
 
     #A method to get the max number of pixels that the player can move without having collision.
     def get_pixel_counter(self,entity,sprite,movement,distance_moved,is_horizontal,is_vertical):
@@ -127,9 +73,6 @@ class CollisionHelper:
         new_distance_moved=movement*can_move_pixel
         entity.rect.x+=new_distance_moved
         return new_distance_moved
-        # if(can_move_pixel!=0):
-        #     print('should go to new function')
-        #     self.update_level_detection_tiles(entity,"Horizontal",entity.rect.x-movement*can_move_pixel,entity.rect.x)
         pass
 
     def handle_vertical_collision(self,entity,sprite,speed):
@@ -140,19 +83,21 @@ class CollisionHelper:
         new_distance_moved=movement*can_move_pixel
         entity.rect.y+=new_distance_moved
         return new_distance_moved
-        # if(can_move_pixel):
-        #     print('should go to new function verticcally')
-        # self.update_level_detection_tiles(entity,"Vertical",entity.rect.y-movement*can_move_pixel,entity.rect.y)
         pass
 
     #Returns whether or not a collision with the transportation portal has occured.
-    def handle_spritegroup_collision(self,entity,speed,direction, spriteGroup, is_transportation_portal):
+    def handle_spritegroup_collision(self,entity,speed,direction, spriteGroup, is_transportation_portal,collision_type="Any"):
         has_entity_moved=0
         for sprite in spriteGroup:
             if sprite.rect.colliderect(entity.rect) and entity.rect.topleft!=sprite.rect.topleft:       #The 2nd condition is to eliminate an enemy sprite checking collision against itself. This is quite important because without this, an enemy sprite would trigger movement by itself when the player is in the attack radius, leading to absurd movement.
                 if(is_transportation_portal):
                     #Transport the player
                     return 1
+                elif(collision_type=="rect_collision"):
+                    if(direction=="Horizontal"):
+                        entity.rect.x-=entity.direction.x*speed
+                    elif(direction=="Vertical"):
+                        entity.rect.y-=entity.direction.y*speed
                 elif(entity.mask.overlap(sprite.mask,(sprite.rect.left-entity.rect.left, sprite.rect.top-entity.rect.top))):
                     distance_moved=0
                     if(direction=="Horizontal"):
@@ -164,8 +109,6 @@ class CollisionHelper:
                         if(distance_moved!=0):
                             self.update_detection_tiles_vertical(entity,distance_moved)
                     has_entity_moved+=distance_moved
-        # if(speed==PLAYER_SPEED):
-        #     print('player has_entity_moved: ',has_entity_moved)
         if(has_entity_moved!=0):
             return 2                    #Indicates that the entity has moved and tiles have been updated already.
         else:
