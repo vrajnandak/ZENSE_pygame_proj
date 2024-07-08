@@ -20,16 +20,18 @@ class Level:
         #Player of the level.
         self.player=player
 
-        #Collision Detecting class (Has all the functions needed for detecting collisions)
-        self.collision_detector=CollisionHelper(self)
-        self.detection_tiles=[]             #Will be filled with in createMap() itself. Used for pathfinding.
-        # self.finder=AStarFinder(diagonal_movement=DiagonalMovement.always)
-        self.finder=AStarFinder()
-
         #Graphics of the level.
         self.graphics_path=os.path.join(MAPS_DIRECTORY_PATH,f'Ruin{self.level_id}')
         self.graphics={}            #Has 'elem_id' as key, and value is a list '[pygame_img,(imgwidth,imgheight)]
         self.loadGraphics()
+
+        #Collision Detecting class (Has all the functions needed for detecting collisions)
+        self.collision_detector=CollisionHelper(self)
+        self.detection_tiles=[]             #Will be filled with in createMap() itself. Used for pathfinding.
+        self.createDetectionTiles()
+        # self.finder=AStarFinder(diagonal_movement=DiagonalMovement.always)
+        self.finder=AStarFinder()
+
         self.createMap()
 
         #Sizes for the Level. I am doing this in the hope that there will be less computations as these values are stored after __init__() is called.
@@ -75,6 +77,16 @@ class Level:
             pass
         pass
 
+    #A method to create the level's detection Tiles. Called only during creation of the level.
+    def createDetectionTiles(self):
+        self.baseFloorImg=pygame.image.load(os.path.join(self.graphics_path,BASEMAP_NAME))
+        self.baseFloorRect=self.baseFloorImg.get_rect(topleft=(0,0))
+        width_tiles=self.baseFloorRect.width//BASE_SIZE
+        height_tiles=self.baseFloorRect.height//BASE_SIZE
+        self.detection_tiles=[[1 for _ in range(width_tiles)] for _ in range(height_tiles)]
+        print(len(self.detection_tiles), len(self.detection_tiles[0]))
+        pass
+
     #A method to create the map.
     def createMap(self):
         #Figure out the Base Map.
@@ -91,18 +103,24 @@ class Level:
                 layout=reader(map,delimiter=',')
                 for row_index,row in enumerate(layout):
                     ####################
-                    detect_tiles_row=[]
+                    # detect_tiles_row=[]
                     for col_index,val in enumerate(row):
                         x=col_index*BASE_SIZE
                         y=row_index*BASE_SIZE
                         if(val!='-1'):
-                            detect_tiles_row.append(0)
+                            # self.detection_tiles[row_index][col_index]=0
+                            # detect_tiles_row.append(0)
                             val=int(val)
                             img_pos=(x,y)
                             if(val<1000):
                                 img=self.graphics[int(val)]
                                 img=img[0]
                                 Obstacle(img_pos,img,[self.visible_sprites,self.obstacle_sprites])      #The instance of this class created is added to the given spriteGroups.
+                                img_width=int(img.get_rect().width//BASE_SIZE)
+                                img_height=int(img.get_rect().height//BASE_SIZE)
+                                for i in range(img_width):
+                                    for j in range(img_height):
+                                        self.detection_tiles[row_index+j][col_index+i]=0
                                 pass
                             elif(val==500):             #A dummy val to ensure that the self.level_tiles are made '0'.
                                 pass
@@ -121,11 +139,11 @@ class Level:
                                 pass
                             elif(val==1004):
                                 pass
-                        ##############
-                        else:
-                            detect_tiles_row.append(1)
-                    ############
-                    self.detection_tiles.append(detect_tiles_row)
+                    #     ##############
+                    #     else:
+                    #         detect_tiles_row.append(1)
+                    # ############
+                    # self.detection_tiles.append(detect_tiles_row)
             pass
         pass
 
@@ -241,9 +259,9 @@ class Level:
         self.player.draw(display_surf)
 
         #Blitting the detection tiles.
-        for row_index,row in enumerate(self.detection_tiles):
-            for col_index,val in enumerate(row):
-                pos=(col_index*BASE_SIZE,row_index*BASE_SIZE)
-                newpos=pos-self.offset
-                debug_print(val,newpos,display_surf)
+        # for row_index,row in enumerate(self.detection_tiles):
+        #     for col_index,val in enumerate(row):
+        #         pos=(col_index*BASE_SIZE,row_index*BASE_SIZE)
+        #         newpos=pos-self.offset
+        #         debug_print(val,newpos,display_surf)
         return 0

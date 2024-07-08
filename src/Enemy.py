@@ -39,7 +39,7 @@ class Enemy(pygame.sprite.Sprite):
         #The default direction of the enemy.
         self.direction.x=player.rect.centerx-self.rect.centerx
         self.direction.y=player.rect.centery-self.rect.centery
-
+        
         #Make the grid
             #Getting the small matrix around the enemy as it is a waste to use the entire level's detection tiles for making the grid.
         small_submatrix=[]
@@ -71,15 +71,43 @@ class Enemy(pygame.sprite.Sprite):
         # end_cell=grid.node(int(player.rect.x//BASE_SIZE),int(player.rect.y//BASE_SIZE))
         
         #Find the path to the player.
-        self.path,runs=level.finder.find_path(start_cell,end_cell,grid)
+        path,runs=level.finder.find_path(start_cell,end_cell,grid)
+        self.path=path
+        # self.path,runs=level.finder.find_path(start_cell,end_cell,grid)
         # print(path)
         #Put the direction towards the next cell in the path.
-        if(len(self.path)>2):
-            next_cell=self.path[1]       #This node only contains the indices w.r.t submatrix, so we've to add the starting number of rows/columns, multiply by BASE_SIZE for actual positions.
+        # if(len(self.path)>2):
+        if(len(path)>2):            #As we only need to move if there is an intermediate node between the start and end node.
+            # next_cell=self.path[1]
+            next_cell=path[1]       #This node only contains the indices w.r.t submatrix, so we've to add the starting number of rows/columns, multiply by BASE_SIZE for actual positions.
             next_cell_col=(start_col+next_cell.x)*BASE_SIZE
             next_cell_row=(start_row+next_cell.y)*BASE_SIZE
+
+            #Variables to check if the next cell to move to differ from the current cell that the sprite is on.
+            cell_cols_different=1 if (int(self.rect.x//BASE_SIZE)!=int(next_cell_col//BASE_SIZE)) else 0
+            cell_rows_different=1 if (int(self.rect.y//BASE_SIZE)!=int(next_cell_row//BASE_SIZE)) else 0
+
+            #Prioritizing the horizontal movement of the sprite over the vertical movement. Sprite can move either in horizontal or vertical only
             self.direction.x=next_cell_col-self.rect.x
             self.direction.y=next_cell_row-self.rect.y
+            print('before updating the directions,next direction: ', self.direction)
+            if(self.direction.x<0):
+                if(path[1].y<path[0].y):
+                    if(self.rect.bottom//BASE_SIZE!=self.rect.top//BASE_SIZE):
+                        self.direction.x=0
+                        self.direction.y=-1
+                    pass
+                elif(path[1].y>path[0].y):
+                    if(self.rect.bottom//BASE_SIZE!=self.rect.top//BASE_SIZE):
+                        self.direction.x=0
+                        self.direction.y=1
+                    pass
+                pass
+            # if(cell_cols_different):
+            #     self.direction.y=0
+            # elif(cell_rows_different):
+            #     self.direction.x=0
+            print('next direction: ', self.direction)
         pass
 
     def handle_collisions(self,direction,level):
@@ -96,13 +124,13 @@ class Enemy(pygame.sprite.Sprite):
         pass
 
     def update(self,display_surf,offset,level):
-        self.update_direction(level.player,level)
 
         #Moving the enemy sprite if player within range.
         # if(self.direction.magnitude()<=self.attack_radius):
         if(pygame.math.Vector2(level.player.rect.left-self.rect.left, level.player.rect.top-self.rect.top).magnitude()<=self.attack_radius):
-            print(f'starting cell: ', self.start_x,self.start_y)
-            print(f'ending cell: ', self.end_x,self.end_y)
+            self.update_direction(level.player,level)
+            # print(f'starting cell: ', self.start_x,self.start_y)
+            # print(f'ending cell: ', self.end_x,self.end_y)
             print(self.path)
             if(self.direction.magnitude()!=0):
                 self.direction=self.direction.normalize()

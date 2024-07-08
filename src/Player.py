@@ -35,13 +35,22 @@ class Player(pygame.sprite.Sprite):
             # self.direction.y=(keys[pygame.K_RIGHT]-keys[pygame.K_LEFT])
         self.direction.x=0
         self.direction.y=0
+        ########HAVE TO MAKE THE BELOW IF CONDITIONALS TO BE PART OF AN if-else LADDER INORDER FOR THERE TO BE NO PROBLEM IN UPDATING THE DETECTION TILES.
+        # if(keys[pygame.K_w] or keys[pygame.K_UP]):
+        #     self.direction.y=-1
+        # if(keys[pygame.K_a] or keys[pygame.K_LEFT]):
+        #     self.direction.x=-1
+        # if(keys[pygame.K_s] or keys[pygame.K_DOWN]):
+        #     self.direction.y=1
+        # if(keys[pygame.K_d] or keys[pygame.K_RIGHT]):
+            # self.direction.x=1
         if(keys[pygame.K_w] or keys[pygame.K_UP]):
             self.direction.y=-1
+        elif(keys[pygame.K_s] or keys[pygame.K_DOWN]):
+            self.direction.y=1
         if(keys[pygame.K_a] or keys[pygame.K_LEFT]):
             self.direction.x=-1
-        if(keys[pygame.K_s] or keys[pygame.K_DOWN]):
-            self.direction.y=1
-        if(keys[pygame.K_d] or keys[pygame.K_RIGHT]):
+        elif(keys[pygame.K_d] or keys[pygame.K_RIGHT]):
             self.direction.x=1
 
         #Using the Attack Moves

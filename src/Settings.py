@@ -16,7 +16,7 @@ TELEPORTATION_MAP={             #A dictionary of key (<level_id>_<teleportation_
     '2': [],
     '3': []
 }
-ENEMY_ATTACK_RADIUS=12         #A radius 5 BASE_SIZE's
+ENEMY_ATTACK_RADIUS=4         #A radius 5 BASE_SIZE's
 
 #Sizes
 BASE_SIZE=32
@@ -44,8 +44,8 @@ SCREEN_BG_SHAD_POS=(0,0)
 
 
 #Speeds
-GAME_FPS=20
-PLAYER_SPEED=10
+GAME_FPS=30
+PLAYER_SPEED=8
 ENEMY_SPEED=4
 KEYBOARD_CAMERA_SPEED=25
 MOUSE_CAMERA_SPEED=25
