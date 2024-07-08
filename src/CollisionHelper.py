@@ -8,16 +8,16 @@ class CollisionHelper:
     def update_detection_tiles_horizontal(self,entity,distance_moved):
         #Getting the entity's positions.
         top_row=int(entity.rect.top//BASE_SIZE)
-        bottom_row=int(top_row+(entity.rect.height//BASE_SIZE))
-        left_col_old=int((entity.rect.x-distance_moved)//BASE_SIZE)
+        bottom_row=int(top_row+entity.height_tiles)
+        left_col_old=int((entity.rect.x-distance_moved)//BASE_SIZE)             #Should subtract first and then divide, else it is possible that we count the wrong number of tiles.
         left_col_curr=int((entity.rect.x)//BASE_SIZE)
 
         #Setting the loop iterator val, level's vals.
-        step_val=1 if distance_moved >0 else -1
+        step_val=1 if distance_moved > 0 else -1
         val1=1 if distance_moved > 0 else 0
         val2=0 if distance_moved > 0 else 1
 
-        #The for loop.
+        #The for loop to change the values.
         for i in range(left_col_old,left_col_curr,step_val):
             for j in range(top_row,bottom_row,1):
                 self.the_level.detection_tiles[j][i]=val1
@@ -58,32 +58,44 @@ class CollisionHelper:
     #     pass
 
     def update_detection_tiles_vertical(self,entity,distance_moved):
+        #Getting the entity's positions
+        left_col=int(entity.rect.left//BASE_SIZE)
+        right_col=int(left_col+entity.width_tiles)
+        top_row_old=int((entity.rect.y-distance_moved)//BASE_SIZE)      #Should subtract first and then divide else we count the wrong number of tiles.
+        top_row_curr=int(entity.rect.y//BASE_SIZE)
+
+        #Setting the loop iterator val, level's vals
+        step_val=1 if distance_moved>0 else -1
+        val1=1 if distance_moved>0 else 0
+        val2=0 if distance_moved>0 else 1
+        
+        #The for loop to change the values.
+        for i in range(top_row_old,top_row_curr,step_val):
+            for j in range(left_col,right_col,1):
+                self.the_level.detection_tiles[i][j]=val1
+                self.the_level.detection_tiles[i+entity.height_tiles][j]=val2
         pass
 
-    #A method to update the detection tiles of the level. This function is called only if the entity has moved.
-    # def update_level_detection_tiles(self,entity,direction,old_pos,new_pos):
-    #     movement=1 if (new_pos-old_pos) > 0 else -1         #We don't need to check for if there has been no movement as this function is called only if there has been movement.
-    #     entity_cols=entity.rect.width//32           #The number of cols that the entity covers
-    #     entity_rows=entity.rect.height//32          #The number of rows that the entity covers
-    #     print('in the function')
-    #     if direction=="Horizontal":
-    #         old_col=old_pos//32                     #The old left position.
-    #         new_col=new_pos//32                     #The new left position.
-    #         cols_changed=abs(new_col-old_col)
-    #         if(cols_changed>0):
-    #             top_row=entity.rect.top//32
-    #             if(movement==1):
-    #                 for i in range(cols_changed):
-    #                     for j in range(top_row,top_row+entity_rows,1):
-    #                         self.the_level.detection_tiles[j][i+old_col]=1              #Changing the left portion to be set to 1
-    #                         self.the_level.detection_tiles[j][new_col+entity_cols-i]=0
-    #                         print('heylskfj')
-    #                     # self.the_level.detection_tiles[i][old_col]=1
-    #                     # self.the_level.detection_tiles[i][new_col]=1
-    #                     pass
-    #                 pass
+    #A method to update the detection tiles of the level whenever the sprite moves vertically.
+    # def old_update_detection_tiles_vertical(self,entity,distance_moved):
+    #     left_col=int(entity.rect.left//BASE_SIZE)
+    #     right_col=int(left_col+entity.width_tiles)
+    #     top_row_old=int((entity.rect.y-distance_moved)//BASE_SIZE)      #Should subtract first and then divide else we count the wrong number of tiles.
+    #     top_row_curr=int(entity.rect.y//BASE_SIZE)
+    #     if(distance_moved>0):
+    #         for i in range(top_row_old,top_row_curr,1):
+    #             for j in range(left_col,right_col,1):
+    #                 # print(f'before having updating level.detection_tiles[{i}][{j}]: ', self.the_level.detection_tiles[i][j])
+    #                 self.the_level.detection_tiles[i][j]=1
+    #                 # print(f'after updating level.detection_tiles[{i}][{j}]: ', self.the_level.detection_tiles[i][j])
+    #                 self.the_level.detection_tiles[i+entity.height_tiles][j]=0
+    #             pass
     #         pass
-    #     elif direction=="Vertical":
+    #     elif(distance_moved<0):
+    #         for i in range(top_row_old,top_row_curr,-1):
+    #             for j in range(left_col,right_col,1):
+    #                 self.the_level.detection_tiles[i][j]=0
+    #                 self.the_level.detection_tiles[i+entity.height_tiles][j]=1
     #         pass
     #     pass
 
