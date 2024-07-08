@@ -21,6 +21,10 @@ class Enemy(pygame.sprite.Sprite):
         self.mask=pygame.mask.from_surface(self.img)        #This will be used by the player for collision detection.
         self.rect=self.img.get_rect(topleft=self.pos)
 
+        #Enemy Dimensions - Used for updating the tiles
+        self.width_tiles=int(self.rect.width//BASE_SIZE)
+        self.height_tiles=int(self.rect.height//BASE_SIZE)
+
         #Variables to move towards player.
         self.direction=pygame.math.Vector2()
         self.attack_radius=ENEMY_ATTACK_RADIUS

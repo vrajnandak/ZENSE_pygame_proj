@@ -5,36 +5,57 @@ class CollisionHelper:
         self.the_level=level
         pass
 
-    #A method to update the detection tiles of the level whenever the sprite moves horizontally.
     def update_detection_tiles_horizontal(self,entity,distance_moved):
+        #Getting the entity's positions.
         top_row=int(entity.rect.top//BASE_SIZE)
         bottom_row=int(top_row+(entity.rect.height//BASE_SIZE))
-        entity_width=int(entity.rect.width//BASE_SIZE)
-        if(distance_moved>0):
-            left_col_old=int((entity.rect.x-distance_moved)//BASE_SIZE)
-            left_col_curr=int((entity.rect.x)//BASE_SIZE)
-            print(f'moved right, entity_width: {entity_width}, left old: {left_col_old} and left curr: {left_col_curr}')
-            # print(f'left old:{left_col_old} and left curr:{left_col_curr}')
-            # right_col_old=(entity.rect.right-distance_moved)//32
-            # right_col_curr=(entity.rect.right)//32
-            for i in range(left_col_old,left_col_curr,1):
-                for j in range(top_row,bottom_row,1):
-                    print(f'before updation, self.the_level[{j}][{i}]: {self.the_level.detection_tiles[j][i]}')
-                    self.the_level.detection_tiles[j][i]=1
-                    print(f'after having updated, self.the_level[{j}][{i}]: {self.the_level.detection_tiles[j][i]}')
-                    self.the_level.detection_tiles[j][i+entity_width]=0
-                    # print('updated',end='')
-            pass
-        elif(distance_moved<0):
-            left_col_old=int((entity.rect.x-distance_moved)//BASE_SIZE)
-            left_col_curr=int((entity.rect.x)//BASE_SIZE)
-            print(f'moved left, entity_width: {entity_width}, left old: {left_col_old} and left curr: {left_col_curr}')
-            for i in range(left_col_old,left_col_curr,-1):
-                for j in range(top_row,bottom_row,1):
-                    self.the_level.detection_tiles[j][i]=0
-                    self.the_level.detection_tiles[j][i+entity_width]=1
-            pass
+        left_col_old=int((entity.rect.x-distance_moved)//BASE_SIZE)
+        left_col_curr=int((entity.rect.x)//BASE_SIZE)
+
+        #Setting the loop iterator val, level's vals.
+        step_val=1 if distance_moved >0 else -1
+        val1=1 if distance_moved > 0 else 0
+        val2=0 if distance_moved > 0 else 1
+
+        #The for loop.
+        for i in range(left_col_old,left_col_curr,step_val):
+            for j in range(top_row,bottom_row,1):
+                self.the_level.detection_tiles[j][i]=val1
+                self.the_level.detection_tiles[j][i+entity.width_tiles]=val2
         pass
+
+    #A method to update the detection tiles of the level whenever the sprite moves horizontally.
+    # def old_update_detection_tiles_horizontal(self,entity,distance_moved):
+    #     top_row=int(entity.rect.top//BASE_SIZE)
+    #     bottom_row=int(top_row+(entity.rect.height//BASE_SIZE))
+    #     entity_width=entity.width_tiles
+    #     left_col_old=int((entity.rect.x-distance_moved)//BASE_SIZE)
+    #     left_col_curr=int((entity.rect.x)//BASE_SIZE)
+    #     if(distance_moved>0):
+    #         # left_col_old=int((entity.rect.x-distance_moved)//BASE_SIZE)
+    #         # left_col_curr=int((entity.rect.x)//BASE_SIZE)
+    #         # print(f'moved right, entity_width: {entity_width}, left old: {left_col_old} and left curr: {left_col_curr}')
+    #         # print(f'left old:{left_col_old} and left curr:{left_col_curr}')
+    #         # right_col_old=(entity.rect.right-distance_moved)//32
+    #         # right_col_curr=(entity.rect.right)//32
+    #         for i in range(left_col_old,left_col_curr,1):
+    #             for j in range(top_row,bottom_row,1):
+    #                 # print(f'before updation, self.the_level[{j}][{i}]: {self.the_level.detection_tiles[j][i]}')
+    #                 self.the_level.detection_tiles[j][i]=1
+    #                 # print(f'after having updated, self.the_level[{j}][{i}]: {self.the_level.detection_tiles[j][i]}')
+    #                 self.the_level.detection_tiles[j][i+entity_width]=0
+    #                 # print('updated',end='')
+    #         pass
+    #     elif(distance_moved<0):
+    #         # left_col_old=int((entity.rect.x-distance_moved)//BASE_SIZE)
+    #         # left_col_curr=int((entity.rect.x)//BASE_SIZE)
+    #         # print(f'moved left, entity_width: {entity_width}, left old: {left_col_old} and left curr: {left_col_curr}')
+    #         for i in range(left_col_old,left_col_curr,-1):
+    #             for j in range(top_row,bottom_row,1):
+    #                 self.the_level.detection_tiles[j][i]=0
+    #                 self.the_level.detection_tiles[j][i+entity_width]=1
+    #         pass
+    #     pass
 
     def update_detection_tiles_vertical(self,entity,distance_moved):
         pass

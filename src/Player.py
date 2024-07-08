@@ -16,6 +16,10 @@ class Player(pygame.sprite.Sprite):
         self.rect=self.img.get_rect(topleft=self.pos)
         self.mask=pygame.mask.from_surface(self.img)
 
+        #Player Dimensions - Used for updating the tiles.
+        self.width_tiles=int(self.rect.width//BASE_SIZE)
+        self.height_tiles=int(self.rect.height//BASE_SIZE)
+
         self.direction=pygame.math.Vector2()        #A vector to only get the directions of the player.
         self.offset=pygame.math.Vector2()   #A vector to hold the position at which the player has to be blit at. The value is set in the get_offset() in Level.
         # self.helper_methods=Player.PlayerHelperMethods(self)
