@@ -79,6 +79,11 @@ EXTRAS:
 IMAGE REFERENCES:
 https://elthen.itch.io/2d-pixel-art-archaeologist
 
+YOUTUBE REFERENCES:
+https://www.youtube.com/watch?v=QU1pPzEGrqw
+https://www.youtube.com/watch?v=Rvcyf4HsWiw
+https://www.youtube.com/watch?v=fo4e3njyGy0
+
 
 
 

@@ -1,6 +1,7 @@
 import pygame
 import os
 from csv import reader
+import sys
 
 pygame.init()
 pygame.font.init()
@@ -84,6 +85,7 @@ def getSpriteFromSpriteSheet(spritesheet_path,sprite_width,sprite_height,sprite_
         sprite.set_colorkey(colorKey)
     return sprite
 
+#A function to display the given text on the screen.
 debug_font=pygame.font.Font(None,30)
 def debug_print(text,pos,display_surf):
     debug_surf=debug_font.render(str(text),'True','Black')
