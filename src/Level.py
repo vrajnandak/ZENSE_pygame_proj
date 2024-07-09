@@ -177,12 +177,6 @@ class Level:
     
     #A method to get the offset for the box-camera using the box_rect and the player position.
     def get_box_based_offset(self):
-        #Change the offset only if there is a chance of moving the box with respect to the map.
-        # if((self.box_camera['left']<self.box_rect.x<self.box_camera['right']) and 
-        #    (self.box_camera['top']<self.box_rect.y<self.box_camera['top'])):
-        # if((self.box_camera['left']<self.box_rect.x and (self.box_rect.right< self.LEVEL_WIDTH-self.box_camera['right'])) and (self.box_camera['top']<self.box_rect.y and (self.box_rect.bottom< self.LEVEL_HEIGHT-self.box_camera['bottom']))):
-                # print('slkdfjsdklf')
-                #Changing the position of the box_rect if the player has moved out of the rect
         if(self.player.rect.left < self.box_rect.left):
             print('one')
             self.box_rect.left=self.player.rect.left
@@ -196,15 +190,10 @@ class Level:
         if(self.player.rect.bottom > self.box_rect.bottom):
             self.box_rect.bottom=self.player.rect.bottom
             pass
-        pass
 
         self.offset.x=self.box_rect.left-self.box_camera['left']
         self.offset.y=self.box_rect.top-self.box_camera['top']
         self.player.offset=self.offset
-        # print(self.player.rect.x, 'and', self.player.rect.y)
-        # print(self.box_rect.x, ' and', self.box_rect.y)
-
-        
         pass
 
     #A method to add the offset accumulated by keyboard keys to the final offset used for blitting sprites.

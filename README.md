@@ -23,7 +23,7 @@ TO RUN THE GAME:
 
 CONTROLS: 
 1. Player movement: [up-arrow, down-arrow, left-arrow, right-arrow] and [w,a,s,d].
-2. Camera movement: [hovering mouse towards end of screen] and [i(top),j(left),k(down),l(right)]. Holding [b] will use the Box-camera instead of the default camera movement(player-centered camera). [u] to reset the camera back to the player. The box-camera cannot be used alongside the keyboard and mouse camera.
+2. Camera movement: [hovering mouse towards end of screen] and [i(top),j(left),k(down),l(right)]. Holding [b] will use the Box-camera instead of the default camera movement(player-centered camera). [u] to reset the camera back to the player. The box-camera cannot be used alongside the keyboard and mouse camera (There is a bit of a problem with the player's movement when using the box-camera as well).
 3. Attack: [left-click(when attack mode is on)] and [t]
 4. Healing: [left-click(when healing mode is on)] and [h]
 5. Pause Screen: [esc]

@@ -28,26 +28,13 @@ class Player(pygame.sprite.Sprite):
     #A method to set the direction of player, attack mode, heal mode etc.
     def use_controls(self,keys):
         #Using the normal movement controls.
-            #We could also set the direction in just 2 lines but then you would have to do a separate logic for the w,a,s,d keys.
-            # self.direction.x=(keys[pygame.K_DOWN]-keys[pygame.K_UP])
-            # self.direction.y=(keys[pygame.K_RIGHT]-keys[pygame.K_LEFT])
         self.direction.x=0
         self.direction.y=0
-        ########HAVE TO MAKE THE BELOW IF CONDITIONALS TO BE PART OF AN if-else LADDER INORDER FOR THERE TO BE NO PROBLEM IN UPDATING THE DETECTION TILES.
-        # if(keys[pygame.K_w] or keys[pygame.K_UP]):
-        #     self.direction.y=-1
-        # if(keys[pygame.K_a] or keys[pygame.K_LEFT]):
-        #     self.direction.x=-1
-        # if(keys[pygame.K_s] or keys[pygame.K_DOWN]):
-        #     self.direction.y=1
-        # if(keys[pygame.K_d] or keys[pygame.K_RIGHT]):
-            # self.direction.x=1
         if(keys[pygame.K_w] or keys[pygame.K_UP]):
             self.direction.y=-1
         if(keys[pygame.K_s] or keys[pygame.K_DOWN]):
             self.direction.y=1
         if(keys[pygame.K_a] or keys[pygame.K_LEFT]):
-            print('going left')
             self.direction.x=-1
         if(keys[pygame.K_d] or keys[pygame.K_RIGHT]):
             self.direction.x=1
@@ -65,9 +52,7 @@ class Player(pygame.sprite.Sprite):
             return ret_val
         elif(ret1==2 or ret2==2):
             return 2
-        else:
-            return 0
-        # return ret_val
+        return 0
         
     def move(self,keys,level):
         self.use_controls(keys)
