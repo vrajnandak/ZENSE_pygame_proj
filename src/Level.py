@@ -283,6 +283,7 @@ class Level:
         self.transport_sprites.update(display_surf,self.offset)
         self.enemy_sprites.update(display_surf,self.offset,self)
         self.player.draw(display_surf)
+        debug_print(self.player.status,(10,10),display_surf)
         # pygame.draw.rect(pygame.display.get_surface(),'black',self.box_rect,5)
 
         #Blitting the detection tiles.

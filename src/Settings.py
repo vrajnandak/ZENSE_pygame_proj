@@ -55,6 +55,7 @@ MOUSE_CAMERA_SPEED=25
 WORKING_DIRECTORY_PATH=os.getcwd()
 SAVED_DATA_DIR_PATH=os.path.join(WORKING_DIRECTORY_PATH,"SavedData")
 GRAPHICS_DIR_PATH=os.path.join(WORKING_DIRECTORY_PATH,"graphics")
+PLAYER_DIRECTORY_PATH=os.path.join(GRAPHICS_DIR_PATH,"Player")
 MAPS_DIRECTORY_PATH=os.path.join(GRAPHICS_DIR_PATH,"Ruins")            #Folder path to getting Maps and Other Graphics
 BASEMAP_NAME="BaseMap.png"                          #Name of Floor maps which are basically the 1st drawn image.
 FLOORINFO_DIR_NAME="FloorInfo"
