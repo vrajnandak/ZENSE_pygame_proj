@@ -17,6 +17,14 @@ TELEPORTATION_MAP={             #A dictionary of key (<level_id>_<teleportation_
     '3': []
 }
 ENEMY_ATTACK_RADIUS=12         #A radius 5 BASE_SIZE's
+    #A dictionary of key(weapon name) and value(a dictionary containing {cooldown_time, damage})
+WEAPON_INFO={
+    'whip': {'cooldown':150, 'damage': 15},
+    'sword':{'cooldown': 200, 'damage': 30},
+    'lance':{'cooldown': 100, 'damage': 20},
+    'axe':{'cooldown': 150, 'damage': 40},
+    'gun':{'cooldown': 200, 'damage': 30}
+}                 
 
 #Sizes
 BASE_SIZE=32

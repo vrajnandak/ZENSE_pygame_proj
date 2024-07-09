@@ -6,6 +6,7 @@ from Enemy import *
 from Button import *
 from Portal import *
 from CollisionHelper import CollisionHelper
+from Weapon import Weapon
 
 class Level:
     def __init__(self,level_id,player):
@@ -262,6 +263,11 @@ class Level:
         self.apply_offset_limits()
         self.player.offset=self.offset
 
+        pass
+
+    #A method to create a weapon. It is better to handle the weapon as a separate entity from the player in order to not have to write extra code to deal with collisions.
+    def create_attack(self):
+        Weapon(self.player,[self.visible_sprites])
         pass
 
     def run(self,keys):

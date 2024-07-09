@@ -35,6 +35,10 @@ class Player(pygame.sprite.Sprite):
         self.healing=False
         self.healing_time=None
 
+        #Weapon variables
+        self.weapon_index=0
+        self.weapon=list(WEAPON_INFO.keys())[self.weapon_index]
+
     #A method to load the graphics of the players.
     def load_my_graphics(self):
         self.graphics={
