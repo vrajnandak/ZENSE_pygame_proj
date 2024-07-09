@@ -8,13 +8,13 @@ class Player(pygame.sprite.Sprite):
         self.pos=pos
 
         # ***************************************HAS TO BE REPLACED BY THE PROPER STARTING IMAGE***********************************
-        self.img=pygame.Surface((BASE_SIZE,BASE_SIZE))
-        self.img.fill('green')
-        # self.img=pygame.image.load(
-        #                 os.path.join(
-        #                     os.path.join((GRAPHICS_DIR_PATH),"Player"),"player.png"
-        #                     )
-        #                 )
+        # self.img=pygame.Surface((BASE_SIZE,BASE_SIZE))
+        # self.img.fill('green')
+        self.img=pygame.image.load(
+                        os.path.join(
+                            os.path.join((GRAPHICS_DIR_PATH),"Player"),"player.png"
+                            )
+                        )
         self.rect=self.img.get_rect(topleft=self.pos)
         self.mask=pygame.mask.from_surface(self.img)
 
@@ -24,8 +24,6 @@ class Player(pygame.sprite.Sprite):
 
         self.direction=pygame.math.Vector2()        #A vector to only get the directions of the player.
         self.offset=pygame.math.Vector2()   #A vector to hold the position at which the player has to be blit at. The value is set in the get_offset() in Level.
-
-        # self.dum_counter=0
 
     #A method to set the direction of player, attack mode, heal mode etc.
     def use_controls(self,keys):

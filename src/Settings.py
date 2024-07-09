@@ -16,7 +16,7 @@ TELEPORTATION_MAP={             #A dictionary of key (<level_id>_<teleportation_
     '2': [],
     '3': []
 }
-ENEMY_ATTACK_RADIUS=8         #A radius 5 BASE_SIZE's
+ENEMY_ATTACK_RADIUS=12         #A radius 5 BASE_SIZE's
 
 #Sizes
 BASE_SIZE=32
@@ -45,8 +45,8 @@ SCREEN_BG_SHAD_POS=(0,0)
 
 #Speeds
 GAME_FPS=30
-PLAYER_SPEED=8
-ENEMY_SPEED=4
+PLAYER_SPEED=10
+ENEMY_SPEED=5
 KEYBOARD_CAMERA_SPEED=25
 MOUSE_CAMERA_SPEED=25
 
@@ -83,6 +83,7 @@ def debug_print(text,pos,display_surf):
 
 # Just realized this isn't needed as long as we follow the below format.
 # #ALL_BLOCKS - Has 'elem_id' as key, the block 'img' as value. This will be initialized in the Level object's using 'load_ALL_BLOCKS()'.
+#     #elem_id: 500      ==> 'Gate_being_revealed'              ==>"None". The image will have id of 500. Any elem having id of 500 will slowly appear once player has unlocked achievement.
 #     #elem_id: 1000     ==> 'Invisible'                        ==>"RED" color in Tiled map.
 #     #elem_id: 1001     ==> 'Player start position'            ==>"GREEN" color in Tiled map.
 #     #elem_id: 1002     ==> 'Enemy start position'             ==>"YELLOW" color in Tiled map.
@@ -92,3 +93,20 @@ def debug_print(text,pos,display_surf):
 # def load_ALL_BLOCKS():
 #     ALL_BLOCKS[1000]=getSpriteFromSpriteSheet(BLOCKS_PATH,32,32,0,0,'Black')
 #     ALL_BLOCKS[1001]=getSpriteFromSpriteSheet(BLOCKS_PATH,32,32,32,0,'Black')
+
+
+
+###############         MAP FOR TELEPORTING                   ##############
+#Ruin0 has 3 entraces.
+
+
+
+
+#TO_ADD_FEATURES
+#--->Must add player,enemy sprites of size 32x32 or width:32, height:64 only.
+# 1. Add the map for teleporting between maps.
+# 2. Add the functionality where the gate opens only when the code is entered.(Hint has to be displayed on the screen after some time).
+# 3. Be able to add Animations
+# 4. Be able to view inventory
+# 5. Be able to talk with NPC
+# 6. Be able to give out Quests

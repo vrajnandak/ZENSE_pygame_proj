@@ -53,6 +53,7 @@ DESCRIPTION OF FILES:
 
 
 EXTRAS:
+->PATH TO PLAYER: Whenever the player is in the range of the enemy's attack radius, the enemy sprite uses a path finder(using the AStarFinder finder) to find the shortest path to the player. Inorder to be able to freely move the enemy even when close to the obstacles, the detection_tiles of the level instance(used for making the grid for finding the path) are filled with 0's where the obstacles are and even their boundaries are filled with 0. This is done so that the path found by the pathfinder will ensure that the enemy sprite moves a bit away from the obstacle sprites. However, as the speeds of the enemies don't match in line with the BASE_SIZE and the enemy is allowed to move diagonally, there is a possibility that an enemy sprite may sometime bug out when trying to move as the sprite may not exactly fit in with the cells of the detection_tiles.
 ->OFFSETS: The same offset value is used for all sprites, player etc.
     ->The way the get_player_based_offset() works: The below diagram is the level. For the player, the offsets are abvious. The below values are for the images. Both the offsets are obviously the same.
          ___________________________________
