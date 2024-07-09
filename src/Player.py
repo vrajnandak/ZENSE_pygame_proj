@@ -44,11 +44,12 @@ class Player(pygame.sprite.Sprite):
             # self.direction.x=1
         if(keys[pygame.K_w] or keys[pygame.K_UP]):
             self.direction.y=-1
-        elif(keys[pygame.K_s] or keys[pygame.K_DOWN]):
+        if(keys[pygame.K_s] or keys[pygame.K_DOWN]):
             self.direction.y=1
         if(keys[pygame.K_a] or keys[pygame.K_LEFT]):
+            print('going left')
             self.direction.x=-1
-        elif(keys[pygame.K_d] or keys[pygame.K_RIGHT]):
+        if(keys[pygame.K_d] or keys[pygame.K_RIGHT]):
             self.direction.x=1
 
         #Using the Attack Moves

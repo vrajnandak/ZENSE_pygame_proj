@@ -52,6 +52,13 @@ class Level:
         self.BOTTOM_OFFSET_BORDER=self.LEVEL_HEIGHT-SCREEN_HEIGHT_HALF
         self.RIGHT_OFFSET_VAL=self.UPPER_XOFFSET_LIM
         self.BOTTOM_OFFSET_VAL=self.UPPER_YOFFSET_LIM
+            #The below variables are used for calculating the offsets based on player movement, box position to show a box-camera movement.
+        self.box_camera={'left':60,'right':60,'top':60,'bottom':60}
+        default_left=self.player.rect.left
+        default_top=self.player.rect.top
+        box_width=SCREEN_WIDTH-(self.box_camera['left']+self.box_camera['right'])
+        box_height=SCREEN_HEIGHT-(self.box_camera['top']+self.box_camera['bottom'])
+        self.box_rect=pygame.Rect(default_left,default_top,box_width,box_height)
             #The below variables are used for calculating the offsets based on keyboard camera controls.
         self.keyboard_offset_counter=pygame.math.Vector2()      #'.x' is used for x-axis controlling, '.y' is used for y-axis controlling.
             #The below variables are used for calculating the offsets based on mouse positions.
@@ -168,6 +175,38 @@ class Level:
         # self.player.offset=self.player_based_offset
         pass
     
+    #A method to get the offset for the box-camera using the box_rect and the player position.
+    def get_box_based_offset(self):
+        #Change the offset only if there is a chance of moving the box with respect to the map.
+        # if((self.box_camera['left']<self.box_rect.x<self.box_camera['right']) and 
+        #    (self.box_camera['top']<self.box_rect.y<self.box_camera['top'])):
+        # if((self.box_camera['left']<self.box_rect.x and (self.box_rect.right< self.LEVEL_WIDTH-self.box_camera['right'])) and (self.box_camera['top']<self.box_rect.y and (self.box_rect.bottom< self.LEVEL_HEIGHT-self.box_camera['bottom']))):
+                # print('slkdfjsdklf')
+                #Changing the position of the box_rect if the player has moved out of the rect
+        if(self.player.rect.left < self.box_rect.left):
+            print('one')
+            self.box_rect.left=self.player.rect.left
+            pass
+        if(self.player.rect.right > self.box_rect.right):
+            self.box_rect.right=self.player.rect.right
+            pass
+        if(self.player.rect.top < self.box_rect.top):
+            self.box_rect.top=self.player.rect.top
+            pass
+        if(self.player.rect.bottom > self.box_rect.bottom):
+            self.box_rect.bottom=self.player.rect.bottom
+            pass
+        pass
+
+        self.offset.x=self.box_rect.left-self.box_camera['left']
+        self.offset.y=self.box_rect.top-self.box_camera['top']
+        self.player.offset=self.offset
+        # print(self.player.rect.x, 'and', self.player.rect.y)
+        # print(self.box_rect.x, ' and', self.box_rect.y)
+
+        
+        pass
+
     #A method to add the offset accumulated by keyboard keys to the final offset used for blitting sprites.
     def get_keyboard_based_offset(self,keys):
         # if(keys[pygame.K_i]):
@@ -217,15 +256,19 @@ class Level:
 
     def get_offset(self,keys):
         #There are 3 types of offset. player_based_offset, (keyboard_keys_based_offset, mouse_based_offset). And pressing 'u' resets the offset to player_based_offset.
-        self.get_player_based_offset()
         if(keys[pygame.K_u]):       #Ressetting the camera.
             self.keyboard_offset_counter=pygame.math.Vector2()
             self.mouse_offset_counter=pygame.math.Vector2()
             pygame.mouse.set_pos((SCREEN_WIDTH_HALF,SCREEN_HEIGHT_HALF))
+        elif(keys[pygame.K_b]):
+            self.get_box_based_offset()
+            pass
         else:
+            self.get_player_based_offset()
             #Handling keyboard based camera movement.
             self.get_keyboard_based_offset(keys)
             self.get_mouse_based_offset()
+            self.box_rect.center=self.player.rect.topleft               #So that there is no log when releasing or on clicking 'b'.
             pass
         self.apply_offset_limits()
         self.player.offset=self.offset
@@ -251,6 +294,7 @@ class Level:
         self.transport_sprites.update(display_surf,self.offset)
         self.enemy_sprites.update(display_surf,self.offset,self)
         self.player.draw(display_surf)
+        # pygame.draw.rect(pygame.display.get_surface(),'black',self.box_rect,5)
 
         #Blitting the detection tiles.
         # for row_index,row in enumerate(self.detection_tiles):
