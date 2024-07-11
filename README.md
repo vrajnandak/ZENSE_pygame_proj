@@ -27,6 +27,7 @@ CONTROLS:
 3. Attack: [space]
 4. Healing: [left control]
 5. Pause Screen: [esc]
+6. Switching weapons: [n] for next weapon, [p] for previous weapon.
 
 
 Naming formats:
@@ -78,10 +79,6 @@ EXTRAS:
 
 IMAGE REFERENCES:
 https://elthen.itch.io/2d-pixel-art-archaeologist
-
-YOUTUBE REFERENCES:
-https://www.youtube.com/watch?v=QU1pPzEGrqw
-https://www.youtube.com/watch?v=fo4e3njyGy0
 
 
 

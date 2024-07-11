@@ -18,9 +18,11 @@ class Level:
         self.obstacle_sprites=pygame.sprite.Group()
         self.transport_sprites=pygame.sprite.Group()
         self.hidden_sprites=pygame.sprite.Group()           #A sprite group for the hidden passages which appear on the completion of a task.
+        self.curr_attack=None                               #The current weapon being used by player to attack.
 
         #Player of the level.
         self.player=player
+        self.player.getAttackFunctions(self.create_attack,self.destroy_attack)
 
         #Graphics of the level.
         self.graphics_path=os.path.join(MAPS_DIRECTORY_PATH,f'Ruin{self.level_id}')
@@ -267,8 +269,14 @@ class Level:
 
     #A method to create a weapon. It is better to handle the weapon as a separate entity from the player in order to not have to write extra code to deal with collisions.
     def create_attack(self):
-        Weapon(self.player,[self.visible_sprites])
+        self.curr_attack=Weapon(self.player,[self.visible_sprites])
         pass
+
+    #A method to destroy the created weapon.
+    def destroy_attack(self):
+        if self.curr_attack:
+            self.curr_attack.kill()
+            self.curr_attack=None
 
     def run(self,keys):
         #Move the Player

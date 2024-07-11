@@ -29,6 +29,8 @@ class Player(pygame.sprite.Sprite):
         self.attack_cooldown=400
         self.attacking=False
         self.attack_time=None
+        self.createAttack=None
+        self.destroyAttack=None
 
         #Healing variables
         self.healing_cooldown=500
@@ -38,6 +40,14 @@ class Player(pygame.sprite.Sprite):
         #Weapon variables
         self.weapon_index=0
         self.weapon=list(WEAPON_INFO.keys())[self.weapon_index]
+        self.weapon_switch_cooldown=200
+        self.can_switch_weapon=True
+        self.weapon_switch_time=None
+
+    #A method to initialize the function to create the weapon and destroy the weapon.
+    def getAttackFunctions(self,createAttack,destroyAttack):
+        self.createAttack=createAttack
+        self.destroyAttack=destroyAttack
 
     #A method to load the graphics of the players.
     def load_my_graphics(self):
@@ -133,7 +143,17 @@ class Player(pygame.sprite.Sprite):
         if(keys[pygame.K_SPACE] and not(self.attacking)):
             self.attacking=True
             self.attack_time=pygame.time.get_ticks()
+            self.createAttack()
             pass
+
+        #Switching to next Attack
+        if(keys[pygame.K_n] and self.can_switch_weapon):
+            self.can_switch_weapon=False
+            self.weapon_switch_time=pygame.time.get_ticks()
+            self.weapon_index+=1
+            if(self.weapon_index>=len(WEAPON_INFO)):
+                self.weapon_index=0
+            self.weapon=list(WEAPON_INFO.keys())[self.weapon_index]
 
         #Using the Heal Moves
         if(keys[pygame.K_LCTRL] and not(self.attacking) and not(self.healing)):
@@ -149,6 +169,12 @@ class Player(pygame.sprite.Sprite):
         if self.attacking:
             if current_time-self.attack_time >=self.attack_cooldown:
                 self.attacking=False
+                self.destroyAttack()
+
+        #Applying cooldown for switching weapons.
+        if not self.can_switch_weapon:
+            if current_time-self.weapon_switch_time >=self.weapon_switch_cooldown:
+                self.can_switch_weapon=True
 
         #Applying cooldown for healing
         if self.healing:

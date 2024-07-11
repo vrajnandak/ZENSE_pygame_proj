@@ -9,7 +9,7 @@ class Weapon(pygame.sprite.Sprite):
         self.player_direction=player.status.split('_')[0]
 
         #Weapon graphics
-        full_path=os.path.join(GRAPHICS_DIR_PATH,os.path.join("PLAYER_WEAPON",os.path.join(self.player.weapon,f'${self.player_direction}.png')))
+        full_path=os.path.join(GRAPHICS_DIR_PATH,os.path.join("PLAYER_WEAPON",os.path.join(self.player.weapon,f'{self.player_direction}.png')))
         self.img=pygame.image.load(full_path).convert_alpha()       #convert_alpha() as the background is black.
         self.rect=self.img.get_rect(center=player.rect.center)
         self.update_rect()
@@ -22,13 +22,14 @@ class Weapon(pygame.sprite.Sprite):
             self.rect=self.img.get_rect(midright=self.player.rect.midleft)
             pass
         elif self.player_direction=='up':
-            self.rect=self.img.get_rect(midtop=self.player.rect.midtop)
+            self.rect=self.img.get_rect(midbottom=self.player.rect.midtop)
             pass
         elif self.player_direction=='down':
-            self.rect=self.img.get_rect(midbottom=self.player.rect.midbottom)
+            self.rect=self.img.get_rect(midtop=self.player.rect.midbottom)
             pass
         pass
 
-    def update(self,display_surf):
+    def update(self,display_surf,offset):
         self.update_rect()
-        display_surf.blit(self.img,self.rect.topleft)
+        # display_surf.blit(self.img,self.rect.topleft)
+        display_surf.blit(self.img,(self.rect.topleft-offset))
