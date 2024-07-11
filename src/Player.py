@@ -32,23 +32,30 @@ class Player(pygame.sprite.Sprite):
         self.createAttack=None
         self.destroyAttack=None
 
-        #Healing variables
-        self.healing_cooldown=500
-        self.healing=False
-        self.healing_time=None
-        self.can_switch_heal=True
-        self.heal_switch_time=None
+        #Magic variables
+        self.magic_cooldown=500
+        self.magicing=False
+        self.magic_time=None
+        self.createMagic=None
+        self.destroyMagic=None
 
         #Weapon variables
         self.weapon_index=0
-        self.weapon=list(WEAPON_INFO.keys())[self.weapon_index]
+        self.weapon_name=list(WEAPON_INFO.keys())[self.weapon_index]
         self.weapon_switch_cooldown=200
         self.can_switch_weapon=True
         self.weapon_switch_time=None
 
+        #Magic dynamic variables.
+        self.magic_index=0
+        self.magic_name=list(MAGIC_INFO.keys())[self.magic_index]
+        self.magic_switch_cooldown=200
+        self.can_switch_magic=True
+        self.magic_switch_time=None
+
         #Player stats.
-        self.stats={'health':100,'energy':60,'attack':10,'magic':4,'speed':PLAYER_SPEED}        #These are the default or caps on player stats.
-        self.health=self.stats['health']//2
+        self.stats={'health':500,'energy':60,'attack':10,'magic':4,'speed':PLAYER_SPEED}        #These are the default or caps on player stats.
+        self.health=self.stats['health']
         self.energy=self.stats['energy']
         self.exp=1
         self.exp_cap=100                        #This will be updated to a new cap whenever the self.exp >= self.exp_cap.
@@ -74,6 +81,12 @@ class Player(pygame.sprite.Sprite):
         self.createAttack=createAttack
         self.destroyAttack=destroyAttack
 
+    #A method to initialize the function to create the magic and destroy it.
+    def getMagicFunctions(self,createMagic,destroyMagic):
+        self.createMagic=createMagic
+        self.destroyMagic=destroyMagic
+        pass
+
     #A method to load the graphics of the players.
     def load_my_graphics(self):
         self.graphics={
@@ -92,10 +105,10 @@ class Player(pygame.sprite.Sprite):
             'up_attack':[],
             'down_attack':[],
 
-            'right_heal':[],
-            'left_heal':[],
-            'up_heal':[],
-            'down_heal':[]
+            'right_magic':[],
+            'left_magic':[],
+            'up_magic':[],
+            'down_magic':[]
         }
 
         for animation in self.graphics.keys():
@@ -119,8 +132,8 @@ class Player(pygame.sprite.Sprite):
                 self.status=self.status.replace('attack','idle')
             elif 'idle' in self.status:
                 pass
-            elif 'heal' in self.status:
-                self.status=self.status.replace('heal','idle')
+            elif 'magic' in self.status:
+                self.status=self.status.replace('magic','idle')
             else:
                 self.status=self.status+'_idle'
 
@@ -130,23 +143,23 @@ class Player(pygame.sprite.Sprite):
                 self.status=self.status.replace('idle','attack')
             elif 'attack' in self.status:
                 pass
-            elif 'heal' in self.status:
-                self.status=self.status.replace('heal','attack')
+            elif 'magic' in self.status:
+                self.status=self.status.replace('magic','attack')
             else:
                 self.status=self.status+'_attack'
 
-        #Heal status
-        if self.healing:
+        #Magic status
+        if self.magicing:
             if 'idle' in self.status:
-                self.status=self.status.replace('idle','heal')
-            elif 'heal' in self.status:
+                self.status=self.status.replace('idle','magic')
+            elif 'magic' in self.status:
                 pass
             elif 'attack' in self.status:
-                self.status=self.status.replace('attack','heal')
+                self.status=self.status.replace('attack','magic')
             else:
-                self.status=self.status+'_heal'
+                self.status=self.status+'_magic'
 
-    #A method to set the direction of player, attack mode, heal mode etc.
+    #A method to set the direction of player, attack mode, magic mode etc.
     def use_controls(self,keys,level):
         #Using the normal movement controls.
         self.direction.x=0
@@ -184,8 +197,8 @@ class Player(pygame.sprite.Sprite):
                 self.weapon_index=self.weapon_index if self.weapon_index>=0 else len(WEAPON_INFO)-1
                 self.weapon_index=self.weapon_index if self.weapon_index<len(WEAPON_INFO) else 0
 
-                self.weapon=list(WEAPON_INFO.keys())[self.weapon_index]
-                level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon}','full.png'))
+                self.weapon_name=list(WEAPON_INFO.keys())[self.weapon_index]
+                level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon_name}','full.png'))
 
         #Switching to next Attack
         # if(keys[pygame.K_n] and self.can_switch_weapon):
@@ -194,8 +207,8 @@ class Player(pygame.sprite.Sprite):
         #     self.weapon_index+=1
         #     if(self.weapon_index>=len(WEAPON_INFO)):
         #         self.weapon_index=0
-        #     self.weapon=list(WEAPON_INFO.keys())[self.weapon_index]
-        #     level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon}',f'full.png'))
+        #     self.weapon_name=list(WEAPON_INFO.keys())[self.weapon_index]
+        #     level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon_name}',f'full.png'))
 
         # #Switching to previous Attack.
         # if(keys[pygame.K_p] and self.can_switch_weapon):
@@ -204,14 +217,38 @@ class Player(pygame.sprite.Sprite):
         #     self.weapon_index-=1
         #     if(self.weapon_index<0):
         #         self.weapon_index=len(WEAPON_INFO)-1
-        #     self.weapon=list(WEAPON_INFO.keys())[self.weapon_index]
-        #     level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon}',f'full.png'))
+        #     self.weapon_name=list(WEAPON_INFO.keys())[self.weapon_index]
+        #     level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon_name}',f'full.png'))
 
-        #Using the Heal Moves
-        if(keys[pygame.K_LCTRL] and not(self.attacking) and not(self.healing)):
-            self.healing=True
-            self.healing_time=pygame.time.get_ticks()
+        #Using the Magic Moves
+        if(keys[pygame.K_LCTRL] and not(self.attacking) and not(self.magicing)):
+            self.magicing=True
+            self.magic_time=pygame.time.get_ticks()
+            style=self.magic_name
+            strength=MAGIC_INFO[style]['strength'] + self.stats['magic']
+            cost=MAGIC_INFO[style]['cost']
+            self.createMagic(style,strength,cost)
             pass
+
+        #Switching the Magic
+        if self.can_switch_magic:
+            inc=1 if keys[pygame.K_m] else 0
+            dec=-1 if keys[pygame.K_o] else 0
+            if(inc==1 or dec==-1):
+                self.can_switch_magic=False
+                self.magic_switch_time=pygame.time.get_ticks()
+
+                #Changing the weapon index to be within the range.
+                self.magic_index+=(inc+dec)
+                self.magic_index=self.magic_index if self.magic_index>=0 else len(MAGIC_INFO)-1
+                self.magic_index=self.magic_index if self.magic_index<len(MAGIC_INFO) else 0
+
+                self.magic_name=list(MAGIC_INFO.keys())[self.magic_index]
+                # img=pygame.Surface((BASE_SIZE,BASE_SIZE))
+                # img.fill('blue')
+                # if(self.magic_index!=0):
+                #     img.fill('pink')
+                level.curr_selected_magic=pygame.image.load(os.path.join(PLAYER_MAGIC_DIRECTORY_PATH,f'{self.magic_name}.png'))
         pass
 
     def apply_cooldown(self):
@@ -228,10 +265,15 @@ class Player(pygame.sprite.Sprite):
             if current_time-self.weapon_switch_time >=self.weapon_switch_cooldown:
                 self.can_switch_weapon=True
 
-        #Applying cooldown for healing
-        if self.healing:
-            if current_time-self.healing_time >=self.healing_cooldown:
-                self.healing=False
+        #Applying cooldown for Magic
+        if self.magicing:
+            if current_time-self.magic_time >=self.magic_cooldown:
+                self.magicing=False
+
+        #Applying cooldown for switching magic.
+        if not self.can_switch_magic:
+            if current_time-self.magic_switch_time>=self.magic_switch_cooldown:
+                self.can_switch_magic=True
     
     #A method to check collisions
     def handle_collisions(self,direction, level):
@@ -254,7 +296,7 @@ class Player(pygame.sprite.Sprite):
                 self.frame_index=0
                 
             self.img=animation[int(self.frame_index)]
-        # self.rect=self.img.get_rect(center=self.img.center)
+            self.rect=self.img.get_rect(center=self.rect.center)
 
     def move(self,keys,level):
         #Gettings the controls

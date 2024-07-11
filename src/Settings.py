@@ -18,7 +18,8 @@ TELEPORTATION_MAP={             #A dictionary of key (<level_id>_<teleportation_
     '3': []
 }
 ENEMY_HEALTH=200
-ENEMY_ATTACK_RADIUS=12         #A radius 5 BASE_SIZE's
+ENEMY_NOTICE_RADIUS=12         #A radius 5 BASE_SIZE's
+ENEMY_ATTACK_RADIUS=3
     #A dictionary of key(weapon name) and value(a dictionary containing {cooldown_time, damage})
 WEAPON_INFO={
     # 'whip': {'cooldown':150, 'damage': 15},
@@ -26,6 +27,17 @@ WEAPON_INFO={
     'lance':{'cooldown': 100, 'damage': 20},
     'axe':{'cooldown': 150, 'damage': 40},
     # 'gun':{'cooldown': 200, 'damage': 30}
+}
+MAGIC_INFO={
+    'flame':{'strength':5,'cost':20},
+    'heal':{'strength':20,'cost':10}
+}
+ZOMBIE_ENEMIES_INFO={
+    'zombie1':{'health':100,'exp':20,'damage':10, 'resistance': 4, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
+    'zombie2':{'health':150,'exp':30,'damage':20, 'resistance': 3, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
+    'zombie3':{'health':200,'exp':50,'damage':50, 'resistance': 3, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
+    'zombie4':{'health':400,'exp':100,'damage':75, 'resistance': 2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
+    'zombieBoss':{'health':1000,'exp':500,'damage':150, 'resistance': 2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS}
 }
 
 #Sizes
@@ -68,6 +80,7 @@ SAVED_DATA_DIR_PATH=os.path.join(WORKING_DIRECTORY_PATH,"SavedData")
 GRAPHICS_DIR_PATH=os.path.join(WORKING_DIRECTORY_PATH,"graphics")
 PLAYER_DIRECTORY_PATH=os.path.join(GRAPHICS_DIR_PATH,"Player")
 MAPS_DIRECTORY_PATH=os.path.join(GRAPHICS_DIR_PATH,"Ruins")            #Folder path to getting Maps and Other Graphics
+PLAYER_MAGIC_DIRECTORY_PATH=os.path.join(GRAPHICS_DIR_PATH,"PLAYER_MAGIC")
 PLAYER_WEAPONS_DIRECTORY_PATH=os.path.join(GRAPHICS_DIR_PATH,"PLAYER_WEAPON")
 BASEMAP_NAME="BaseMap.png"                          #Name of Floor maps which are basically the 1st drawn image.
 FLOORINFO_DIR_NAME="FloorInfo"
@@ -181,9 +194,14 @@ def debug_print(text,pos,display_surf):
 # Just realized this isn't needed as long as we follow the below format.
 # #ALL_BLOCKS - Has 'elem_id' as key, the block 'img' as value. This will be initialized in the Level object's using 'load_ALL_BLOCKS()'.
 #     #elem_id: 500      ==> 'Gate_being_revealed'              ==>"None". The image will have id of 500. Any elem having id of 500 will slowly appear once player has unlocked achievement.
+#     #elem_id: 100      ==> 'zombie1 start position'           ==>"PINK" color in Tiled map.
+#     #elem_id: 101      ==> 'zombie2 start position'           ==>"YELLOW" color in Tiled map.
+#     #elem_id: 101      ==> 'zombie3 start position'           ==>"PURPLE" color in Tiled map.
+#     #elem_id: 101      ==> 'zombie4 start position'           ==>"GOLD" color in Tiled map.
+#     #elem_id: 101      ==> 'zombieBoss start position'        ==>"SILVER" color in Tiled map.
 #     #elem_id: 1000     ==> 'Invisible'                        ==>"RED" color in Tiled map.
 #     #elem_id: 1001     ==> 'Player start position'            ==>"GREEN" color in Tiled map.
-#     #elem_id: 1002     ==> 'Enemy start position'             ==>"YELLOW" color in Tiled map.
+#************************REMOVED*******************#     #elem_id: 1002     ==> 'Enemy start position'             ==>"YELLOW" color in Tiled map.
 #     #elem_id: 1003     ==> 'Transport gates'                  ==>"BLACK" color in Tiled map.
 #     #elem_id: 1004     ==> 'Strong enemy start position'      ==>"BLUE" color in Tiled map.
 # ALL_BLOCKS={}

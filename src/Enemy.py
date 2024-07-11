@@ -2,24 +2,22 @@ import pygame
 from Settings import *
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
-# from pathfinding.core.diagonal_movement import DiagonalMovement     #To allow the enemies to move diagonally as well while searching the path.
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self,pos,groups):
+    def __init__(self,pos,zombieType,groups):
         super().__init__(groups)
         self.pos=pos
 
-        # ***************************************HAS TO BE REPLACED BY THE PROPER STARTING IMAGE***********************************
+        self.graphics_path=os.path.join(GRAPHICS_DIR_PATH,"Enemy",zombieType)
+        self.load_graphics()
+
+        #Animation variables.
+        self.status='idle'
+        self.frame_index=0.1
+        self.animation_speed=0.5
         # self.img=pygame.Surface((BASE_SIZE,BASE_SIZE))
         # self.img.fill('red')
-        self.img=pygame.image.load(
-            os.path.join(
-                os.path.join(
-                    GRAPHICS_DIR_PATH,"Enemy"
-                    ),
-                    "tmpENEMY.png"
-            )
-        )
+        self.img=self.graphics[self.status][int(self.frame_index)]
         self.mask=pygame.mask.from_surface(self.img)        #This will be used by the player for collision detection.
         self.rect=self.img.get_rect(topleft=self.pos)
 
@@ -27,9 +25,12 @@ class Enemy(pygame.sprite.Sprite):
         self.width_tiles=int(self.rect.width//BASE_SIZE)
         self.height_tiles=int(self.rect.height//BASE_SIZE)
 
-        #Variables to move towards player.
+        #Movement Variables.
         self.direction=pygame.math.Vector2()
-        self.attack_radius=ENEMY_ATTACK_RADIUS*BASE_SIZE
+
+        #Getting the index of the zombie type from the dictionary in the Settings.py file.
+        self.attack_radius=BASE_SIZE*(ZOMBIE_ENEMIES_INFO[zombieType]['attack_radius'])
+        self.notice_radius=BASE_SIZE*(ZOMBIE_ENEMIES_INFO[zombieType]['notice_radius'])
 
         #The max size of the submatrix, centered around self( i.e., enemy sprite).
         self.SUBMATRIX_SIZE=12
@@ -37,6 +38,29 @@ class Enemy(pygame.sprite.Sprite):
 
         #Enemy UI.
         self.health=ENEMY_HEALTH
+
+        #Player interaction
+        self.attack_cooldown=200
+        self.can_attack=True
+        self.attack_time=None
+
+    def load_graphics(self):
+        self.graphics={
+            'idle':[],
+            'move':[],
+            'attack':[]
+        }
+
+        animation_names=os.listdir(self.graphics_path)
+        for animation_name in animation_names:
+            animation_path=os.path.join(self.graphics_path,animation_name)
+            image_file_names=os.listdir(animation_path)
+            imgs=[]
+            for image_file_name in image_file_names:
+                img=pygame.image.load(os.path.join(animation_path,image_file_name))
+                imgs.append(img)
+            self.graphics[animation_name]=imgs
+        pass
 
     def update_direction(self,player,level):
         #The default direction of the enemy.
@@ -89,8 +113,9 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self,display_surf,offset,level):
 
-        #Moving the enemy sprite if player within range.
-        if(pygame.math.Vector2(level.player.rect.left-self.rect.left, level.player.rect.top-self.rect.top).magnitude()<=self.attack_radius):
+        #Moving the enemy sprite if player within notice range.
+        if(pygame.math.Vector2(level.player.rect.left-self.rect.left, level.player.rect.top-self.rect.top).magnitude()<=self.notice_radius):
+            self.status='move'
             self.update_direction(level.player,level)
             if(self.direction.magnitude()!=0):
                 self.direction=self.direction.normalize()
@@ -99,8 +124,32 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.y+=self.direction.y*ENEMY_SPEED
             ret_val=self.handle_collisions("Vertical",level)
             pass
+        else:
+            self.direction.x=0
+            self.direction.y=0
+        if(pygame.math.Vector2(level.player.rect.left-self.rect.left,level.player.rect.top-self.rect.top).magnitude()<=self.attack_radius) and self.can_attack:
+            self.frame_index=0
+            self.status='attack'
+            self.attack_time=pygame.time.get_ticks()
+        if(self.direction.x==0 and self.direction.y==0):
+            self.status='idle'
+        
+        #Updating the animation.
+        self.frame_index+=self.animation_speed
+        if(self.frame_index>=len(self.graphics[self.status])):
+            if self.status=='attack':           #We want to complete the animation of attack. So we wait until the last frame has been played for the attack.
+                self.can_attack=False
+            self.frame_index=0
+        self.img=self.graphics[self.status][int(self.frame_index)]
+        self.rect=self.img.get_rect(center=self.rect.center)
+
+        #If it has been a while since the last animation has been played, then the enemy can attack.
+        if not self.can_attack:
+            if pygame.time.get_ticks()-self.attack_time >=self.attack_cooldown:
+                self.can_attack=True
 
         self.draw(display_surf,offset)
+        debug_print(self.status,self.rect.center-offset,display_surf)
         pass
 
     def draw(self,display_surf,offset):

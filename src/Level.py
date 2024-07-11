@@ -20,12 +20,13 @@ class Level:
         self.transport_sprites=pygame.sprite.Group()
         self.hidden_sprites=pygame.sprite.Group()           #A sprite group for the hidden passages which appear on the completion of a task.
         self.curr_attack=None                               #The current weapon being used by player to attack.
-        self.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,os.path.join(list(WEAPON_INFO.keys())[0],"full.png")))
-        self.curr_selected_heal=None
+        self.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,list(WEAPON_INFO.keys())[0],'full.png'))
+        self.curr_selected_magic=pygame.image.load(os.path.join(PLAYER_MAGIC_DIRECTORY_PATH,f'{list(MAGIC_INFO.keys())[0]}.png'))
 
         #Player of the level.
         self.player=player
         self.player.getAttackFunctions(self.create_attack,self.destroy_attack)
+        self.player.getMagicFunctions(self.create_magic,self.destroy_magic)
 
         #Graphics of the level.
         self.graphics_path=os.path.join(MAPS_DIRECTORY_PATH,f'Ruin{self.level_id}')
@@ -125,7 +126,7 @@ class Level:
                         if(val!='-1'):
                             val=int(val)
                             img_pos=(x,y)
-                            if(val<1000):
+                            if(val<100):
                                 img=self.graphics[int(val)]
                                 img=img[0]
                                 Obstacle(img_pos,img,[self.visible_sprites,self.obstacle_sprites])      #The instance of this class created is added to the given spriteGroups.
@@ -136,6 +137,22 @@ class Level:
                                         if ((row_index-1+j<len(self.detection_tiles)) and (col_index-1+j < len(self.detection_tiles[0]))):
                                             self.detection_tiles[row_index-1+j][col_index-1+i]=0
                                 pass
+                            
+                            elif(val==100 or val==1002):
+                                Enemy(img_pos,'zombie1',[self.enemy_sprites])
+                                pass
+                            elif(val==101):
+                                Enemy(img_pos,'zombie2',[self.enemy_sprites])
+                                pass
+                            elif(val==102):
+                                Enemy(img_pos,'zombie3',[self.enemy_sprites])
+                                pass
+                            elif(val==103):
+                                Enemy(img_pos,'zombie4',[self.enemy_sprites])
+                                pass
+                            elif(val==104):
+                                Enemy(img_pos,'zombieBoss',[self.enemy_sprites])
+                                pass
                             elif(val==500):             #A dummy val to ensure that the self.level_tiles are made '0'.
                                 pass
                             elif(val==1000):
@@ -144,9 +161,6 @@ class Level:
                             elif(val==1001):
                                 #This is to update the detection tiles properly so that the player's tiles are marked as '0'.
                             #     self.player=Player(img_pos)
-                                pass
-                            elif(val==1002):
-                                Enemy(img_pos,[self.enemy_sprites])
                                 pass
                             elif(val==1003):
                                 Portal(img_pos,[self.visible_sprites,self.transport_sprites], os.path.join(self.graphics_path,"Portals"))
@@ -284,6 +298,15 @@ class Level:
             self.curr_attack.kill()
             self.curr_attack=None
 
+    #A method to create the magic.
+    def create_magic(self,style,strength,cost):
+        print(style,strength,cost)
+        pass
+
+    #A method to destroy the magic.
+    def destroy_magic(self):
+        pass
+
     #A method to display the weapon selections.
     def display_selection(self,display_surf,left,top,has_switched,img=None):
         bg_rect=pygame.rect.Rect(left,top,ITEM_BOX_SIZE,ITEM_BOX_SIZE)
@@ -323,7 +346,7 @@ class Level:
         self.display_selection(display_surf,10,SCREEN_HEIGHT-ITEM_BOX_SIZE,not self.player.can_switch_weapon,self.curr_selected_weapon)
 
         #Displaying the magic selection.
-        self.display_selection(display_surf,10,SCREEN_HEIGHT-2*ITEM_BOX_SIZE - 20, not self.player.can_switch_heal)
+        self.display_selection(display_surf,10,SCREEN_HEIGHT-2*ITEM_BOX_SIZE - 20, not self.player.can_switch_magic, self.curr_selected_magic)
         
 
         #Blitting the detection tiles.

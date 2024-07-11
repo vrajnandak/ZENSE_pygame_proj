@@ -10,7 +10,7 @@ class Weapon(pygame.sprite.Sprite):
 
         #Weapon graphics
         # full_path=os.path.join(GRAPHICS_DIR_PATH,os.path.join("PLAYER_WEAPON",os.path.join(self.player.weapon,f'{self.player_direction}.png')))
-        full_path=os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,os.path.join(self.player.weapon,f'{self.player_direction}.png'))
+        full_path=os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,os.path.join(self.player.weapon_name,f'{self.player_direction}.png'))
         self.img=pygame.image.load(full_path).convert_alpha()       #convert_alpha() as the background is black.
         self.rect=self.img.get_rect(center=player.rect.center)
         self.update_rect()
