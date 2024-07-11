@@ -15,7 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.mask=pygame.mask.from_surface(self.img)
         self.status='down'          #Used for controlling the images to be loaded of the player.
         self.frame_index=0.1        #To loop over the list of images for a certain animation state.
-        self.animation_speed=0.1    #The speed at which the frame index increases.
+        self.animation_speed=0.4    #The speed at which the frame index increases.
 
         #Player Dimensions - Used for updating the tiles.
         self.width_tiles=int(self.rect.width//BASE_SIZE)
@@ -36,6 +36,8 @@ class Player(pygame.sprite.Sprite):
         self.healing_cooldown=500
         self.healing=False
         self.healing_time=None
+        self.can_switch_heal=True
+        self.heal_switch_time=None
 
         #Weapon variables
         self.weapon_index=0
@@ -43,6 +45,29 @@ class Player(pygame.sprite.Sprite):
         self.weapon_switch_cooldown=200
         self.can_switch_weapon=True
         self.weapon_switch_time=None
+
+        #Player stats.
+        self.stats={'health':100,'energy':60,'attack':10,'magic':4,'speed':PLAYER_SPEED}        #These are the default or caps on player stats.
+        self.health=self.stats['health']//2
+        self.energy=self.stats['energy']
+        self.exp=1
+        self.exp_cap=100                        #This will be updated to a new cap whenever the self.exp >= self.exp_cap.
+        self.speed=self.stats['speed']
+
+        #Player UI
+        self.health_bar_rect=pygame.rect.Rect(10,10,HEALTH_BAR_WIDTH,BAR_HEIGHT)
+        self.health_text_surf=UI_TEXT_FONT.render("HP",True,'black')
+        self.health_text_surf_pos=(self.health_bar_rect.centerx-self.health_text_surf.get_width()//2,self.health_bar_rect.centery-self.health_text_surf.get_height()//2)
+        self.energy_bar_rect=pygame.rect.Rect(10,40,ENERGY_BAR_WIDTH,BAR_HEIGHT)
+        self.energy_text_surf=UI_TEXT_FONT.render("MP",True,'black')
+        self.energy_text_surf_pos=(self.energy_bar_rect.centerx-self.energy_text_surf.get_width()//2,self.energy_bar_rect.centery-self.energy_text_surf.get_height()//2)
+        self.exp_bar_rect=pygame.rect.Rect(10,70,EXP_BAR_WIDTH,BAR_HEIGHT)
+        self.exp_text_surf=UI_TEXT_FONT.render("EXP",True,'black')
+        self.exp_text_surf_pos=(self.exp_bar_rect.centerx-self.exp_text_surf.get_width()//2,self.exp_bar_rect.centery-self.exp_text_surf.get_height()//2)
+
+        # self.EXP_surf=pygame.font.Font(None,30).render("EXP: ",True,'black')
+        # self.EXP_rect=pygame.rect.Rect(10,70,self.EXP_surf.get_width()+20,self.EXP_surf.get_height())
+        # self.exp_bar_rect=pygame.rect.Rect(self.EXP_rect.right,70,EXP_BAR_WIDTH,BAR_HEIGHT)
 
     #A method to initialize the function to create the weapon and destroy the weapon.
     def getAttackFunctions(self,createAttack,destroyAttack):
@@ -122,7 +147,7 @@ class Player(pygame.sprite.Sprite):
                 self.status=self.status+'_heal'
 
     #A method to set the direction of player, attack mode, heal mode etc.
-    def use_controls(self,keys):
+    def use_controls(self,keys,level):
         #Using the normal movement controls.
         self.direction.x=0
         self.direction.y=0
@@ -146,14 +171,41 @@ class Player(pygame.sprite.Sprite):
             self.createAttack()
             pass
 
+        #Switching the weapons.
+        if self.can_switch_weapon:
+            inc=1 if keys[pygame.K_n] else 0
+            dec=-1 if keys[pygame.K_p] else 0
+            if(inc==1 or dec==-1):
+                self.can_switch_weapon=False
+                self.weapon_switch_time=pygame.time.get_ticks()
+
+                #Changing the weapon index to be within the range.
+                self.weapon_index+=(inc+dec)
+                self.weapon_index=self.weapon_index if self.weapon_index>=0 else len(WEAPON_INFO)-1
+                self.weapon_index=self.weapon_index if self.weapon_index<len(WEAPON_INFO) else 0
+
+                self.weapon=list(WEAPON_INFO.keys())[self.weapon_index]
+                level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon}','full.png'))
+
         #Switching to next Attack
-        if(keys[pygame.K_n] and self.can_switch_weapon):
-            self.can_switch_weapon=False
-            self.weapon_switch_time=pygame.time.get_ticks()
-            self.weapon_index+=1
-            if(self.weapon_index>=len(WEAPON_INFO)):
-                self.weapon_index=0
-            self.weapon=list(WEAPON_INFO.keys())[self.weapon_index]
+        # if(keys[pygame.K_n] and self.can_switch_weapon):
+        #     self.can_switch_weapon=False
+        #     self.weapon_switch_time=pygame.time.get_ticks()
+        #     self.weapon_index+=1
+        #     if(self.weapon_index>=len(WEAPON_INFO)):
+        #         self.weapon_index=0
+        #     self.weapon=list(WEAPON_INFO.keys())[self.weapon_index]
+        #     level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon}',f'full.png'))
+
+        # #Switching to previous Attack.
+        # if(keys[pygame.K_p] and self.can_switch_weapon):
+        #     self.can_switch_weapon=False
+        #     self.weapon_switch_time=pygame.time.get_ticks()
+        #     self.weapon_index-=1
+        #     if(self.weapon_index<0):
+        #         self.weapon_index=len(WEAPON_INFO)-1
+        #     self.weapon=list(WEAPON_INFO.keys())[self.weapon_index]
+        #     level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon}',f'full.png'))
 
         #Using the Heal Moves
         if(keys[pygame.K_LCTRL] and not(self.attacking) and not(self.healing)):
@@ -206,7 +258,7 @@ class Player(pygame.sprite.Sprite):
 
     def move(self,keys,level):
         #Gettings the controls
-        self.use_controls(keys)
+        self.use_controls(keys,level)
         self.set_status()
         # debug_print(self.status,(10,10),pygame.display.get_surface())
 
@@ -236,3 +288,28 @@ class Player(pygame.sprite.Sprite):
     def draw(self,display_surf):
         newpos=self.rect.topleft-self.offset
         display_surf.blit(self.img,newpos)
+
+    #A method to display only the Bar name on the bar.
+    def draw_box_bars(self,text_surf,text_surf_pos,display_surf,BOX_BG_COLOR,BAR_COLOR,BORDER_COLOR,box_rect,curr_val,max_val,BAR_WIDTH,):
+        #Displaying the bars.
+        pygame.draw.rect(display_surf,BOX_BG_COLOR,box_rect,0,border_radius=2)
+        box_width=int((curr_val*BAR_WIDTH)//max_val)
+        curr_rect=box_rect.copy()
+        curr_rect.width=box_width
+        pygame.draw.rect(display_surf,BAR_COLOR,curr_rect,0,border_radius=2)
+        pygame.draw.rect(display_surf,BORDER_COLOR,box_rect,2,border_radius=2)
+
+        #Displaying the text on the bar.
+        display_surf.blit(text_surf,text_surf_pos)
+
+    #A method to display the HP,MP,EXP.
+    def display_ui(self,display_surf):
+        #Displaying the health bar.
+        self.draw_box_bars(self.health_text_surf,self.health_text_surf_pos,display_surf,HEALTH_BAR_BGCOLOR,HEALTH_BAR_COLOR,HEALTH_BAR_BORDER_COLOR,self.health_bar_rect,self.health,self.stats['health'],HEALTH_BAR_WIDTH)
+
+        #Displaying the energy bar.
+        self.draw_box_bars(self.energy_text_surf,self.energy_text_surf_pos,display_surf,ENERGY_BAR_BGCOLOR,ENERGY_BAR_COLOR,ENERGY_BAR_BORDER_COLOR,self.energy_bar_rect,self.energy,self.stats['energy'],ENERGY_BAR_WIDTH)
+       
+        #Displaying the exp bar.
+        self.draw_box_bars(self.exp_text_surf,self.exp_text_surf_pos,display_surf,EXP_BAR_BGCOLOR,EXP_BAR_COLOR,EXP_BAR_BORDER_COLOR,self.exp_bar_rect,self.exp,self.exp_cap,EXP_BAR_WIDTH)
+        pass

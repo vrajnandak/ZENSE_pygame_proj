@@ -7,6 +7,7 @@ from Button import *
 from Portal import *
 from CollisionHelper import CollisionHelper
 from Weapon import Weapon
+from UI import UI
 
 class Level:
     def __init__(self,level_id,player):
@@ -19,6 +20,8 @@ class Level:
         self.transport_sprites=pygame.sprite.Group()
         self.hidden_sprites=pygame.sprite.Group()           #A sprite group for the hidden passages which appear on the completion of a task.
         self.curr_attack=None                               #The current weapon being used by player to attack.
+        self.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,os.path.join(list(WEAPON_INFO.keys())[0],"full.png")))
+        self.curr_selected_heal=None
 
         #Player of the level.
         self.player=player
@@ -37,6 +40,9 @@ class Level:
 
         #Creating the map.
         self.createMap()
+
+        #Getting the user Interface.
+        self.ui=UI()
 
         #Sizes for the Level. I am doing this in the hope that there will be less computations as these values are stored after __init__() is called.
         self.LEVEL_HEIGHT=self.baseFloorRect.bottom
@@ -278,6 +284,19 @@ class Level:
             self.curr_attack.kill()
             self.curr_attack=None
 
+    #A method to display the weapon selections.
+    def display_selection(self,display_surf,left,top,has_switched,img=None):
+        bg_rect=pygame.rect.Rect(left,top,ITEM_BOX_SIZE,ITEM_BOX_SIZE)
+        pygame.draw.rect(display_surf,ITEM_BOX_BG_COLOR,bg_rect,0,border_radius=2)
+        if has_switched:
+            pygame.draw.rect(display_surf,ITEM_BOX_BORDER_COLOR_ACTIVE,bg_rect,2,border_radius=2)
+        else:
+            pygame.draw.rect(display_surf,ITEM_BOX_BORDER_COLOR,bg_rect,2,border_radius=2)
+
+        if(img):
+            display_surf.blit(img,(bg_rect.centerx-img.get_width()//2,bg_rect.centery-img.get_height()//2))
+        pass
+
     def run(self,keys):
         #Move the Player
         shd_transport=self.player.move(keys,self)
@@ -298,12 +317,22 @@ class Level:
         self.enemy_sprites.update(display_surf,self.offset,self)
         self.player.draw(display_surf)
         debug_print(self.player.status,(10,10),display_surf)
-        # pygame.draw.rect(pygame.display.get_surface(),'black',self.box_rect,5)
+        self.ui.display(display_surf,self.player)
+
+        #Displaying the weapon selection.
+        self.display_selection(display_surf,10,SCREEN_HEIGHT-ITEM_BOX_SIZE,not self.player.can_switch_weapon,self.curr_selected_weapon)
+
+        #Displaying the magic selection.
+        self.display_selection(display_surf,10,SCREEN_HEIGHT-2*ITEM_BOX_SIZE - 20, not self.player.can_switch_heal)
+        
 
         #Blitting the detection tiles.
-        # for row_index,row in enumerate(self.detection_tiles):
-        #     for col_index,val in enumerate(row):
-        #         pos=(col_index*BASE_SIZE,row_index*BASE_SIZE)
-        #         newpos=pos-self.offset
-        #         debug_print(val,newpos,display_surf)
+        # self.draw_map_detection_tiles(display_surf)
         return 0
+    
+    def draw_map_detection_tiles(self,display_surf):
+        for row_index,row in enumerate(self.detection_tiles):
+            for col_index,val in enumerate(row):
+                pos=(col_index*BASE_SIZE,row_index*BASE_SIZE)
+                newpos=pos-self.offset
+                debug_print(val,newpos,display_surf)

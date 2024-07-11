@@ -35,6 +35,9 @@ class Enemy(pygame.sprite.Sprite):
         self.SUBMATRIX_SIZE=12
         self.SUBMATRIX_HALF_SIZE=int(self.SUBMATRIX_SIZE//2)
 
+        #Enemy UI.
+        self.health=ENEMY_HEALTH
+
     def update_direction(self,player,level):
         #The default direction of the enemy.
         self.direction.x=player.rect.centerx-self.rect.centerx

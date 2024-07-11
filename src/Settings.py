@@ -17,15 +17,16 @@ TELEPORTATION_MAP={             #A dictionary of key (<level_id>_<teleportation_
     '2': [],
     '3': []
 }
+ENEMY_HEALTH=200
 ENEMY_ATTACK_RADIUS=12         #A radius 5 BASE_SIZE's
     #A dictionary of key(weapon name) and value(a dictionary containing {cooldown_time, damage})
 WEAPON_INFO={
-    'whip': {'cooldown':150, 'damage': 15},
+    # 'whip': {'cooldown':150, 'damage': 15},
     'sword':{'cooldown': 200, 'damage': 30},
     'lance':{'cooldown': 100, 'damage': 20},
     'axe':{'cooldown': 150, 'damage': 40},
-    'gun':{'cooldown': 200, 'damage': 30}
-}                 
+    # 'gun':{'cooldown': 200, 'damage': 30}
+}
 
 #Sizes
 BASE_SIZE=32
@@ -37,6 +38,7 @@ SCREEN_SIZE=(SCREEN_WIDTH,SCREEN_HEIGHT)
 PLAYER_SIZE=(2*BASE_SIZE,3*BASE_SIZE)
 ENEMY_SIZE=(2*BASE_SIZE,3*BASE_SIZE)
 STRONG_ENEMY_SIZE=(3*BASE_SIZE,3*BASE_SIZE)
+
 
 #Colors
 SCREEN_BG_SHADE_COLOR=(127,127,127,0)
@@ -66,9 +68,32 @@ SAVED_DATA_DIR_PATH=os.path.join(WORKING_DIRECTORY_PATH,"SavedData")
 GRAPHICS_DIR_PATH=os.path.join(WORKING_DIRECTORY_PATH,"graphics")
 PLAYER_DIRECTORY_PATH=os.path.join(GRAPHICS_DIR_PATH,"Player")
 MAPS_DIRECTORY_PATH=os.path.join(GRAPHICS_DIR_PATH,"Ruins")            #Folder path to getting Maps and Other Graphics
+PLAYER_WEAPONS_DIRECTORY_PATH=os.path.join(GRAPHICS_DIR_PATH,"PLAYER_WEAPON")
 BASEMAP_NAME="BaseMap.png"                          #Name of Floor maps which are basically the 1st drawn image.
 FLOORINFO_DIR_NAME="FloorInfo"
 BLOCKS_PATH=os.path.join(GRAPHICS_DIR_PATH,"Blocks.png")
+
+
+#UI Information.
+UI_TEXT_FONT=pygame.font.Font(None,20)
+BAR_HEIGHT=20                       #Common for all the bars being displayed
+HEALTH_BAR_WIDTH=int(SCREEN_WIDTH//8)
+HEALTH_BAR_BGCOLOR=(60,60,60)
+HEALTH_BAR_COLOR=(0,255,0)
+HEALTH_BAR_BORDER_COLOR=(0,0,0)
+ENERGY_BAR_WIDTH=int((3*HEALTH_BAR_WIDTH)//4)
+ENERGY_BAR_BGCOLOR=(60,60,60)
+ENERGY_BAR_COLOR=(103,146,160)
+ENERGY_BAR_BORDER_COLOR=(0,0,0)
+EXP_BAR_WIDTH=int(HEALTH_BAR_WIDTH//2)
+EXP_BAR_BGCOLOR=(60,60,60)
+EXP_BAR_COLOR=(255,255,0)
+EXP_BAR_BORDER_COLOR=(0,0,0)
+ITEM_BOX_SIZE=80
+ITEM_BOX_BG_COLOR=(60,60,60)
+ITEM_BOX_BORDER_COLOR=(0,0,0)
+ITEM_BOX_BORDER_COLOR_ACTIVE=(255,215,0)
+
 
 
 #Function to display the textbox along with the value in the string.
@@ -112,7 +137,9 @@ def getRequiredInfo(textBoxNames,font,text_color='black'):
                 mouse_pos=pygame.mouse.get_pos()
                 if submit_rect.collidepoint(mouse_pos):
                     return user_strings
-            if event.type==pygame.KEYDOWN:
+            if event.type==pygame.KEYDOWN:      #If user clicks enter(which is often referred to as 'carriage return'), then return the strings.
+                if event.key==pygame.K_RETURN:
+                    return user_strings
                 mouse_pos=pygame.mouse.get_pos()
                 for index,rect in enumerate(textBoxCollideRects):
                     if rect.collidepoint(mouse_pos):
