@@ -93,7 +93,7 @@ class MyGame:
                 if event.type==pygame.QUIT:
                     self.quit_game=1
                     running=False
-                if event.type==pygame.MOUSEBUTTONUP:
+                if event.type==pygame.MOUSEBUTTONUP and event.button==1:        #To indicate a left release on mouse.
                     for button in buttons:
                         if(button.bottom_rect.collidepoint(pygame.mouse.get_pos())):
                             # self.button_chosen_text=button.text

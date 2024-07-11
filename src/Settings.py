@@ -71,6 +71,132 @@ FLOORINFO_DIR_NAME="FloorInfo"
 BLOCKS_PATH=os.path.join(GRAPHICS_DIR_PATH,"Blocks.png")
 
 
+#Function to display the textbox along with the value in the string.
+def display_textbox(display_surf,text_surf,text_rect,user_info,text_color,font):
+    #Drawing the text_surf using text_rect.
+    pygame.draw.rect(display_surf,'white',text_rect,0,border_radius=3)
+    display_surf.blit(text_surf,(text_rect.centerx-text_surf.get_width()//2,text_rect.centery-text_surf.get_height()//2))
+
+    #Drawing the user string.
+    user_surf=font.render(user_info,True,text_color)
+    white_bgrect=pygame.rect.Rect(text_rect.right+30, text_rect.top,user_surf.get_width()+(20 if len(user_info)>0 else 0),user_surf.get_height()+20)
+    pygame.draw.rect(display_surf,'white',white_bgrect,0,border_radius=3)
+    display_surf.blit(user_surf,(white_bgrect.centerx-user_surf.get_width()//2, white_bgrect.centery-user_surf.get_height()//2))
+
+#Function to get the required credentials from the user.
+def getRequiredInfo(textBoxNames,font,text_color='black'):
+    display_surf=pygame.display.get_surface()
+    user_strings=[]             #Holds the strings obtained from the user. This is what is returned by this function.
+    textBoxSurfs=[]             #Hold the rendered surfaces for the textboxNames.
+    textBoxCollideRects=[]      #The rectangles on these rendered surfaces to check for collision.
+    textBoxes_left=100          #The left position of all the textboxe names.
+    extra_box_space=20          #Used to maintain a bit more space in the textboxes.
+    for index,textboxname in enumerate(textBoxNames):
+        text_surf=font.render(textboxname,True,text_color)
+        text_box=pygame.rect.Rect(textBoxes_left,50+index*150, text_surf.get_width()+extra_box_space, text_surf.get_height()+extra_box_space)
+        textBoxSurfs.append(text_surf)
+        textBoxCollideRects.append(text_box)
+        user_strings.append("")
+
+    #Submit button and surface.
+    submit_surf=font.render("Submit",True,text_color)
+    submit_rect=pygame.rect.Rect(int((3*SCREEN_WIDTH)//4), int((3*SCREEN_HEIGHT)//8), submit_surf.get_width()+extra_box_space, submit_surf.get_height()+extra_box_space)
+    submit_rect_pos=(submit_rect.centerx-submit_surf.get_width()//2,submit_rect.centery-submit_surf.get_height()//2)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type==pygame.MOUSEBUTTONDOWN and event.button==1:      #1st condition to check for mouse click, 2nd condition to check for left click.
+                mouse_pos=pygame.mouse.get_pos()
+                if submit_rect.collidepoint(mouse_pos):
+                    return user_strings
+            if event.type==pygame.KEYDOWN:
+                mouse_pos=pygame.mouse.get_pos()
+                for index,rect in enumerate(textBoxCollideRects):
+                    if rect.collidepoint(mouse_pos):
+                        if event.type==pygame.K_BACKSPACE:
+                            user_strings[index]=user_strings[index][:-1]
+                        else:
+                            user_strings[index]+=event.unicode
+        
+        #Blitting all the textboxes and the submit button.
+        display_surf.fill('black')
+        for index,text_surf in enumerate(textBoxSurfs):
+            display_textbox(display_surf,text_surf,textBoxCollideRects[index],user_strings[index],text_color,font)
+        pygame.draw.rect(display_surf,'white',submit_rect,0,border_radius=3)
+        display_surf.blit(submit_surf,submit_rect_pos)
+        pygame.display.flip()
+    pass
+
+# #Function to display the textbox along with the value in the string.
+# def display_textbox(display_surf,text_rect,textbox_name,user_info,font):
+#     #Displaying the textbox name.
+#     text_surface=font.render(textbox_name, True, 'white')
+#     display_surf.blit(text_surface,(text_rect.left+text_surface.get_width()//2, text_rect.top+text_surface.get_height()//2))
+
+#     #Displaying the string right beside it.
+#     user_surface=font.render(user_info,True,'black')
+#     white_bg_width=user_surface.get_width()
+#     if(len(user_info)>0):
+#         white_bg_width+=20
+#     white_bg_box=pygame.rect.Rect(text_rect.left+text_surface.get_width(), text_rect.top, white_bg_width,user_surface.get_height())
+#     pygame.draw.rect(display_surf,'white',white_bg_box,0,border_radius=3)
+#     display_surf.blit(user_surface,(text_rect.left + text_surface.get_width() + 10, text_rect.top))
+
+#     pass
+
+# #Function to run the event loop and get the required information from the user.
+# def getReqInfo(textboxNames, font):
+#     #Getting the display surface.
+#     display_surf=pygame.display.get_surface()
+
+#     #Making a rectangle for each textbox values. This is for checking the mouse collision with the textboxName
+#     display_rect=[]
+#     user_strings=[]         #Will hold the information obtained from keyboard.
+#     for i in range(len(textboxNames)):
+#         box_rect=pygame.rect.Rect(100,50+i*50,100,30)
+#         display_rect.append(box_rect)
+#         user_strings.append("")
+
+#     #Submit button.
+#     submit_rect=pygame.rect.Rect(SCREEN_WIDTH_HALF + 100,SCREEN_HEIGHT_HALF,100,80)
+#     submit_surf=font.render("Submit",True,'black')
+#     submit_surf_pos=(submit_rect.centerx-submit_surf.get_width()//2, submit_rect.centery-submit_surf.get_height()//2)
+
+#     while True:
+#         for event in pygame.event.get():
+#             if event.type==pygame.QUIT:
+#                 pygame.quit()
+#                 sys.exit()
+#             if event.type==pygame.MOUSEBUTTONDOWN and event.button==1:      #1st condition to check for mouse click, 2nd condition to check for left click.
+#                 mouse_pos=pygame.mouse.get_pos()
+#                 if submit_rect.collidepoint(mouse_pos):
+#                     return user_strings
+#             if event.type==pygame.KEYDOWN:
+#                 mouse_pos=pygame.mouse.get_pos()
+#                 for index,rect in enumerate(display_rect):
+#                     if rect.collidepoint(mouse_pos):
+#                         if event.type==pygame.K_BACKSPACE:
+#                             user_strings[index]=user_strings[index][:-1]
+#                         else:
+#                             user_strings[index]+=event.unicode
+        
+#         #Black background.
+#         display_surf.fill('black')
+
+#         #Displaying all the textboxes.
+#         for index,rect in enumerate(display_rect):
+#             display_textbox(display_surf,rect,textboxNames[index],user_strings[index],font)
+#             pygame.draw.rect(display_surf,'yellow',rect,3,border_radius=3)
+        
+#         #Displaying the submit button.
+#         pygame.draw.rect(display_surf,'white',submit_rect,border_radius=3)
+#         display_surf.blit(submit_surf,submit_surf_pos)
+#         pygame.display.flip()
+#     pass
+
 #Function to draw a half-transparent background with a shade of the given color. Used only when displaying a screen.
 def drawShadedBGScreen(display_surf,shaded_color=SCREEN_BG_SHADE_COLOR):
     pygame.draw.rect(SCREEN_BG_SHADE_SURF,shaded_color,[0,0,SCREEN_WIDTH,SCREEN_HEIGHT])       #Fills the rectangle with specified color and draws this on the surface.
