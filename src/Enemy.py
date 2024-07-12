@@ -2,6 +2,7 @@ import pygame
 from Settings import *
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
+from math import sin        #To toggle between 0 to 255 for the flicker animation when the enemy sprite gets hit.
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self,pos,zombieType,groups):
@@ -38,7 +39,6 @@ class Enemy(pygame.sprite.Sprite):
 
         #Enemy UI.
         self.health=ZOMBIE_ENEMIES_INFO[zombieType]['health']
-        self.resistance=ZOMBIE_ENEMIES_INFO[zombieType]['resistance']
 
         #Player interaction
         self.attack_cooldown=200
@@ -87,6 +87,7 @@ class Enemy(pygame.sprite.Sprite):
         #Finding the start and end cells.
         start_x=int(self.rect.x//BASE_SIZE)-start_col
         start_y=int(self.rect.y//BASE_SIZE)-start_row
+        
         end_x=min(max(int(player.rect.x//BASE_SIZE)-start_col, 0),end_col-start_col-1)
         end_y=min(max(int(player.rect.y//BASE_SIZE)-start_row, 0),end_row-start_row-1)
         start_cell=grid.node(start_x,start_y)
@@ -102,7 +103,6 @@ class Enemy(pygame.sprite.Sprite):
             #Prioritizing the horizontal movement of the sprite over the vertical movement. Sprite can move either in horizontal or vertical only
             self.direction.x=next_cell_col-self.rect.x
             self.direction.y=next_cell_row-self.rect.y
-
         pass
 
     def handle_collisions(self,direction,level):
@@ -145,6 +145,32 @@ class Enemy(pygame.sprite.Sprite):
             if pygame.time.get_ticks()-self.hit_time >=self.cant_get_hit_duration:
                 self.can_get_hit=True
 
+    #A method to continuously toggle between 0 and 255.
+    def wave_value(self):
+        value=sin(pygame.time.get_ticks())
+        if value>=0:
+            return 255
+        return 0
+        pass
+    #A method to animate the enemy sprite.
+    def animate(self):
+        #Updating the animation.
+        self.frame_index+=self.animation_speed
+        if(self.frame_index>=len(self.graphics[self.status])):
+            if self.status=='attack':           #We want to complete the animation of attack. So we wait until the last frame has been played for the attack.
+                self.can_attack=False
+            self.frame_index=0
+        # self.img=self.graphics[self.status][int(self.frame_index)]
+        self.rect=self.img.get_rect(center=self.rect.center)
+
+        if not self.can_get_hit:
+            #Flicker animation for the enemy sprite.
+            alpha=self.wave_value()
+            self.img.set_alpha(alpha)
+            pass
+        else:
+            self.img.set_alpha(255)
+
     def update(self,display_surf,offset,level):
 
         #Moving the enemy sprite if player within notice range.
@@ -168,19 +194,11 @@ class Enemy(pygame.sprite.Sprite):
         if(self.direction.x==0 and self.direction.y==0):
             self.status='idle'
         
-        #Updating the animation.
-        self.frame_index+=self.animation_speed
-        if(self.frame_index>=len(self.graphics[self.status])):
-            if self.status=='attack':           #We want to complete the animation of attack. So we wait until the last frame has been played for the attack.
-                self.can_attack=False
-            self.frame_index=0
-        # self.img=self.graphics[self.status][int(self.frame_index)]
-        self.rect=self.img.get_rect(center=self.rect.center)
-
+        self.animate()
         self.apply_cooldowns()
 
         self.draw(display_surf,offset)
-        debug_print(self.status,self.rect.center-offset,display_surf)
+        # debug_print(self.status,self.rect.center-offset,display_surf)
         pass
 
     def draw(self,display_surf,offset):

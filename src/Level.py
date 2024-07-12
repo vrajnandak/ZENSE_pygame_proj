@@ -361,7 +361,7 @@ class Level:
         
 
         #Blitting the detection tiles.
-        self.draw_map_detection_tiles(display_surf)
+        # self.draw_map_detection_tiles(display_surf)
         return 0
     
     def draw_map_detection_tiles(self,display_surf):

@@ -87,7 +87,6 @@ class Player(pygame.sprite.Sprite):
     def get_full_damage(self):
         base_damage=self.stats['attack']
         weapon_damage=WEAPON_INFO[self.weapon_name]['damage']
-        print('returning ', base_damage+weapon_damage)
         return base_damage+weapon_damage
         pass
 
@@ -301,6 +300,8 @@ class Player(pygame.sprite.Sprite):
                 
             self.img=animation[int(self.frame_index)]
             self.rect=self.img.get_rect(center=self.rect.center)
+
+        #Flicker the player if player has been hit.
 
     def move(self,keys,level):
         #Gettings the controls

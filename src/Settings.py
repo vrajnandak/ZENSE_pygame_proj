@@ -33,11 +33,11 @@ MAGIC_INFO={
     'heal':{'strength':20,'cost':10, 'cooldown':150}
 }
 ZOMBIE_ENEMIES_INFO={
-    'zombie1':{'health':100,'exp':20,'damage':10, 'resistance': 4, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
-    'zombie2':{'health':150,'exp':30,'damage':20, 'resistance': 3, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
-    'zombie3':{'health':200,'exp':50,'damage':50, 'resistance': 3, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
-    'zombie4':{'health':400,'exp':100,'damage':75, 'resistance': 2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
-    'zombieBoss':{'health':1000,'exp':500,'damage':150, 'resistance': 2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS}
+    'zombie1':{'health':100,'exp':20,'damage':10, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
+    'zombie2':{'health':150,'exp':30,'damage':20, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
+    'zombie3':{'health':200,'exp':50,'damage':50, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
+    'zombie4':{'health':400,'exp':100,'damage':75, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
+    'zombieBoss':{'health':1000,'exp':500,'damage':150, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS}
 }
 
 #Sizes
@@ -186,7 +186,9 @@ def getSpriteFromSpriteSheet(spritesheet_path,sprite_width,sprite_height,sprite_
 
 #A function to display the given text on the screen.
 debug_font=pygame.font.Font(None,30)
-def debug_print(text,pos,display_surf):
+def debug_print(text,pos,display_surf=None):
+    if display_surf==None:
+        display_surf=pygame.display.get_surface()
     debug_surf=debug_font.render(str(text),'True','Black')
     display_surf.blit(debug_surf,pos)
     pass
