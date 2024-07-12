@@ -8,6 +8,8 @@ from Portal import *
 from CollisionHelper import CollisionHelper
 from Weapon import Weapon
 from UI import UI
+from Particles import Animations
+from PlayerMagic import *
 
 class Level:
     def __init__(self,level_id,player):
@@ -18,8 +20,9 @@ class Level:
         self.visible_sprites=pygame.sprite.Group()
         self.obstacle_sprites=pygame.sprite.Group()
         self.transport_sprites=pygame.sprite.Group()
+        self.attack_sprites=pygame.sprite.Group()
         self.hidden_sprites=pygame.sprite.Group()           #A sprite group for the hidden passages which appear on the completion of a task.
-        self.attackable_sprites=pygame.sprite.Group()       #A sprite group for the leafs and bushes to disappear when the player strikes them.
+
         self.curr_attack=None                               #The current weapon being used by player to attack.
         self.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,list(WEAPON_INFO.keys())[0],'full.png'))
         self.curr_selected_magic=pygame.image.load(os.path.join(PLAYER_MAGIC_DIRECTORY_PATH,f'{list(MAGIC_INFO.keys())[0]}.png'))
@@ -33,6 +36,8 @@ class Level:
         self.graphics_path=os.path.join(MAPS_DIRECTORY_PATH,f'Ruin{self.level_id}')
         self.graphics={}            #Has 'elem_id' as key, and value is a list '[pygame_img,(imgwidth,imgheight)]
         self.loadGraphics()
+        self.animation_player=Animations()
+        self.magic_player=MagicPlayer(self.animation_player)
 
         #Collision Detecting class (Has all the functions needed for detecting collisions)
         self.collision_detector=CollisionHelper(self)
@@ -300,7 +305,17 @@ class Level:
 
     #A method to create the magic.
     def create_magic(self,style,strength,cost):
-        # print(style,strength,cost)
+        if(style=='heal'):
+            self.magic_player.heal(self.player,strength,cost,[self.visible_sprites])
+            pass
+        if(style=='flame'):
+            # print('flaming')
+            self.magic_player.flame(self.player,cost,[self.attack_sprites,self.visible_sprites])
+            pass
+        if(style=='nova'):
+            pass
+        if(style=='aura'):
+            pass
         pass
 
     #A method to destroy the magic.
@@ -323,20 +338,29 @@ class Level:
     #A method to check if the player has attacked any sprite by checking the weapon sprite collision with the sprite groups.
     def player_attack(self):
         if self.curr_attack:
+            #Checking collision with player weapon
             collision_sprites=pygame.sprite.spritecollide(self.curr_attack, self.enemy_sprites, False)
             if collision_sprites:
                 for target_sprite in collision_sprites:
                     target_sprite.reduce_health(self.player,is_weapon=1)
-                    # target_sprite.kill()
+
+        if self.attack_sprites:
+            #Checking collision with player magic.
+            # print('lksdjflksdjf')
+            for sprite in self.attack_sprites:
+                collision_sprites=pygame.sprite.spritecollide(sprite,self.enemy_sprites,False)
+                if collision_sprites:
+                    for target_sprite in collision_sprites:
+                        target_sprite.reduce_health(self.player,0)
         pass
     
     #A method to damage the player whenever an enemy sprite attacks the player.
-    def damage_the_player(self,amount):
+    def damage_the_player(self,amount,attack_type):
         if self.player.can_get_hit:
             self.player.health-=amount
             self.player.can_get_hit=False
             self.player.hit_time=pygame.time.get_ticks()
-
+            self.animation_player.create_particles(attack_type,self.player.rect.center,[self.visible_sprites])
             #Spawn the particles.
         pass
 
@@ -359,6 +383,9 @@ class Level:
         self.transport_sprites.update(display_surf,self.offset)
         self.enemy_sprites.update(display_surf,self.offset,self)
         self.player_attack()
+
+        if(self.player.health<=0):
+            return 10
         self.player.draw(display_surf)
         self.ui.display(display_surf,self.player)
         # debug_print(self.player.status,(10,10),display_surf)

@@ -53,11 +53,13 @@ class Game:
                 return "Pause"
             
             #Running the Level logic.
-            shd_transport=self.curr_level.run(keys)
+            ret_val=self.curr_level.run(keys)
             pygame.display.flip()
             self.clock.tick(GAME_FPS)
 
-            if(shd_transport==1):
+            if(ret_val==1):     #Code for changing the map.
                 self.changeMap()
                 pass
+            elif(ret_val==10):
+                return "Lose"
         pass

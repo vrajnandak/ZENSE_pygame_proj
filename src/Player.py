@@ -54,7 +54,7 @@ class Player(pygame.sprite.Sprite):
         self.magic_switch_time=None
 
         #Player stats.
-        self.stats={'health':500,'energy':60,'attack':10,'magic':4,'speed':PLAYER_SPEED}        #These are the default or caps on player stats.
+        self.stats={'health':500,'energy':100,'attack':10,'magic':4,'speed':PLAYER_SPEED}        #These are the default or caps on player stats.
         self.health=self.stats['health']
         self.energy=self.stats['energy']
         self.exp=1
@@ -89,11 +89,17 @@ class Player(pygame.sprite.Sprite):
         pass
 
     #A method to return the total attack by combining the base attack of player(basically fist power) and the weapon power.
-    def get_full_damage(self):
+    def get_full_weapon_damage(self):
         base_damage=self.stats['attack']
         weapon_damage=WEAPON_INFO[self.weapon_name]['damage']
         return base_damage+weapon_damage
         pass
+    
+    #A method to return the total attack by magic.
+    def get_full_magic_damage(self):
+        base_damage=self.stats['magic']
+        magic_damage=MAGIC_INFO[self.magic_name]['strength']
+        return base_damage+magic_damage
 
     #A method to load the graphics of the players.
     def load_my_graphics(self):
@@ -318,6 +324,10 @@ class Player(pygame.sprite.Sprite):
         else:
             self.img.set_alpha(255)     #This else statement is important because if the previously executed 'if' statement sets the alpha to '0', then we still have to change it to 255, else it would be transparent.
 
+    #A method to recover some of the energy.
+    def recover_exp(self):
+        self.energy=self.stats['energy'] if (self.energy>=self.stats['energy']) else (self.energy+0.01*self.stats['magic'])
+
     def move(self,keys,level):
         #Gettings the controls
         self.use_controls(keys,level)
@@ -343,6 +353,8 @@ class Player(pygame.sprite.Sprite):
             if(shd_transport==1):
                 self.rect.y=self.rect.y-PLAYER_SPEED*self.direction.y
                 return shd_transport
+            
+        self.recover_exp()
 
         self.animate()
         pass

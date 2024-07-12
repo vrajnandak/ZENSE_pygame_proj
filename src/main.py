@@ -68,7 +68,6 @@ class MyGame:
             self.curr_buttons=self.StartButtons
             self.screen_shade_color=SCREEN_BG_DARK_COLOR
         elif(self.curr_screen=="Pause"):
-            self.PauseButtons
             self.curr_buttons=self.PauseButtons
             self.screen_shade_color=SCREEN_BG_SHADE_COLOR
         elif(self.curr_screen=="Settings"):

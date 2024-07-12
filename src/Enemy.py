@@ -15,9 +15,9 @@ class Enemy(pygame.sprite.Sprite):
         self.status='idle'
         self.frame_index=0.1
         self.animation_speed=0.5
-        self.img=pygame.Surface((BASE_SIZE,BASE_SIZE))
-        self.img.fill('red')
-        # self.img=self.graphics[self.status][int(self.frame_index)]
+        # self.img=pygame.Surface((BASE_SIZE,BASE_SIZE))
+        # self.img.fill('red')
+        self.img=self.graphics[self.status][int(self.frame_index)]
         self.mask=pygame.mask.from_surface(self.img)        #This will be used by the player for collision detection.
         self.rect=self.img.get_rect(topleft=self.pos)
 
@@ -31,6 +31,8 @@ class Enemy(pygame.sprite.Sprite):
         #Getting the index of the zombie type from the dictionary in the Settings.py file.
         self.attack_radius=BASE_SIZE*(ZOMBIE_ENEMIES_INFO[zombieType]['attack_radius'])
         self.notice_radius=BASE_SIZE*(ZOMBIE_ENEMIES_INFO[zombieType]['notice_radius'])
+        self.attack_type=ZOMBIE_ENEMIES_INFO[zombieType]['attack_type']
+        self.exp_gained_on_killing=ZOMBIE_ENEMIES_INFO[zombieType]['exp']
 
         #The max size of the submatrix, centered around self( i.e., enemy sprite).
         self.SUBMATRIX_SIZE=12
@@ -129,15 +131,18 @@ class Enemy(pygame.sprite.Sprite):
             self.can_get_hit=False
             self.hit_time=pygame.time.get_ticks()
             if(is_weapon):
-                self.health-=player.get_full_damage()
+                self.health-=player.get_full_weapon_damage()
             else:
+                self.health-=player.get_full_magic_damage()
                 #Deal magic damage.
                 pass
-            self.chk_death()
+            if(self.chk_death()):
+                player.exp+=self.exp_gained_on_killing
         pass
     def chk_death(self):
         if self.health<=0:
             self.kill()
+            return 1
 
     #A method to apply the cooldowns on the enemy
     def apply_cooldowns(self):
@@ -167,7 +172,7 @@ class Enemy(pygame.sprite.Sprite):
             if self.status=='attack':           #We want to complete the animation of attack. So we wait until the last frame has been played for the attack.
                 self.can_attack=False
             self.frame_index=0
-        # self.img=self.graphics[self.status][int(self.frame_index)]
+        self.img=self.graphics[self.status][int(self.frame_index)]
         self.rect=self.img.get_rect(center=self.rect.center)
 
         if not self.can_get_hit:
@@ -234,9 +239,10 @@ class Enemy(pygame.sprite.Sprite):
         if(pygame.math.Vector2(level.player.rect.left-self.rect.left,level.player.rect.top-self.rect.top).magnitude()<=self.attack_radius) and self.can_attack:
             self.frame_index=0
             self.status='attack'
+            
             # print('attacking')
             self.attack_time=pygame.time.get_ticks()
-            level.damage_the_player(self.attack_power)
+            level.damage_the_player(self.attack_power,self.attack_type)
         if(self.direction.x==0 and self.direction.y==0):
             self.status='idle'
         
@@ -250,4 +256,5 @@ class Enemy(pygame.sprite.Sprite):
     def draw(self,display_surf,offset):
         newpos=self.rect.topleft-offset
         display_surf.blit(self.img,newpos)
+        debug_print(self.status,self.rect.topleft-offset,display_surf)
         pass
