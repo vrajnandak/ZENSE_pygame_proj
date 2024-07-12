@@ -2,6 +2,7 @@ import pygame
 import os
 from csv import reader
 import sys
+from math import sin        #To toggle between 0 to 255 for the flicker animation when the enemy or player sprite gets hit.
 
 pygame.init()
 pygame.font.init()
@@ -19,7 +20,7 @@ TELEPORTATION_MAP={             #A dictionary of key (<level_id>_<teleportation_
 }
 ENEMY_HEALTH=200
 ENEMY_NOTICE_RADIUS=12         #A radius 5 BASE_SIZE's
-ENEMY_ATTACK_RADIUS=3
+ENEMY_ATTACK_RADIUS=2
     #A dictionary of key(weapon name) and value(a dictionary containing {cooldown_time, damage})
 WEAPON_INFO={
     # 'whip': {'cooldown':150, 'damage': 15},
@@ -33,11 +34,11 @@ MAGIC_INFO={
     'heal':{'strength':20,'cost':10, 'cooldown':150}
 }
 ZOMBIE_ENEMIES_INFO={
-    'zombie1':{'health':100,'exp':20,'damage':10, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
-    'zombie2':{'health':150,'exp':30,'damage':20, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
-    'zombie3':{'health':200,'exp':50,'damage':50, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
-    'zombie4':{'health':400,'exp':100,'damage':75, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
-    'zombieBoss':{'health':1000,'exp':500,'damage':150, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS}
+    'zombie1':{'health':100,'exp':20,'damage':10, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
+    'zombie2':{'health':150,'exp':30,'damage':20, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
+    'zombie3':{'health':200,'exp':50,'damage':50, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
+    'zombie4':{'health':400,'exp':100,'damage':75, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},
+    'zombieBoss':{'health':1000,'exp':500,'damage':150, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS}
 }
 
 #Sizes
@@ -106,6 +107,16 @@ ITEM_BOX_SIZE=80
 ITEM_BOX_BG_COLOR=(60,60,60)
 ITEM_BOX_BORDER_COLOR=(0,0,0)
 ITEM_BOX_BORDER_COLOR_ACTIVE=(255,215,0)
+
+
+
+#A method to continuously toggle between 0 and 255.
+def wave_value():
+    value=sin(pygame.time.get_ticks())
+    if value>=0:
+        return 255
+    return 0
+    pass
 
 
 

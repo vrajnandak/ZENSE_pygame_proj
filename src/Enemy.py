@@ -2,7 +2,6 @@ import pygame
 from Settings import *
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
-from math import sin        #To toggle between 0 to 255 for the flicker animation when the enemy sprite gets hit.
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self,pos,zombieType,groups):
@@ -39,6 +38,8 @@ class Enemy(pygame.sprite.Sprite):
 
         #Enemy UI.
         self.health=ZOMBIE_ENEMIES_INFO[zombieType]['health']
+        self.attack_power=ZOMBIE_ENEMIES_INFO[zombieType]['damage']
+        self.resistance=ZOMBIE_ENEMIES_INFO[zombieType]['resistance']
 
         #Player interaction
         self.attack_cooldown=200
@@ -49,6 +50,11 @@ class Enemy(pygame.sprite.Sprite):
         self.hit_time=None
         self.can_get_hit=True
         self.cant_get_hit_duration=700          #Putting this to be more than that of player.attack_cooldown so that the enemy gets hit only once everytime the player attacks.
+        
+        #A separate timer for applying the resistance and change the direction of the enemy sprite.
+        # self.apply_resistance_duration=700
+        # self.can_apply_resistance=True
+        # self.resistance_applied_time=pygame.time.get_ticks()        #Simply obtained.
 
     def load_graphics(self):
         self.graphics={
@@ -135,23 +141,24 @@ class Enemy(pygame.sprite.Sprite):
 
     #A method to apply the cooldowns on the enemy
     def apply_cooldowns(self):
+        curr_time=pygame.time.get_ticks()
         #If it has been a while since the last animation has been played, then the enemy can attack.
         if not self.can_attack:
-            if pygame.time.get_ticks()-self.attack_time >=self.attack_cooldown:
+            if curr_time-self.attack_time >=self.attack_cooldown:
                 self.can_attack=True
 
         #If it has been a while since the last time the enemy got hit, then we can update the attribute to be able to get hit.
         if not self.can_get_hit:
-            if pygame.time.get_ticks()-self.hit_time >=self.cant_get_hit_duration:
+            if curr_time-self.hit_time >=self.cant_get_hit_duration:
                 self.can_get_hit=True
 
-    #A method to continuously toggle between 0 and 255.
-    def wave_value(self):
-        value=sin(pygame.time.get_ticks())
-        if value>=0:
-            return 255
-        return 0
-        pass
+        #Applying cooldown for the push back effect of changing the direction.
+        # # if not self.can_apply_resistance:
+        # if self.can_apply_resistance:
+        #     if curr_time-self.resistance_applied_time >=self.apply_resistance_duration:
+        #         self.can_apply_resistance=False     #Set to true only when the weapon touches the enemy.
+        #         print('has become false')
+
     #A method to animate the enemy sprite.
     def animate(self):
         #Updating the animation.
@@ -165,18 +172,55 @@ class Enemy(pygame.sprite.Sprite):
 
         if not self.can_get_hit:
             #Flicker animation for the enemy sprite.
-            alpha=self.wave_value()
+            alpha=wave_value()
             self.img.set_alpha(alpha)
             pass
         else:
             self.img.set_alpha(255)
 
+    # #A method to apply the push back effect on the player
+    # def apply_resistance(self,level):
+    #     if(self.status=='attack' and level.curr_attack!=None):
+    #         #If weapon collide with enemy, then set to true.
+    #         # if (pygame.sprite.collide_mask(self.mask,level.curr_attack.mask)):
+    #         if(self.mask.overlap(level.curr_attack.mask,(level.curr_attack.rect.left-self.rect.left,level.curr_attack.rect.top-self.rect.top))) and (pygame.time.get_ticks()-self.resistance_applied_time >=self.apply_resistance_duration):
+    #         # entity.mask.overlap(sprite.mask,(sprite.rect.left-entity.rect.left, sprite.rect.top-entity.rect.top))
+    #             self.can_apply_resistance=True
+    #             self.resistance_applied_time=pygame.time.get_ticks()
+    #             # print('there is collision')
+    #         if self.can_apply_resistance:
+    #             print(self.can_apply_resistance)
+    #             self.direction*= -self.resistance
+                
+    #     pass
+
     def update(self,display_surf,offset,level):
 
         #Moving the enemy sprite if player within notice range.
         if(pygame.math.Vector2(level.player.rect.left-self.rect.left, level.player.rect.top-self.rect.top).magnitude()<=self.notice_radius):
-            self.status='move'
             self.update_direction(level.player,level)
+            # print('before resistance')
+            # self.apply_resistance(level)
+            self.status='move'
+            # print('after resistance')
+            #Applying the push back effect on the enemy when the enemy get's hit.
+            # if(not self.can_get_hit):
+            #     if(self.can_apply_resistance):
+            #         self.can_apply_resistance=False
+            #         self.resistance_applied_time=pygame.time.get_ticks()
+            #         self.direction*=-self.resistance
+            # elif(self.can_apply_resistance):
+            #     self.can_apply_resistance=False
+            #     self.resistance_applied_time=pygame.time.get_ticks()
+            #     self.direction*=-self.resistance
+
+
+            if not self.can_get_hit: #and (not(self.can_get_hit))):
+                self.can_apply_resistance=False
+                self.resistance_applied_time=pygame.time.get_ticks()
+                self.direction*=-self.resistance
+
+
             if(self.direction.magnitude()!=0):
                 self.direction=self.direction.normalize()
             self.rect.x+=self.direction.x*ENEMY_SPEED
@@ -190,7 +234,9 @@ class Enemy(pygame.sprite.Sprite):
         if(pygame.math.Vector2(level.player.rect.left-self.rect.left,level.player.rect.top-self.rect.top).magnitude()<=self.attack_radius) and self.can_attack:
             self.frame_index=0
             self.status='attack'
+            # print('attacking')
             self.attack_time=pygame.time.get_ticks()
+            level.damage_the_player(self.attack_power)
         if(self.direction.x==0 and self.direction.y==0):
             self.status='idle'
         

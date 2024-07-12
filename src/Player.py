@@ -72,6 +72,11 @@ class Player(pygame.sprite.Sprite):
         self.exp_text_surf=UI_TEXT_FONT.render("EXP",True,'black')
         self.exp_text_surf_pos=(self.exp_bar_rect.centerx-self.exp_text_surf.get_width()//2,self.exp_bar_rect.centery-self.exp_text_surf.get_height()//2)
 
+        #Enemy interactions.
+        self.can_get_hit=True
+        self.hit_time=None
+        self.cant_get_hit_duration=300      #This is a bit more than enemy's attack cooldown.
+
     #A method to initialize the function to create the weapon and destroy the weapon.
     def getAttackFunctions(self,createAttack,destroyAttack):
         self.createAttack=createAttack
@@ -277,6 +282,11 @@ class Player(pygame.sprite.Sprite):
         if not self.can_switch_magic:
             if current_time-self.magic_switch_time>=self.magic_switch_cooldown + MAGIC_INFO[self.magic_name]['cooldown']:
                 self.can_switch_magic=True
+
+        #Applying cooldown for the player being able to get hit.
+        if not self.can_get_hit:
+            if pygame.time.get_ticks()-self.hit_time >=self.cant_get_hit_duration:
+                self.can_get_hit=True
     
     #A method to check collisions
     def handle_collisions(self,direction, level):
@@ -302,6 +312,11 @@ class Player(pygame.sprite.Sprite):
             self.rect=self.img.get_rect(center=self.rect.center)
 
         #Flicker the player if player has been hit.
+        if not self.can_get_hit:
+            alpha=wave_value()
+            self.img.set_alpha(alpha)
+        else:
+            self.img.set_alpha(255)     #This else statement is important because if the previously executed 'if' statement sets the alpha to '0', then we still have to change it to 255, else it would be transparent.
 
     def move(self,keys,level):
         #Gettings the controls

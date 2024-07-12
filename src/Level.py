@@ -329,6 +329,16 @@ class Level:
                     target_sprite.reduce_health(self.player,is_weapon=1)
                     # target_sprite.kill()
         pass
+    
+    #A method to damage the player whenever an enemy sprite attacks the player.
+    def damage_the_player(self,amount):
+        if self.player.can_get_hit:
+            self.player.health-=amount
+            self.player.can_get_hit=False
+            self.player.hit_time=pygame.time.get_ticks()
+
+            #Spawn the particles.
+        pass
 
     def run(self,keys):
         #Move the Player
