@@ -30,7 +30,7 @@ WEAPON_INFO={
     # 'gun':{'cooldown': 200, 'damage': 30}
 }
 MAGIC_INFO={
-    'flame':{'strength':30,'cost':30, 'cooldown':100},
+    'flame':{'strength':15,'cost':30, 'cooldown':100},
     'heal':{'strength':20,'cost':40, 'cooldown':150}
 }
 ZOMBIE_ENEMIES_INFO={

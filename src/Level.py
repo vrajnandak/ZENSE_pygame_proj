@@ -7,7 +7,6 @@ from Button import *
 from Portal import *
 from CollisionHelper import CollisionHelper
 from Weapon import Weapon
-from UI import UI
 from Particles import Animations
 from PlayerMagic import *
 
@@ -30,7 +29,7 @@ class Level:
         #Player of the level.
         self.player=player
         self.player.getAttackFunctions(self.create_attack,self.destroy_attack)
-        self.player.getMagicFunctions(self.create_magic,self.destroy_magic)
+        self.player.getMagicFunctions(self.create_magic)
 
         #Graphics of the level.
         self.graphics_path=os.path.join(MAPS_DIRECTORY_PATH,f'Ruin{self.level_id}')
@@ -47,9 +46,6 @@ class Level:
 
         #Creating the map.
         self.createMap()
-
-        #Getting the user Interface.
-        self.ui=UI()
 
         #Sizes for the Level. I am doing this in the hope that there will be less computations as these values are stored after __init__() is called.
         self.LEVEL_HEIGHT=self.baseFloorRect.bottom
@@ -318,10 +314,6 @@ class Level:
             pass
         pass
 
-    #A method to destroy the magic.
-    def destroy_magic(self):
-        pass
-
     #A method to display the weapon selections.
     def display_selection(self,display_surf,left,top,has_switched,img=None):
         bg_rect=pygame.rect.Rect(left,top,ITEM_BOX_SIZE,ITEM_BOX_SIZE)
@@ -387,7 +379,7 @@ class Level:
         if(self.player.health<=0):
             return 10
         self.player.draw(display_surf)
-        self.ui.display(display_surf,self.player)
+        self.player.display_ui(display_surf)
         # debug_print(self.player.status,(10,10),display_surf)
 
         #Displaying the weapon selection.

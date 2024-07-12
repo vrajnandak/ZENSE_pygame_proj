@@ -36,7 +36,7 @@ class ParticleEffect(pygame.sprite.Sprite):
         super().__init__(groups)
         self.pos=pos
         self.frame_index=0.1
-        self.animation_speed=0.2
+        self.animation_speed=0.6
         self.frames=animation_frames
         # self.image=self.image.get_rect[self.frame_index]
         self.image=self.frames[int(self.frame_index)]

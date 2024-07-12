@@ -36,8 +36,7 @@ class Player(pygame.sprite.Sprite):
         self.magic_cooldown=500
         self.magicing=False
         self.magic_time=None
-        self.createMagic=None
-        self.destroyMagic=None
+        self.createMagic=None       #Magic is automatically destroyed.
 
         #Weapon variables
         self.weapon_index=0
@@ -83,9 +82,8 @@ class Player(pygame.sprite.Sprite):
         self.destroyAttack=destroyAttack
 
     #A method to initialize the function to create the magic and destroy it.
-    def getMagicFunctions(self,createMagic,destroyMagic):
+    def getMagicFunctions(self,createMagic):
         self.createMagic=createMagic
-        self.destroyMagic=destroyMagic
         pass
 
     #A method to return the total attack by combining the base attack of player(basically fist power) and the weapon power.

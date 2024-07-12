@@ -30,7 +30,6 @@ class MagicPlayer:
                 direction_vector.y=-1
             elif direction=='down':
                 direction_vector.y=1 
-            print('player direction: ',direction)
 
             for i in range(1,6):
                 if direction_vector.x:

@@ -52,11 +52,6 @@ class Enemy(pygame.sprite.Sprite):
         self.hit_time=None
         self.can_get_hit=True
         self.cant_get_hit_duration=700          #Putting this to be more than that of player.attack_cooldown so that the enemy gets hit only once everytime the player attacks.
-        
-        #A separate timer for applying the resistance and change the direction of the enemy sprite.
-        # self.apply_resistance_duration=700
-        # self.can_apply_resistance=True
-        # self.resistance_applied_time=pygame.time.get_ticks()        #Simply obtained.
 
     def load_graphics(self):
         self.graphics={
@@ -157,13 +152,6 @@ class Enemy(pygame.sprite.Sprite):
             if curr_time-self.hit_time >=self.cant_get_hit_duration:
                 self.can_get_hit=True
 
-        #Applying cooldown for the push back effect of changing the direction.
-        # # if not self.can_apply_resistance:
-        # if self.can_apply_resistance:
-        #     if curr_time-self.resistance_applied_time >=self.apply_resistance_duration:
-        #         self.can_apply_resistance=False     #Set to true only when the weapon touches the enemy.
-        #         print('has become false')
-
     #A method to animate the enemy sprite.
     def animate(self):
         #Updating the animation.
@@ -183,44 +171,14 @@ class Enemy(pygame.sprite.Sprite):
         else:
             self.img.set_alpha(255)
 
-    # #A method to apply the push back effect on the player
-    # def apply_resistance(self,level):
-    #     if(self.status=='attack' and level.curr_attack!=None):
-    #         #If weapon collide with enemy, then set to true.
-    #         # if (pygame.sprite.collide_mask(self.mask,level.curr_attack.mask)):
-    #         if(self.mask.overlap(level.curr_attack.mask,(level.curr_attack.rect.left-self.rect.left,level.curr_attack.rect.top-self.rect.top))) and (pygame.time.get_ticks()-self.resistance_applied_time >=self.apply_resistance_duration):
-    #         # entity.mask.overlap(sprite.mask,(sprite.rect.left-entity.rect.left, sprite.rect.top-entity.rect.top))
-    #             self.can_apply_resistance=True
-    #             self.resistance_applied_time=pygame.time.get_ticks()
-    #             # print('there is collision')
-    #         if self.can_apply_resistance:
-    #             print(self.can_apply_resistance)
-    #             self.direction*= -self.resistance
-                
-    #     pass
-
     def update(self,display_surf,offset,level):
 
         #Moving the enemy sprite if player within notice range.
         if(pygame.math.Vector2(level.player.rect.left-self.rect.left, level.player.rect.top-self.rect.top).magnitude()<=self.notice_radius):
             self.update_direction(level.player,level)
-            # print('before resistance')
-            # self.apply_resistance(level)
             self.status='move'
-            # print('after resistance')
-            #Applying the push back effect on the enemy when the enemy get's hit.
-            # if(not self.can_get_hit):
-            #     if(self.can_apply_resistance):
-            #         self.can_apply_resistance=False
-            #         self.resistance_applied_time=pygame.time.get_ticks()
-            #         self.direction*=-self.resistance
-            # elif(self.can_apply_resistance):
-            #     self.can_apply_resistance=False
-            #     self.resistance_applied_time=pygame.time.get_ticks()
-            #     self.direction*=-self.resistance
 
-
-            if not self.can_get_hit: #and (not(self.can_get_hit))):
+            if not self.can_get_hit:
                 self.can_apply_resistance=False
                 self.resistance_applied_time=pygame.time.get_ticks()
                 self.direction*=-self.resistance
@@ -250,11 +208,10 @@ class Enemy(pygame.sprite.Sprite):
         self.apply_cooldowns()
 
         self.draw(display_surf,offset)
-        # debug_print(self.status,self.rect.center-offset,display_surf)
         pass
 
     def draw(self,display_surf,offset):
         newpos=self.rect.topleft-offset
         display_surf.blit(self.img,newpos)
-        debug_print(self.status,self.rect.topleft-offset,display_surf)
+        # debug_print(self.status,self.rect.topleft-offset,display_surf)
         pass

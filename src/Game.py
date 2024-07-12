@@ -21,6 +21,9 @@ class Game:
         self.curr_level=Level(STARTING_LEVEL_ID,self.player)
         self.levels.append(self.curr_level)
 
+        self.esc_time_duration=100
+        self.previous_esc_keydown=pygame.time.get_ticks()
+
     def changeMap(self):
         #Have to Transport the player
             #If the level to teleport to doesn't exist in the self.levels.
@@ -34,7 +37,7 @@ class Game:
                 #put 'continue'
         pass
 
-    def run(self):
+    def run(self,previous_esc_time):
         running=True
         while running:
             #The basic event loop to run the game.
@@ -49,7 +52,7 @@ class Game:
             
             #Getting the mouse Keys
             keys=pygame.key.get_pressed()
-            if(keys[pygame.K_ESCAPE]):          #Pause screen has to be visible if the user hits 'esc'
+            if(keys[pygame.K_ESCAPE] and pygame.time.get_ticks()-previous_esc_time>=500):          #Pause screen has to be visible if the user hits 'esc'
                 return "Pause"
             
             #Running the Level logic.

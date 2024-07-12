@@ -61,6 +61,7 @@ class MyGame:
         self.curr_buttons=self.StartButtons
         self.screen_shade_color=SCREEN_BG_SHAD_POS
         self.action=None                 #Can be ["New Game", "Saved Games","Quit","Settings","Resume","Save","Back To Home","Restart", "Yes","No"]
+        self.previous_esc_applied=pygame.time.get_ticks()
         self.startGame()
 
     def chooseWhichButtons(self):
@@ -92,6 +93,12 @@ class MyGame:
                 if event.type==pygame.QUIT:
                     self.quit_game=1
                     running=False
+                if(event.type==pygame.KEYDOWN):
+                    if event.key==pygame.K_ESCAPE and self.curr_screen=="Pause":
+                        self.previous_esc_applied=pygame.time.get_ticks()
+                        print('Returned resume')
+                        return "Resume"
+
                 if event.type==pygame.MOUSEBUTTONUP and event.button==1:        #To indicate a left release on mouse.
                     for button in buttons:
                         if(button.bottom_rect.collidepoint(pygame.mouse.get_pos())):
@@ -131,11 +138,12 @@ class MyGame:
 
             #Performing the Actions.
             if(self.action=="Resume"):
-                self.curr_screen=self.curr_Game.run()       #Returns either of ["Pause","Victory","Lose","Quit"]
+                # print('running the game')
+                self.curr_screen=self.curr_Game.run(self.previous_esc_applied)       #Returns either of ["Pause","Victory","Lose","Quit"]
             elif(self.action=="New Game"):
                 newGame=Game(self.clock)
                 self.curr_Game=newGame
-                self.curr_screen=self.curr_Game.run()
+                self.curr_screen=self.curr_Game.run(self.previous_esc_applied)
                 pass
             elif(self.action=="Saved Games"):
                 pass
