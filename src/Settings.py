@@ -29,8 +29,8 @@ WEAPON_INFO={
     # 'gun':{'cooldown': 200, 'damage': 30}
 }
 MAGIC_INFO={
-    'flame':{'strength':5,'cost':20},
-    'heal':{'strength':20,'cost':10}
+    'flame':{'strength':5,'cost':20, 'cooldown':100},
+    'heal':{'strength':20,'cost':10, 'cooldown':150}
 }
 ZOMBIE_ENEMIES_INFO={
     'zombie1':{'health':100,'exp':20,'damage':10, 'resistance': 4, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS},

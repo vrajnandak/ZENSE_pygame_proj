@@ -33,4 +33,5 @@ class Weapon(pygame.sprite.Sprite):
     def update(self,display_surf,offset):
         self.update_rect()
         # display_surf.blit(self.img,self.rect.topleft)
-        display_surf.blit(self.img,(self.rect.topleft-offset))
+        newpos=self.rect.topleft-offset
+        display_surf.blit(self.img,newpos)

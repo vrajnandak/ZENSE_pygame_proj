@@ -72,10 +72,6 @@ class Player(pygame.sprite.Sprite):
         self.exp_text_surf=UI_TEXT_FONT.render("EXP",True,'black')
         self.exp_text_surf_pos=(self.exp_bar_rect.centerx-self.exp_text_surf.get_width()//2,self.exp_bar_rect.centery-self.exp_text_surf.get_height()//2)
 
-        # self.EXP_surf=pygame.font.Font(None,30).render("EXP: ",True,'black')
-        # self.EXP_rect=pygame.rect.Rect(10,70,self.EXP_surf.get_width()+20,self.EXP_surf.get_height())
-        # self.exp_bar_rect=pygame.rect.Rect(self.EXP_rect.right,70,EXP_BAR_WIDTH,BAR_HEIGHT)
-
     #A method to initialize the function to create the weapon and destroy the weapon.
     def getAttackFunctions(self,createAttack,destroyAttack):
         self.createAttack=createAttack
@@ -85,6 +81,14 @@ class Player(pygame.sprite.Sprite):
     def getMagicFunctions(self,createMagic,destroyMagic):
         self.createMagic=createMagic
         self.destroyMagic=destroyMagic
+        pass
+
+    #A method to return the total attack by combining the base attack of player(basically fist power) and the weapon power.
+    def get_full_damage(self):
+        base_damage=self.stats['attack']
+        weapon_damage=WEAPON_INFO[self.weapon_name]['damage']
+        print('returning ', base_damage+weapon_damage)
+        return base_damage+weapon_damage
         pass
 
     #A method to load the graphics of the players.
@@ -256,7 +260,7 @@ class Player(pygame.sprite.Sprite):
 
         #Applying cooldown for attack
         if self.attacking:
-            if current_time-self.attack_time >=self.attack_cooldown:
+            if current_time-self.attack_time >=self.attack_cooldown + WEAPON_INFO[self.weapon_name]['cooldown']:
                 self.attacking=False
                 self.destroyAttack()
 
@@ -272,7 +276,7 @@ class Player(pygame.sprite.Sprite):
 
         #Applying cooldown for switching magic.
         if not self.can_switch_magic:
-            if current_time-self.magic_switch_time>=self.magic_switch_cooldown:
+            if current_time-self.magic_switch_time>=self.magic_switch_cooldown + MAGIC_INFO[self.magic_name]['cooldown']:
                 self.can_switch_magic=True
     
     #A method to check collisions

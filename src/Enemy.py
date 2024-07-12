@@ -15,9 +15,9 @@ class Enemy(pygame.sprite.Sprite):
         self.status='idle'
         self.frame_index=0.1
         self.animation_speed=0.5
-        # self.img=pygame.Surface((BASE_SIZE,BASE_SIZE))
-        # self.img.fill('red')
-        self.img=self.graphics[self.status][int(self.frame_index)]
+        self.img=pygame.Surface((BASE_SIZE,BASE_SIZE))
+        self.img.fill('red')
+        # self.img=self.graphics[self.status][int(self.frame_index)]
         self.mask=pygame.mask.from_surface(self.img)        #This will be used by the player for collision detection.
         self.rect=self.img.get_rect(topleft=self.pos)
 
@@ -37,12 +37,18 @@ class Enemy(pygame.sprite.Sprite):
         self.SUBMATRIX_HALF_SIZE=int(self.SUBMATRIX_SIZE//2)
 
         #Enemy UI.
-        self.health=ENEMY_HEALTH
+        self.health=ZOMBIE_ENEMIES_INFO[zombieType]['health']
+        self.resistance=ZOMBIE_ENEMIES_INFO[zombieType]['resistance']
 
         #Player interaction
         self.attack_cooldown=200
         self.can_attack=True
         self.attack_time=None
+
+        #Timer variables for enemy getting hit only once when player is in attack mode.
+        self.hit_time=None
+        self.can_get_hit=True
+        self.cant_get_hit_duration=700          #Putting this to be more than that of player.attack_cooldown so that the enemy gets hit only once everytime the player attacks.
 
     def load_graphics(self):
         self.graphics={
@@ -96,6 +102,7 @@ class Enemy(pygame.sprite.Sprite):
             #Prioritizing the horizontal movement of the sprite over the vertical movement. Sprite can move either in horizontal or vertical only
             self.direction.x=next_cell_col-self.rect.x
             self.direction.y=next_cell_row-self.rect.y
+
         pass
 
     def handle_collisions(self,direction,level):
@@ -110,6 +117,33 @@ class Enemy(pygame.sprite.Sprite):
         else:
             return 0
         pass
+
+    def reduce_health(self,player,is_weapon):
+        if(self.can_get_hit):
+            self.can_get_hit=False
+            self.hit_time=pygame.time.get_ticks()
+            if(is_weapon):
+                self.health-=player.get_full_damage()
+            else:
+                #Deal magic damage.
+                pass
+            self.chk_death()
+        pass
+    def chk_death(self):
+        if self.health<=0:
+            self.kill()
+
+    #A method to apply the cooldowns on the enemy
+    def apply_cooldowns(self):
+        #If it has been a while since the last animation has been played, then the enemy can attack.
+        if not self.can_attack:
+            if pygame.time.get_ticks()-self.attack_time >=self.attack_cooldown:
+                self.can_attack=True
+
+        #If it has been a while since the last time the enemy got hit, then we can update the attribute to be able to get hit.
+        if not self.can_get_hit:
+            if pygame.time.get_ticks()-self.hit_time >=self.cant_get_hit_duration:
+                self.can_get_hit=True
 
     def update(self,display_surf,offset,level):
 
@@ -140,13 +174,10 @@ class Enemy(pygame.sprite.Sprite):
             if self.status=='attack':           #We want to complete the animation of attack. So we wait until the last frame has been played for the attack.
                 self.can_attack=False
             self.frame_index=0
-        self.img=self.graphics[self.status][int(self.frame_index)]
+        # self.img=self.graphics[self.status][int(self.frame_index)]
         self.rect=self.img.get_rect(center=self.rect.center)
 
-        #If it has been a while since the last animation has been played, then the enemy can attack.
-        if not self.can_attack:
-            if pygame.time.get_ticks()-self.attack_time >=self.attack_cooldown:
-                self.can_attack=True
+        self.apply_cooldowns()
 
         self.draw(display_surf,offset)
         debug_print(self.status,self.rect.center-offset,display_surf)

@@ -19,6 +19,7 @@ class Level:
         self.obstacle_sprites=pygame.sprite.Group()
         self.transport_sprites=pygame.sprite.Group()
         self.hidden_sprites=pygame.sprite.Group()           #A sprite group for the hidden passages which appear on the completion of a task.
+        self.attackable_sprites=pygame.sprite.Group()       #A sprite group for the leafs and bushes to disappear when the player strikes them.
         self.curr_attack=None                               #The current weapon being used by player to attack.
         self.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,list(WEAPON_INFO.keys())[0],'full.png'))
         self.curr_selected_magic=pygame.image.load(os.path.join(PLAYER_MAGIC_DIRECTORY_PATH,f'{list(MAGIC_INFO.keys())[0]}.png'))
@@ -201,7 +202,6 @@ class Level:
     #A method to get the offset for the box-camera using the box_rect and the player position.
     def get_box_based_offset(self):
         if(self.player.rect.left < self.box_rect.left):
-            print('one')
             self.box_rect.left=self.player.rect.left
             pass
         if(self.player.rect.right > self.box_rect.right):
@@ -300,7 +300,7 @@ class Level:
 
     #A method to create the magic.
     def create_magic(self,style,strength,cost):
-        print(style,strength,cost)
+        # print(style,strength,cost)
         pass
 
     #A method to destroy the magic.
@@ -318,6 +318,16 @@ class Level:
 
         if(img):
             display_surf.blit(img,(bg_rect.centerx-img.get_width()//2,bg_rect.centery-img.get_height()//2))
+        pass
+
+    #A method to check if the player has attacked any sprite by checking the weapon sprite collision with the sprite groups.
+    def player_attack(self):
+        if self.curr_attack:
+            collision_sprites=pygame.sprite.spritecollide(self.curr_attack, self.enemy_sprites, False)
+            if collision_sprites:
+                for target_sprite in collision_sprites:
+                    target_sprite.reduce_health(self.player,is_weapon=1)
+                    # target_sprite.kill()
         pass
 
     def run(self,keys):
@@ -338,9 +348,10 @@ class Level:
         self.visible_sprites.update(display_surf,self.offset)
         self.transport_sprites.update(display_surf,self.offset)
         self.enemy_sprites.update(display_surf,self.offset,self)
+        self.player_attack()
         self.player.draw(display_surf)
-        debug_print(self.player.status,(10,10),display_surf)
         self.ui.display(display_surf,self.player)
+        # debug_print(self.player.status,(10,10),display_surf)
 
         #Displaying the weapon selection.
         self.display_selection(display_surf,10,SCREEN_HEIGHT-ITEM_BOX_SIZE,not self.player.can_switch_weapon,self.curr_selected_weapon)
@@ -350,7 +361,7 @@ class Level:
         
 
         #Blitting the detection tiles.
-        # self.draw_map_detection_tiles(display_surf)
+        self.draw_map_detection_tiles(display_surf)
         return 0
     
     def draw_map_detection_tiles(self,display_surf):
