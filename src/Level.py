@@ -11,11 +11,13 @@ from Particles import Animations
 from PlayerMagic import *
 
 class Level:
-    def __init__(self,level_id,player):
+    def __init__(self,level_id,player,settings):
         self.level_id=level_id
+        self.GameSettings=settings
 
         #Sprite groups of the level.
         self.enemy_sprites=pygame.sprite.Group()
+        self.enemy_counter=0
         self.visible_sprites=pygame.sprite.Group()
         self.obstacle_sprites=pygame.sprite.Group()
         self.transport_sprites=pygame.sprite.Group()
@@ -23,8 +25,8 @@ class Level:
         self.hidden_sprites=pygame.sprite.Group()           #A sprite group for the hidden passages which appear on the completion of a task.
 
         self.curr_attack=None                               #The current weapon being used by player to attack.
-        self.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,list(WEAPON_INFO.keys())[0],'full.png'))
-        self.curr_selected_magic=pygame.image.load(os.path.join(PLAYER_MAGIC_DIRECTORY_PATH,f'{list(MAGIC_INFO.keys())[0]}.png'))
+        self.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,list(self.GameSettings.WEAPON_INFO.keys())[0],'full.png'))
+        self.curr_selected_magic=pygame.image.load(os.path.join(PLAYER_MAGIC_DIRECTORY_PATH,f'{list(self.GameSettings.MAGIC_INFO.keys())[0]}.png'))
 
         #Player of the level.
         self.player=player
@@ -142,18 +144,23 @@ class Level:
                             
                             elif(val==100 or val==1002):
                                 Enemy(img_pos,'zombie1',[self.enemy_sprites])
+                                self.enemy_counter+=1
                                 pass
                             elif(val==101):
                                 Enemy(img_pos,'zombie2',[self.enemy_sprites])
+                                self.enemy_counter+=1
                                 pass
                             elif(val==102):
                                 Enemy(img_pos,'zombie3',[self.enemy_sprites])
+                                self.enemy_counter+=1
                                 pass
                             elif(val==103):
                                 Enemy(img_pos,'zombie4',[self.enemy_sprites])
+                                self.enemy_counter+=1
                                 pass
                             elif(val==104):
                                 Enemy(img_pos,'zombieBoss',[self.enemy_sprites])
+                                self.enemy_counter+=1
                                 pass
                             elif(val==500):             #A dummy val to ensure that the self.level_tiles are made '0'.
                                 pass
@@ -223,43 +230,43 @@ class Level:
     #A method to add the offset accumulated by keyboard keys to the final offset used for blitting sprites.
     def get_keyboard_based_offset(self,keys):
         # if(keys[pygame.K_i]):
-        if(keys[pygame.K_i] and ((self.offset.y + (self.keyboard_offset_counter.y-1)*KEYBOARD_CAMERA_SPEED)>0)):
+        if(keys[pygame.K_i] and ((self.offset.y + (self.keyboard_offset_counter.y-1)*self.GameSettings.KEYBOARD_CAMERA_SPEED)>0)):
         # if(keys[pygame.K_i] and ((self.offset.y + (self.mouse_offset_counter.y*MOUSE_CAMERA_SPEED) + (self.keyboard_offset_counter.y-1)*KEYBOARD_CAMERA_SPEED)>0)):
             self.keyboard_offset_counter.y-=1
             pass
         # if(keys[pygame.K_j]):
-        if(keys[pygame.K_j] and ((self.offset.x + (self.keyboard_offset_counter.x-1)*KEYBOARD_CAMERA_SPEED)>0)):
+        if(keys[pygame.K_j] and ((self.offset.x + (self.keyboard_offset_counter.x-1)*self.GameSettings.KEYBOARD_CAMERA_SPEED)>0)):
         # if(keys[pygame.K_j] and ((self.offset.x + (self.mouse_offset_counter.x*MOUSE_CAMERA_SPEED) + (self.keyboard_offset_counter.x-1)*KEYBOARD_CAMERA_SPEED)>0)):
             self.keyboard_offset_counter.x-=1
             pass
         # if(keys[pygame.K_k]):
-        if(keys[pygame.K_k] and ((self.offset.y + (self.keyboard_offset_counter.y+1)*KEYBOARD_CAMERA_SPEED) < self.UPPER_YOFFSET_LIM)):
+        if(keys[pygame.K_k] and ((self.offset.y + (self.keyboard_offset_counter.y+1)*self.GameSettings.KEYBOARD_CAMERA_SPEED) < self.UPPER_YOFFSET_LIM)):
         # if(keys[pygame.K_k] and ((self.offset.y + (self.mouse_offset_counter.y*MOUSE_CAMERA_SPEED) + (self.keyboard_offset_counter.y+1)*KEYBOARD_CAMERA_SPEED) < self.UPPER_YOFFSET_LIM)):
             self.keyboard_offset_counter.y+=1
             pass
         # if(keys[pygame.K_l]):
-        if(keys[pygame.K_l] and ((self.offset.x + (self.keyboard_offset_counter.x+1)*KEYBOARD_CAMERA_SPEED) < self.UPPER_XOFFSET_LIM)):
+        if(keys[pygame.K_l] and ((self.offset.x + (self.keyboard_offset_counter.x+1)*self.GameSettings.KEYBOARD_CAMERA_SPEED) < self.UPPER_XOFFSET_LIM)):
         # if(keys[pygame.K_l] and ((self.offset.x + (self.mouse_offset_counter.x*MOUSE_CAMERA_SPEED) + (self.keyboard_offset_counter.x+1)*KEYBOARD_CAMERA_SPEED) < self.UPPER_XOFFSET_LIM)):
             self.keyboard_offset_counter.x+=1
             pass
         
-        self.offset=self.offset+self.keyboard_offset_counter*KEYBOARD_CAMERA_SPEED
+        self.offset=self.offset+self.keyboard_offset_counter*self.GameSettings.KEYBOARD_CAMERA_SPEED
 
     #A method to add the offset accumulated by mouse position to the final offset used for blitting sprites.
     def get_mouse_based_offset(self):
         mouse_pos=pygame.math.Vector2(pygame.mouse.get_pos())
-        if(mouse_pos.x<=self.MOUSE_LEFT_LIMIT and (self.offset.x+(self.mouse_offset_counter.x-1)*MOUSE_CAMERA_SPEED)>0):
+        if(mouse_pos.x<=self.MOUSE_LEFT_LIMIT and (self.offset.x+(self.mouse_offset_counter.x-1)*self.GameSettings.MOUSE_CAMERA_SPEED)>0):
             self.mouse_offset_counter.x-=1
-        elif(mouse_pos.x>=self.MOUSE_RIGHT_LIMIT and (self.offset.x+(self.mouse_offset_counter.x-1)*MOUSE_CAMERA_SPEED)<self.UPPER_XOFFSET_LIM):
+        elif(mouse_pos.x>=self.MOUSE_RIGHT_LIMIT and (self.offset.x+(self.mouse_offset_counter.x-1)*self.GameSettings.MOUSE_CAMERA_SPEED)<self.UPPER_XOFFSET_LIM):
             self.mouse_offset_counter.x+=1
-        if(mouse_pos.y<=self.MOUSE_TOP_LIMIT and (self.offset.y+(self.mouse_offset_counter.y-1)*MOUSE_CAMERA_SPEED)>0):
+        if(mouse_pos.y<=self.MOUSE_TOP_LIMIT and (self.offset.y+(self.mouse_offset_counter.y-1)*self.GameSettings.MOUSE_CAMERA_SPEED)>0):
             self.mouse_offset_counter.y-=1
-        elif(mouse_pos.y>=self.MOUSE_BOTTOM_LIMIT and (self.offset.y+(self.mouse_offset_counter.y+1)*MOUSE_CAMERA_SPEED)<self.UPPER_YOFFSET_LIM):
+        elif(mouse_pos.y>=self.MOUSE_BOTTOM_LIMIT and (self.offset.y+(self.mouse_offset_counter.y+1)*self.GameSettings.MOUSE_CAMERA_SPEED)<self.UPPER_YOFFSET_LIM):
             self.mouse_offset_counter.y+=1
         #Can uncomment the below line but for best effects, it's better if you can set the values of self.MOUSE_LEFT_LIMIT and self.MOUSE_TOP_LIMIT to '0' and the values of self.MOUSE_RIGHT_LIMIT and self.MOUSE_BOTTOM_LIMIT so that the value subtracted is 0.
         # pygame.mouse.set_pos(min(max(self.MOUSE_LEFT_LIMIT,mouse_pos.x),self.MOUSE_RIGHT_LIMIT),min(max(self.MOUSE_TOP_LIMIT,mouse_pos.y),self.MOUSE_BOTTOM_LIMIT))     #Setting the mouse on the borders if it tries to go outside the borders, else it is set in it's current place.
 
-        self.offset=self.offset+self.mouse_offset_counter*MOUSE_CAMERA_SPEED
+        self.offset=self.offset+self.mouse_offset_counter*self.GameSettings.MOUSE_CAMERA_SPEED
         pass
     
     def apply_offset_limits(self):
@@ -334,7 +341,9 @@ class Level:
             collision_sprites=pygame.sprite.spritecollide(self.curr_attack, self.enemy_sprites, False)
             if collision_sprites:
                 for target_sprite in collision_sprites:
-                    target_sprite.reduce_health(self.player,is_weapon=1)
+                    ret_val=target_sprite.reduce_health(self.player,is_weapon=1)
+                    if(ret_val==1):
+                        self.enemy_counter-=1
 
         if self.attack_sprites:
             #Checking collision with player magic.
@@ -343,7 +352,10 @@ class Level:
                 collision_sprites=pygame.sprite.spritecollide(sprite,self.enemy_sprites,False)
                 if collision_sprites:
                     for target_sprite in collision_sprites:
-                        target_sprite.reduce_health(self.player,0)
+                        ret_val=target_sprite.reduce_health(self.player,0)
+                        if(ret_val==1):
+                            self.enemy_counter-=1
+
         pass
     
     #A method to damage the player whenever an enemy sprite attacks the player.
@@ -357,6 +369,10 @@ class Level:
         pass
 
     def run(self,keys):
+        # if(self.enemy_sprites==None):
+        # if(self.enemy_counter==0):
+        #     print('all enemy sprites have been killed')
+            # return 5
         #Move the Player
         shd_transport=self.player.move(keys,self)
         if(shd_transport==1):
@@ -387,7 +403,7 @@ class Level:
 
         #Displaying the magic selection.
         self.display_selection(display_surf,10,SCREEN_HEIGHT-2*ITEM_BOX_SIZE - 20, not self.player.can_switch_magic, self.curr_selected_magic)
-        
+        # debug_print(self.enemy_counter,(600,500))
 
         #Blitting the detection tiles.
         # self.draw_map_detection_tiles(display_surf)

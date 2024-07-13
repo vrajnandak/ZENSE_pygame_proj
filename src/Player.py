@@ -2,8 +2,11 @@ import pygame
 from Settings import *
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self,pos):
+    def __init__(self,pos,settings):
         self.pos=pos
+
+        #Getting the game's settings.
+        self.GameSettings=settings
 
         #Loading player graphics.
         self.player_graphics_path=PLAYER_DIRECTORY_PATH
@@ -40,25 +43,31 @@ class Player(pygame.sprite.Sprite):
 
         #Weapon variables
         self.weapon_index=0
-        self.weapon_name=list(WEAPON_INFO.keys())[self.weapon_index]
+        self.weapon_name=list(self.GameSettings.WEAPON_INFO.keys())[self.weapon_index]
         self.weapon_switch_cooldown=200
         self.can_switch_weapon=True
         self.weapon_switch_time=None
 
         #Magic dynamic variables.
         self.magic_index=0
-        self.magic_name=list(MAGIC_INFO.keys())[self.magic_index]
+        self.magic_name=list(self.GameSettings.MAGIC_INFO.keys())[self.magic_index]
         self.magic_switch_cooldown=200
         self.can_switch_magic=True
         self.magic_switch_time=None
 
         #Player stats.
-        self.stats={'health':500,'energy':100,'attack':10,'magic':4,'speed':PLAYER_SPEED}        #These are the default or caps on player stats.
+        self.stats={'health':500,'energy':100,'attack':10,'magic':4,'speed':self.GameSettings.PLAYER_SPEED}        #These are the default or caps on player stats.
         self.health=self.stats['health']
         self.energy=self.stats['energy']
         self.exp=1
         self.exp_cap=100                        #This will be updated to a new cap whenever the self.exp >= self.exp_cap.
         self.speed=self.stats['speed']
+        self.player_level=0
+
+        #Player level up timers.
+        self.player_level_up_time=None
+        self.player_level_up_msg_duration=4000
+        self.player_level_up=False
 
         #Player UI
         self.health_bar_rect=pygame.rect.Rect(10,10,HEALTH_BAR_WIDTH,BAR_HEIGHT)
@@ -70,6 +79,8 @@ class Player(pygame.sprite.Sprite):
         self.exp_bar_rect=pygame.rect.Rect(10,70,EXP_BAR_WIDTH,BAR_HEIGHT)
         self.exp_text_surf=UI_TEXT_FONT.render("EXP",True,'black')
         self.exp_text_surf_pos=(self.exp_bar_rect.centerx-self.exp_text_surf.get_width()//2,self.exp_bar_rect.centery-self.exp_text_surf.get_height()//2)
+
+        self.player_level_text_surf_pos=(10,110)
 
         #Enemy interactions.
         self.can_get_hit=True
@@ -89,14 +100,14 @@ class Player(pygame.sprite.Sprite):
     #A method to return the total attack by combining the base attack of player(basically fist power) and the weapon power.
     def get_full_weapon_damage(self):
         base_damage=self.stats['attack']
-        weapon_damage=WEAPON_INFO[self.weapon_name]['damage']
+        weapon_damage=self.GameSettings.WEAPON_INFO[self.weapon_name]['damage']
         return base_damage+weapon_damage
         pass
     
     #A method to return the total attack by magic.
     def get_full_magic_damage(self):
         base_damage=self.stats['magic']
-        magic_damage=MAGIC_INFO[self.magic_name]['strength']
+        magic_damage=self.GameSettings.MAGIC_INFO[self.magic_name]['strength']
         return base_damage+magic_damage
 
     #A method to load the graphics of the players.
@@ -206,10 +217,10 @@ class Player(pygame.sprite.Sprite):
 
                 #Changing the weapon index to be within the range.
                 self.weapon_index+=(inc+dec)
-                self.weapon_index=self.weapon_index if self.weapon_index>=0 else len(WEAPON_INFO)-1
-                self.weapon_index=self.weapon_index if self.weapon_index<len(WEAPON_INFO) else 0
+                self.weapon_index=self.weapon_index if self.weapon_index>=0 else len(self.GameSettings.WEAPON_INFO)-1
+                self.weapon_index=self.weapon_index if self.weapon_index<len(self.GameSettings.WEAPON_INFO) else 0
 
-                self.weapon_name=list(WEAPON_INFO.keys())[self.weapon_index]
+                self.weapon_name=list(self.GameSettings.WEAPON_INFO.keys())[self.weapon_index]
                 level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon_name}','full.png'))
 
         #Switching to next Attack
@@ -237,8 +248,8 @@ class Player(pygame.sprite.Sprite):
             self.magicing=True
             self.magic_time=pygame.time.get_ticks()
             style=self.magic_name
-            strength=MAGIC_INFO[style]['strength'] + self.stats['magic']
-            cost=MAGIC_INFO[style]['cost']
+            strength=self.GameSettings.MAGIC_INFO[style]['strength'] + self.stats['magic']
+            cost=self.GameSettings.MAGIC_INFO[style]['cost']
             self.createMagic(style,strength,cost)
             pass
 
@@ -252,10 +263,10 @@ class Player(pygame.sprite.Sprite):
 
                 #Changing the weapon index to be within the range.
                 self.magic_index+=(inc+dec)
-                self.magic_index=self.magic_index if self.magic_index>=0 else len(MAGIC_INFO)-1
-                self.magic_index=self.magic_index if self.magic_index<len(MAGIC_INFO) else 0
+                self.magic_index=self.magic_index if self.magic_index>=0 else len(self.GameSettings.MAGIC_INFO)-1
+                self.magic_index=self.magic_index if self.magic_index<len(self.GameSettings.MAGIC_INFO) else 0
 
-                self.magic_name=list(MAGIC_INFO.keys())[self.magic_index]
+                self.magic_name=list(self.GameSettings.MAGIC_INFO.keys())[self.magic_index]
                 # img=pygame.Surface((BASE_SIZE,BASE_SIZE))
                 # img.fill('blue')
                 # if(self.magic_index!=0):
@@ -268,7 +279,7 @@ class Player(pygame.sprite.Sprite):
 
         #Applying cooldown for attack
         if self.attacking:
-            if current_time-self.attack_time >=self.attack_cooldown + WEAPON_INFO[self.weapon_name]['cooldown']:
+            if current_time-self.attack_time >=self.attack_cooldown + self.GameSettings.WEAPON_INFO[self.weapon_name]['cooldown']:
                 self.attacking=False
                 self.destroyAttack()
 
@@ -284,19 +295,23 @@ class Player(pygame.sprite.Sprite):
 
         #Applying cooldown for switching magic.
         if not self.can_switch_magic:
-            if current_time-self.magic_switch_time>=self.magic_switch_cooldown + MAGIC_INFO[self.magic_name]['cooldown']:
+            if current_time-self.magic_switch_time>=self.magic_switch_cooldown + self.GameSettings.MAGIC_INFO[self.magic_name]['cooldown']:
                 self.can_switch_magic=True
 
         #Applying cooldown for the player being able to get hit.
         if not self.can_get_hit:
-            if pygame.time.get_ticks()-self.hit_time >=self.cant_get_hit_duration:
+            if current_time-self.hit_time >=self.cant_get_hit_duration:
                 self.can_get_hit=True
     
+        #Apply cooldown for the player level up message being shown.
+        if self.player_level_up:
+            if current_time-self.player_level_up_time >=self.player_level_up_msg_duration:
+                self.player_level_up=False
     #A method to check collisions
     def handle_collisions(self,direction, level):
-        ret1=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.enemy_sprites,0)
-        ret2=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.obstacle_sprites,0)
-        ret_val=level.collision_detector.handle_spritegroup_collision(self,PLAYER_SPEED,direction,level.transport_sprites,1)
+        ret1=level.collision_detector.handle_spritegroup_collision(self,self.speed,direction,level.enemy_sprites,0)
+        ret2=level.collision_detector.handle_spritegroup_collision(self,self.speed,direction,level.obstacle_sprites,0)
+        ret_val=level.collision_detector.handle_spritegroup_collision(self,self.speed,direction,level.transport_sprites,1)
         if(ret_val==1):
             return ret_val
         elif(ret1==2 or ret2==2):
@@ -323,7 +338,7 @@ class Player(pygame.sprite.Sprite):
             self.img.set_alpha(255)     #This else statement is important because if the previously executed 'if' statement sets the alpha to '0', then we still have to change it to 255, else it would be transparent.
 
     #A method to recover some of the energy.
-    def recover_exp(self):
+    def recover_energy(self):
         self.energy=self.stats['energy'] if (self.energy>=self.stats['energy']) else (self.energy+0.01*self.stats['magic'])
 
     def move(self,keys,level):
@@ -340,19 +355,19 @@ class Player(pygame.sprite.Sprite):
             self.direction=self.direction.normalize()
 
             #Move player horizontally and then check collisions. If player has to transport, then return '1'
-            self.rect.x=self.rect.x+PLAYER_SPEED*self.direction.x
+            self.rect.x=self.rect.x+self.speed*self.direction.x
             shd_transport=self.handle_collisions("Horizontal",level)
             if(shd_transport==1):
-                self.rect.x=self.rect.x-PLAYER_SPEED*self.direction.x           #Undoing movement as we have to transport. Next time we load back into this map, no collision happens.
+                self.rect.x=self.rect.x-self.speed*self.direction.x           #Undoing movement as we have to transport. Next time we load back into this map, no collision happens.
                 return shd_transport
             #Move player Vertically and then check collisions. If player has to transport, then return '1'.
-            self.rect.y=self.rect.y+PLAYER_SPEED*self.direction.y
+            self.rect.y=self.rect.y+self.speed*self.direction.y
             shd_transport=self.handle_collisions("Vertical",level)
             if(shd_transport==1):
-                self.rect.y=self.rect.y-PLAYER_SPEED*self.direction.y
+                self.rect.y=self.rect.y-self.speed*self.direction.y
                 return shd_transport
             
-        self.recover_exp()
+        self.recover_energy()
 
         self.animate()
         pass
@@ -374,6 +389,18 @@ class Player(pygame.sprite.Sprite):
         #Displaying the text on the bar.
         display_surf.blit(text_surf,text_surf_pos)
 
+    #A method to show the player level up message for a short while.
+    def player_level_up_msg(self):
+        if self.player_level_up:
+            #Display the message here for the level up.
+            pass
+        pass
+    
+    #A method to update the exp cap as the player has levelled up.
+    def update_exp_cap(self):
+        self.exp_cap=int(self.exp_cap*INC_EXP_CAP)
+        pass
+
     #A method to display the HP,MP,EXP.
     def display_ui(self,display_surf):
         #Displaying the health bar.
@@ -382,6 +409,21 @@ class Player(pygame.sprite.Sprite):
         #Displaying the energy bar.
         self.draw_box_bars(self.energy_text_surf,self.energy_text_surf_pos,display_surf,ENERGY_BAR_BGCOLOR,ENERGY_BAR_COLOR,ENERGY_BAR_BORDER_COLOR,self.energy_bar_rect,self.energy,self.stats['energy'],ENERGY_BAR_WIDTH)
        
+        #Updating the exp cap if experience has reached the level threshold.
+        if(self.exp>=self.exp_cap):
+            # self.exp=1
+            self.player_level+=1
+            self.player_level_up_time=pygame.time.get_ticks()
+            self.player_level_up=True
+            self.update_exp_cap()
+
         #Displaying the exp bar.
         self.draw_box_bars(self.exp_text_surf,self.exp_text_surf_pos,display_surf,EXP_BAR_BGCOLOR,EXP_BAR_COLOR,EXP_BAR_BORDER_COLOR,self.exp_bar_rect,self.exp,self.exp_cap,EXP_BAR_WIDTH)
+        self.player_level_up_msg()
+
+        #Displaying the player level.
+        text_surf=UI_TEXT_FONT.render(f'Player Level: {self.player_level}',True,'black')
+        display_surf.blit(text_surf,(self.player_level_text_surf_pos))
+
+        # debug_print(self.exp_cap,(500,500))
         pass

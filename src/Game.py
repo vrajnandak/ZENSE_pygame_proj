@@ -9,16 +9,18 @@ class Game:
     def __init__(self,clock):
         self.clock=clock
 
+        self.GameSettings=Settings()
+
         #Get some credentials from the user, like the name, age etc.
         self.font=pygame.font.Font(None,32)
         information=getRequiredInfo(["Name","Age"],self.font)
 
         #The player for the Game.
-        self.player=Player(GAME_START_PLAYER_POS)
+        self.player=Player(GAME_START_PLAYER_POS,self.GameSettings)
 
         #All the levels unlocked till now
         self.levels=[]
-        self.curr_level=Level(STARTING_LEVEL_ID,self.player)
+        self.curr_level=Level(STARTING_LEVEL_ID,self.player,self.GameSettings)
         self.levels.append(self.curr_level)
 
         self.esc_time_duration=100
@@ -53,12 +55,13 @@ class Game:
             #Getting the mouse Keys
             keys=pygame.key.get_pressed()
             if(keys[pygame.K_ESCAPE] and pygame.time.get_ticks()-previous_esc_time>=500):          #Pause screen has to be visible if the user hits 'esc'
+                SaveGameScreen()
                 return "Pause"
             
             #Running the Level logic.
             ret_val=self.curr_level.run(keys)
             pygame.display.flip()
-            self.clock.tick(GAME_FPS)
+            self.clock.tick(self.GameSettings.GAME_FPS)
 
             if(ret_val==1):     #Code for changing the map.
                 self.changeMap()

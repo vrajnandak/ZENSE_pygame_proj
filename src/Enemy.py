@@ -42,6 +42,7 @@ class Enemy(pygame.sprite.Sprite):
         self.health=ZOMBIE_ENEMIES_INFO[zombieType]['health']
         self.attack_power=ZOMBIE_ENEMIES_INFO[zombieType]['damage']
         self.resistance=ZOMBIE_ENEMIES_INFO[zombieType]['resistance']
+        self.speed=ZOMBIE_ENEMIES_INFO[zombieType]['speed']
 
         #Player interaction
         self.attack_cooldown=200
@@ -109,10 +110,10 @@ class Enemy(pygame.sprite.Sprite):
         pass
 
     def handle_collisions(self,direction,level):
-        ret_val1=level.collision_detector.handle_spritegroup_collision(self,ENEMY_SPEED,direction,level.transport_sprites,1,collision_type="rect_collision")
-        ret_val2=level.collision_detector.handle_spritegroup_collision(self,ENEMY_SPEED,direction,level.obstacle_sprites,0,collision_type="rect_collision")
-        ret_val3=level.collision_detector.handle_spritegroup_collision(self,ENEMY_SPEED,direction,level.enemy_sprites,0,collision_type="rect_collision")
-        ret_val4=level.collision_detector.handle_spritegroup_collision(self,ENEMY_SPEED,direction,[level.player],0,collision_type="rect_collision")
+        ret_val1=level.collision_detector.handle_spritegroup_collision(self,self.speed,direction,level.transport_sprites,1,collision_type="rect_collision")
+        ret_val2=level.collision_detector.handle_spritegroup_collision(self,self.speed,direction,level.obstacle_sprites,0,collision_type="rect_collision")
+        ret_val3=level.collision_detector.handle_spritegroup_collision(self,self.speed,direction,level.enemy_sprites,0,collision_type="rect_collision")
+        ret_val4=level.collision_detector.handle_spritegroup_collision(self,self.speed,direction,[level.player],0,collision_type="rect_collision")
         if(ret_val3==1):
             return 1
         elif(ret_val1==2 or ret_val2==2 or ret_val3==2 or ret_val4==2):
@@ -131,13 +132,18 @@ class Enemy(pygame.sprite.Sprite):
                 self.health-=player.get_full_magic_damage()
                 #Deal magic damage.
                 pass
-            if(self.chk_death()):
+            if(self.chk_death()==1):
                 player.exp+=self.exp_gained_on_killing
+                return 1
+            
+        return 0
         pass
     def chk_death(self):
         if self.health<=0:
+
             self.kill()
             return 1
+        return 0
 
     #A method to apply the cooldowns on the enemy
     def apply_cooldowns(self):
@@ -186,9 +192,9 @@ class Enemy(pygame.sprite.Sprite):
 
             if(self.direction.magnitude()!=0):
                 self.direction=self.direction.normalize()
-            self.rect.x+=self.direction.x*ENEMY_SPEED
+            self.rect.x+=self.direction.x*self.speed
             ret_val=self.handle_collisions("Horizontal",level)
-            self.rect.y+=self.direction.y*ENEMY_SPEED
+            self.rect.y+=self.direction.y*self.speed
             ret_val=self.handle_collisions("Vertical",level)
             pass
         else:
