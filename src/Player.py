@@ -283,11 +283,31 @@ class Player(pygame.sprite.Sprite):
         if self.player_level_up:
             if current_time-self.player_level_up_time >=self.player_level_up_msg_duration:
                 self.player_level_up=False
+
+    #A method to check collision with loot drops.
+    def chk_collision_with_randomLoot(self,loot_sprites):
+        for loot in loot_sprites:
+            if self.rect.colliderect(loot.rect):
+                if loot.name=="Health_Potion":
+                    self.health+=HEALTH_POTION_VAL[loot.val]
+                    self.chk_health()
+                    pass
+                elif loot.name=="Exp_Potion":
+                    self.exp+=EXP_POTION_VAL[loot.val]
+                    self.chk_exp()
+                    pass
+                elif loot.name=="Energy_Potion":
+                    self.energy+=ENERGY_POTION_VAL[loot.val]
+                    self.chk_energy()
+                loot.kill()
+        pass
+
     #A method to check collisions
     def handle_collisions(self,direction, level):
         ret1=level.collision_detector.handle_spritegroup_collision(self,self.speed,direction,level.enemy_sprites,0)
         ret2=level.collision_detector.handle_spritegroup_collision(self,self.speed,direction,level.obstacle_sprites,0)
         ret_val=level.collision_detector.handle_spritegroup_collision(self,self.speed,direction,level.transport_sprites,1)
+        self.chk_collision_with_randomLoot(level.loot_drops)
         if(ret_val==1):
             return ret_val
         elif(ret1==2 or ret2==2):
@@ -377,21 +397,35 @@ class Player(pygame.sprite.Sprite):
         self.exp_cap=int(self.exp_cap*INC_EXP_CAP)
         pass
 
+    #A method to update the player's level if the player exp has reached the current exp threshold
+    def chk_exp(self):
+        if(self.exp>=self.exp_cap):
+            self.player_level+=1
+            self.player_level_up_time=pygame.time.get_ticks()
+            self.player_level_up=True
+            self.update_exp_cap()
+
+    #A method to cap the player's health.
+    def chk_health(self):
+        if(self.health>self.stats['health']):
+            self.health=self.stats['health']
+
+    #A method to cap the player's energy.
+    def chk_energy(self):
+        if(self.energy>self.stats['energy']):
+            self.energy=self.stats['energy']
+
     #A method to display the HP,MP,EXP.
     def display_ui(self,display_surf):
+        self.chk_exp()
+        self.chk_energy()
+        self.chk_health()
+
         #Displaying the health bar.
         self.draw_box_bars(self.health_text_surf,self.health_text_surf_pos,display_surf,HEALTH_BAR_BGCOLOR,HEALTH_BAR_COLOR,HEALTH_BAR_BORDER_COLOR,self.health_bar_rect,self.health,self.stats['health'],HEALTH_BAR_WIDTH)
 
         #Displaying the energy bar.
         self.draw_box_bars(self.energy_text_surf,self.energy_text_surf_pos,display_surf,ENERGY_BAR_BGCOLOR,ENERGY_BAR_COLOR,ENERGY_BAR_BORDER_COLOR,self.energy_bar_rect,self.energy,self.stats['energy'],ENERGY_BAR_WIDTH)
-       
-        #Updating the exp cap if experience has reached the level threshold.
-        if(self.exp>=self.exp_cap):
-            # self.exp=1
-            self.player_level+=1
-            self.player_level_up_time=pygame.time.get_ticks()
-            self.player_level_up=True
-            self.update_exp_cap()
 
         #Displaying the exp bar.
         self.draw_box_bars(self.exp_text_surf,self.exp_text_surf_pos,display_surf,EXP_BAR_BGCOLOR,EXP_BAR_COLOR,EXP_BAR_BORDER_COLOR,self.exp_bar_rect,self.exp,self.exp_cap,EXP_BAR_WIDTH)

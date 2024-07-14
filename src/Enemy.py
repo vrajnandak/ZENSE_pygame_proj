@@ -28,6 +28,8 @@ class Enemy(pygame.sprite.Sprite):
         #Movement Variables.
         self.direction=pygame.math.Vector2()
 
+        self.zombieType=zombieType
+
         #Getting the index of the zombie type from the dictionary in the Settings.py file.
         self.attack_radius=BASE_SIZE*(ZOMBIE_ENEMIES_INFO[zombieType]['attack_radius'])
         self.notice_radius=BASE_SIZE*(ZOMBIE_ENEMIES_INFO[zombieType]['notice_radius'])
@@ -39,6 +41,7 @@ class Enemy(pygame.sprite.Sprite):
         self.SUBMATRIX_HALF_SIZE=int(self.SUBMATRIX_SIZE//2)
 
         #Enemy UI.
+        self.max_health=ZOMBIE_ENEMIES_INFO[zombieType]['health']
         self.health=ZOMBIE_ENEMIES_INFO[zombieType]['health']
         self.attack_power=ZOMBIE_ENEMIES_INFO[zombieType]['damage']
         self.resistance=ZOMBIE_ENEMIES_INFO[zombieType]['resistance']
@@ -217,8 +220,23 @@ class Enemy(pygame.sprite.Sprite):
         self.draw(display_surf,offset)
         pass
 
+    def draw_health_bar(self,display_surf,offset):
+        newpos=self.rect.topleft-offset - pygame.math.Vector2(0,20)
+        if(self.rect.width!=BASE_SIZE):
+            newpos.x+=(self.rect.width//4)                  #This is to center the health bar position on top of the enemy sprite. As 'zombie1' has dimensions 64x64, we use this else it is not needed and can be commented.
+        health_rect=pygame.rect.Rect(newpos[0],newpos[1],BASE_SIZE,10)
+        pygame.draw.rect(display_surf,HEALTH_BAR_BGCOLOR,health_rect,0,border_radius=2)
+        pygame.draw.rect(display_surf,HEALTH_BAR_BORDER_COLOR, health_rect,1,border_radius=2)
+
+        curr_width=int((self.health*BASE_SIZE)//self.max_health)
+        present_health_rect=pygame.rect.Rect(newpos[0],newpos[1],curr_width,10)
+        pygame.draw.rect(display_surf,'red', present_health_rect,0,border_radius=2)
+
     def draw(self,display_surf,offset):
         newpos=self.rect.topleft-offset
         display_surf.blit(self.img,newpos)
+
+        if(self.health>0):
+            self.draw_health_bar(display_surf,offset)
         # debug_print(self.status,self.rect.topleft-offset,display_surf)
         pass

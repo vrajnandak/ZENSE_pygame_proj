@@ -9,11 +9,17 @@ from CollisionHelper import CollisionHelper
 from Weapon import Weapon
 from Particles import Animations
 from PlayerMagic import *
+from RandomLoot import RandomLoot
+from LEVEL_THINGS import LEVEL_INFO
 
 class Level:
-    def __init__(self,level_id,player,settings):
+    def __init__(self,level_id,player,settings,has_displayed_basic_game_info):
         self.level_id=level_id
         self.GameSettings=settings
+        self.has_displayed_basic_game_info=has_displayed_basic_game_info
+
+        #Getting the level information.
+        self.level_information=LEVEL_INFO(self.level_id,self.has_displayed_basic_game_info)
 
         #Sprite groups of the level.
         self.enemy_sprites=pygame.sprite.Group()
@@ -22,6 +28,7 @@ class Level:
         self.obstacle_sprites=pygame.sprite.Group()
         self.transport_sprites=pygame.sprite.Group()
         self.attack_sprites=pygame.sprite.Group()
+        self.loot_drops=pygame.sprite.Group()
         self.hidden_sprites=pygame.sprite.Group()           #A sprite group for the hidden passages which appear on the completion of a task.
         self.character_sprites=pygame.sprite.Group()
 
@@ -46,6 +53,11 @@ class Level:
         self.detection_tiles=[]             #Will be filled with in createMap() itself. Used for pathfinding.
         self.createDetectionTiles()
         self.finder=AStarFinder()           #We don't mention diagonal movement as the sprites may not necessarily be able to move diagonally due to obstacles.
+
+        self.random_loot_graphics={}
+        self.getRandomLootGraphics()
+        self.random_loot_graphics_names=list(self.random_loot_graphics.keys())
+        # print(self.random_loot_graphics)
 
         #Creating the map.
         self.createMap()
@@ -82,6 +94,15 @@ class Level:
         self.MOUSE_LEFT_LIMIT=30
         self.MOUSE_TOP_LIMIT=30
         self.MOUSE_BOTTOM_LIMIT=SCREEN_HEIGHT-30
+
+    #A method to get the graphics of the random loot potions.
+    def getRandomLootGraphics(self):
+        graphics_path=os.path.join(GRAPHICS_DIR_PATH,"RANDOM_LOOT")
+        files=os.listdir(graphics_path)
+        for image_name in files:
+            img=pygame.image.load(os.path.join(graphics_path,image_name))
+            self.random_loot_graphics[image_name.split('.png')[0]]=img
+        pass
 
     #A method to simply store the unique graphics for this level.
     def loadGraphics(self):
@@ -341,6 +362,19 @@ class Level:
             display_surf.blit(img,(bg_rect.centerx-img.get_width()//2,bg_rect.centery-img.get_height()//2))
         pass
 
+    #A method to randomly drop a loot drop whenever an enemy sprite dies.
+    def random_loot_drop(self,pos,zombieType):
+        n=randint(0,2*len(self.random_loot_graphics_names))
+        if(n<len(self.random_loot_graphics_names)):
+            loot_name=self.random_loot_graphics_names[n]
+            #Making the drop have stats based on the zombie Type killed.
+            if(zombieType[-1].isdigit()):
+                val=int(zombieType[-1])-1
+            else:
+                val=4
+            RandomLoot(pos,[self.visible_sprites,self.loot_drops],self.random_loot_graphics[loot_name],loot_name,val)
+        pass
+
     #A method to check if the player has attacked any sprite by checking the weapon sprite collision with the sprite groups.
     def player_attack(self):
         if self.curr_attack:
@@ -348,9 +382,11 @@ class Level:
             collision_sprites=pygame.sprite.spritecollide(self.curr_attack, self.enemy_sprites, False)
             if collision_sprites:
                 for target_sprite in collision_sprites:
+                    target_sprite_pos=target_sprite.rect.topleft
                     ret_val=target_sprite.reduce_health(self.player,is_weapon=1)
                     if(ret_val==1):
                         self.enemy_counter-=1
+                        self.random_loot_drop(target_sprite_pos,target_sprite.zombieType)
 
         if self.attack_sprites:
             #Checking collision with player magic.
@@ -359,9 +395,11 @@ class Level:
                 collision_sprites=pygame.sprite.spritecollide(sprite,self.enemy_sprites,False)
                 if collision_sprites:
                     for target_sprite in collision_sprites:
+                        target_sprite_pos=target_sprite.rect.topleft
                         ret_val=target_sprite.reduce_health(self.player,0)
                         if(ret_val==1):
                             self.enemy_counter-=1
+                            self.random_loot_drop(target_sprite_pos,target_sprite.zombieType)
 
         pass
     
@@ -410,6 +448,9 @@ class Level:
 
         #Displaying the magic selection.
         self.display_selection(display_surf,10,SCREEN_HEIGHT-2*ITEM_BOX_SIZE - 20, not self.player.can_switch_magic, self.curr_selected_magic)
+
+        #Displaying the level information if any.
+        self.level_information.update()
 
         # debug_print(self.GameSettings.PLAYER_SPEED,(300,300))
         # debug_print(f'weapon damage: {self.GameSettings.WEAPON_INFO[self.player.weapon_name]["damage"]}',(500,300))

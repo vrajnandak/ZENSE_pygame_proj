@@ -23,8 +23,9 @@ class Game:
         self.player=Player(GAME_START_PLAYER_POS,self.GameSettings)
 
         #All the levels unlocked till now
+        self.has_displayed_basic_game_info=False
         self.levels=[]
-        self.curr_level=Level(STARTING_LEVEL_ID,self.player,self.GameSettings)
+        self.curr_level=Level(STARTING_LEVEL_ID,self.player,self.GameSettings,self.has_displayed_basic_game_info)
         self.levels.append(self.curr_level)
 
         self.esc_time_duration=100
@@ -78,6 +79,8 @@ class Game:
             ret_val=self.curr_level.run(keys)
             pygame.display.flip()
             self.clock.tick(self.GameSettings.GAME_FPS)
+
+            self.has_displayed_basic_game_info=True
 
             if(ret_val==1):     #Code for changing the map.
                 self.changeMap()

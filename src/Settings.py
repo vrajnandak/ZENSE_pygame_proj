@@ -3,6 +3,7 @@ import os
 from csv import reader
 import sys
 from math import sin        #To toggle between 0 to 255 for the flicker animation when the enemy or player sprite gets hit.
+from random import randint
 
 pygame.init()
 pygame.font.init()
@@ -16,6 +17,11 @@ ENEMY_SPEED=5
 KEYBOARD_CAMERA_SPEED=20
 MOUSE_CAMERA_SPEED=20
 
+
+#Potion values
+HEALTH_POTION_VAL=[100,150,200,300,500]
+EXP_POTION_VAL=[200,300,400,600,1000]
+ENERGY_POTION_VAL=[20,30,40,50,100]
 
 #Others
 GAME_TITLE="Time Rift Rescue"
@@ -222,6 +228,30 @@ def SaveGameScreen(display_surf=None):
     screenshot.blit(display_surf,rect.topleft,area=rect)
     pygame.image.save(screenshot,os.path.join(GRAPHICS_DIR_PATH,"GameScreen.png"))
     pass
+
+
+#A function to display a message. The function splits the message into different lines if the message is long.
+def DISPLAY_MSG(message, message_box_left,message_box_top,message_box_width,message_box_height,font=pygame.font.Font(None,30)):
+    display_surf=pygame.display.get_surface()
+    pygame.draw.rect(display_surf,BG_COLOR,(message_box_left,message_box_top,message_box_width,message_box_height),0,border_radius=10)
+    pygame.draw.rect(display_surf,BG_BORDER_COLOR,(message_box_left,message_box_top,message_box_width,message_box_height),3,border_radius=10)
+    collection=[word.split(' ') for word in message.splitlines()]
+    space=font.size(' ')[0]
+    x=message_box_left+20
+    y=message_box_top+20
+    for lines in collection:
+        for words in lines:
+            word_surf=font.render(words,True,'white')
+            word_width, word_height=word_surf.get_size()
+            if x+word_width>=message_box_width:
+                x=message_box_left
+                y+=word_height+20
+            display_surf.blit(word_surf,(x,y))
+            x+=word_width+space
+        x=message_box_left+20
+        y+=word_height+20
+    pass
+
 
 # #Function to get a single sprite from the given spritesheet.
 # def getSpriteFromSpriteSheet(spritesheet_path,sprite_width,sprite_height,sprite_location_left,sprite_location_top,colorKey=None):

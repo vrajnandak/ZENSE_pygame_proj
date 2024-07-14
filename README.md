@@ -21,6 +21,12 @@ TO RUN THE GAME:
 1. Open the 'ZENSE_PROJECT_PYGAME' folder in VScode and not any other folder. This is because 'os.getcwd()' is used in 'Settings.py' file and all the paths will fail if this folder is not the working directory.
 
 
+INSTRUCTIONS:
+1. Start Screen should contain the concept and the goal of the game.
+2. When entering your credentials for creating a new game, provide a text box telling "Place the mouse on the text box and type the required credential".
+3. Show a small textbox for a while on the game screen showing the default controls.
+
+
 CONTROLS: 
 1. Player movement: [up-arrow, down-arrow, left-arrow, right-arrow] and [w,a,s,d].
 2. Camera movement: [hovering mouse towards end of screen] and [i(top),j(left),k(down),l(right)]. Holding [b] will use the Box-camera instead of the default camera movement(player-centered camera). [u] to reset the camera back to the player. The box-camera cannot be used alongside the keyboard and mouse camera (There is a bit of a problem with the player's movement when using the box-camera as well).
