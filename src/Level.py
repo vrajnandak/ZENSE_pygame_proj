@@ -148,20 +148,20 @@ class Level:
                                 self.enemy_counter+=1
                                 pass
                             elif(val==101):
-                                # Enemy(img_pos,'zombie2',[self.enemy_sprites])
-                                # self.enemy_counter+=1
+                                Enemy(img_pos,'zombie2',[self.enemy_sprites])
+                                self.enemy_counter+=1
                                 pass
                             elif(val==102):
-                                # Enemy(img_pos,'zombie3',[self.enemy_sprites])
-                                # self.enemy_counter+=1
+                                Enemy(img_pos,'zombie3',[self.enemy_sprites])
+                                self.enemy_counter+=1
                                 pass
                             elif(val==103):
-                                # Enemy(img_pos,'zombie4',[self.enemy_sprites])
-                                # self.enemy_counter+=1
+                                Enemy(img_pos,'zombie4',[self.enemy_sprites])
+                                self.enemy_counter+=1
                                 pass
                             elif(val==104):
-                                # Enemy(img_pos,'zombieBoss',[self.enemy_sprites])
-                                # self.enemy_counter+=1
+                                Enemy(img_pos,'zombieBoss',[self.enemy_sprites])
+                                self.enemy_counter+=1
                                 pass
                             elif(val==300):     #Scientist1
                                 pass

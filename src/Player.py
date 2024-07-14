@@ -56,7 +56,7 @@ class Player(pygame.sprite.Sprite):
         self.magic_switch_time=None
 
         #Player stats.
-        self.stats={'health':500,'energy':100,'attack':10,'magic':4,'speed':self.GameSettings.PLAYER_SPEED}        #These are the default or caps on player stats.
+        self.stats={'health':1000,'energy':100,'attack':10,'magic':4,'speed':self.GameSettings.PLAYER_SPEED}        #These are the default or caps on player stats.
         self.health=self.stats['health']
         self.energy=self.stats['energy']
         self.exp=1
@@ -223,26 +223,6 @@ class Player(pygame.sprite.Sprite):
                 self.weapon_name=list(self.GameSettings.WEAPON_INFO.keys())[self.weapon_index]
                 level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon_name}','full.png'))
 
-        #Switching to next Attack
-        # if(keys[pygame.K_n] and self.can_switch_weapon):
-        #     self.can_switch_weapon=False
-        #     self.weapon_switch_time=pygame.time.get_ticks()
-        #     self.weapon_index+=1
-        #     if(self.weapon_index>=len(WEAPON_INFO)):
-        #         self.weapon_index=0
-        #     self.weapon_name=list(WEAPON_INFO.keys())[self.weapon_index]
-        #     level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon_name}',f'full.png'))
-
-        # #Switching to previous Attack.
-        # if(keys[pygame.K_p] and self.can_switch_weapon):
-        #     self.can_switch_weapon=False
-        #     self.weapon_switch_time=pygame.time.get_ticks()
-        #     self.weapon_index-=1
-        #     if(self.weapon_index<0):
-        #         self.weapon_index=len(WEAPON_INFO)-1
-        #     self.weapon_name=list(WEAPON_INFO.keys())[self.weapon_index]
-        #     level.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,f'{self.weapon_name}',f'full.png'))
-
         #Using the Magic Moves
         if(keys[pygame.K_LCTRL] and not(self.attacking) and not(self.magicing)):
             self.magicing=True
@@ -267,10 +247,6 @@ class Player(pygame.sprite.Sprite):
                 self.magic_index=self.magic_index if self.magic_index<len(self.GameSettings.MAGIC_INFO) else 0
 
                 self.magic_name=list(self.GameSettings.MAGIC_INFO.keys())[self.magic_index]
-                # img=pygame.Surface((BASE_SIZE,BASE_SIZE))
-                # img.fill('blue')
-                # if(self.magic_index!=0):
-                #     img.fill('pink')
                 level.curr_selected_magic=pygame.image.load(os.path.join(PLAYER_MAGIC_DIRECTORY_PATH,f'{self.magic_name}.png'))
         pass
 

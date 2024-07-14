@@ -28,8 +28,8 @@ TELEPORTATION_MAP={             #A dictionary of key (<level_id>_<teleportation_
     '3': []
 }
 ENEMY_HEALTH=200
-ENEMY_NOTICE_RADIUS=12         #A radius 5 BASE_SIZE's
-ENEMY_ATTACK_RADIUS=2
+ENEMY_NOTICE_RADIUS=9         #A radius 5 BASE_SIZE's
+ENEMY_ATTACK_RADIUS=1
 INC_EXP_CAP=1.9                #A variable to indicate the factor by which the exp cap grows for the player.
     #A dictionary of key(weapon name) and value(a dictionary containing {cooldown_time, damage})
 WEAPON_INFO={           #The last 3 attributes are list containing the said values for cooldown, damage respectively in the list.
