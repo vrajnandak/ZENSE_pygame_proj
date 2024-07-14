@@ -14,6 +14,8 @@ class Game:
         #Get some credentials from the user, like the name, age etc.
         self.font=pygame.font.Font(None,32)
         information=getRequiredInfo(["Name","Age"],self.font)
+        self.GameSettings.my_Name=information[0]
+        self.GameSettings.my_age=information[1]
 
         #The player for the Game.
         self.player=Player(GAME_START_PLAYER_POS,self.GameSettings)

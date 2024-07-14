@@ -16,6 +16,11 @@ class MyGame:
         if(os.path.isfile(self.path_to_screen_img)):
             os.remove(self.path_to_screen_img)
 
+        #Game's clock
+        self.clock=pygame.time.Clock()
+
+        self.OriginalSettings=Settings()
+
         self.gui_font=pygame.font.Font(None, 30)
 
         # self.screen=pygame.display.set_mode(SCREEN_SIZE)
@@ -24,9 +29,6 @@ class MyGame:
         pygame.display.set_caption(GAME_TITLE)
 
         self.quit_game=0        #Is set inside the display screen method.
-
-        #Game's clock
-        self.clock=pygame.time.Clock()
 
         #Buttons. Every screen has a separate button due to having different sizes, positions in the screen. We could've otherwise re-used the same buttons.
             #Start Screen - "New Game","Saved Games", "Quit", "Settings"
@@ -47,8 +49,11 @@ class MyGame:
         # for button in self.PauseButtons:                #This is because we don't want the animation on pausing the game.
         #     button.animation_phase=None
             #Settings Screen -
-        self.settingsResume=None
-        self.SettingsButtons=[self.settingsResume]
+        self.settingsResume=Button((120,100),200,60,"Resume",self.gui_font,-100)
+        self.settingsBackToHome=Button((480,100),200,60,"Back To Home",self.gui_font,-100)
+        self.settingsResetSettings=Button((820,100),200,60,"Reset Settings", self.gui_font,-100)
+        # self.settingsChangeSpeeds=
+        self.SettingsButtons=[self.settingsResume,self.settingsBackToHome,self.settingsResetSettings]
             #Victory Screen -
         self.VictoryButtons=[]
             #Loss Screen -
@@ -136,6 +141,14 @@ class MyGame:
                 drawShadedBGScreen(self.screen,screen_bg_shade)
             for button in buttons:
                 button.draw(self.screen)
+            if(self.curr_screen=="Settings"):
+                if(self.curr_Game!=None):
+                    self.curr_Game.GameSettings.display_settings(self.screen,self.curr_Game,can_change_values=1)
+                else:
+                    # print('returning not possible')
+                    # self.OriginalSettings.display_settings(self.screen,self.Temporary_Game,can_change_values=0)
+                    return "NOT_POSSIBLE"
+
             pygame.display.flip()
         return ""
     
@@ -178,6 +191,8 @@ class MyGame:
                 break
                 pass
             elif(self.action=="Settings"):
+                self.curr_screen="Settings"
+                # print('current screen is now settings')
                 pass
             elif(self.action=="Save"):
                 # self.gameDataManager.saveTheGame(self.curr_Game)
@@ -196,8 +211,22 @@ class MyGame:
             elif(self.action=="No"):
                 pass
             elif(self.action=="NOT_POSSIBLE"):
+                for button in self.curr_buttons:
+                    button.animation_phase=None
+                # print('not possible')
                 #Show a msg on the bottom of the screen for a certain time saying "Please create a game or join one".
                 pass
+            elif(self.action=="Reset Settings"):
+                if self.curr_Game!=None:
+                    self.curr_Game.GameSettings.reset_settings()
+                else:
+                    pass
+                    # for button in self.curr_buttons:
+                    #     button.animation_phase=None
+            else:
+                # self.curr
+                pass
+
         pass
         pass
 

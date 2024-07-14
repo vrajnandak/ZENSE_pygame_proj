@@ -13,8 +13,8 @@ pygame.font.init()
 GAME_FPS=30
 PLAYER_SPEED=10
 ENEMY_SPEED=5
-KEYBOARD_CAMERA_SPEED=25
-MOUSE_CAMERA_SPEED=25
+KEYBOARD_CAMERA_SPEED=20
+MOUSE_CAMERA_SPEED=20
 
 
 #Others
@@ -32,16 +32,16 @@ ENEMY_NOTICE_RADIUS=12         #A radius 5 BASE_SIZE's
 ENEMY_ATTACK_RADIUS=2
 INC_EXP_CAP=1.9                #A variable to indicate the factor by which the exp cap grows for the player.
     #A dictionary of key(weapon name) and value(a dictionary containing {cooldown_time, damage})
-WEAPON_INFO={
-    # 'whip': {'cooldown':150, 'damage': 15},
-    'sword':{'cooldown': 200, 'damage': 30},
-    'lance':{'cooldown': 100, 'damage': 20},
-    'axe':{'cooldown': 150, 'damage': 40},
-    # 'gun':{'cooldown': 200, 'damage': 30}
+WEAPON_INFO={           #The last 3 attributes are list containing the said values for cooldown, damage respectively in the list.
+    # 'whip': {'cooldown':150, 'damage': 15, 'min_val': [100,10], 'max_val': [300,30], 'cost_to_upgrade_one_unit': [10,50]},     
+    'sword':{'cooldown': 200, 'damage': 30, 'min_val': [100,20], 'max_val': [300,50], 'cost_to_upgrade_one_unit': [10,40]},
+    'lance':{'cooldown': 100, 'damage': 20, 'min_val': [100,20], 'max_val': [200,40], 'cost_to_upgrade_one_unit': [10,40]},
+    'axe':{'cooldown': 150, 'damage': 40, 'min_val': [100,30], 'max_val': [200,70], 'cost_to_upgrade_one_unit': [10,40]},
+    # 'gun':{'cooldown': 200, 'damage': 30, 'min_val': [150,20], 'max_val': [300,40], 'cost_to_upgrade_one_unit': [10,50]}
 }
 MAGIC_INFO={
-    'flame':{'strength':15,'cost':30, 'cooldown':100},
-    'heal':{'strength':20,'cost':40, 'cooldown':150}
+    'flame':{'cooldown':100,'strength':15,'cost':30, 'min_val': [100,15,25], 'max_val': [250,50,40], 'cost_to_upgrade_one_unit': [20,50,70]},
+    'heal':{'cooldown':150,'strength':20,'cost':40, 'min_val': [100,15,25], 'max_val': [250,40,40], 'cost_to_upgrade_one_unit': [20,50,80]}
 }
 ZOMBIE_ENEMIES_INFO={
     'zombie1':{'health':100,'exp':20,'damage':10, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'claw', 'speed':ENEMY_SPEED},
@@ -54,7 +54,7 @@ ZOMBIE_ENEMIES_INFO={
 #Sizes
 BASE_SIZE=32
 SCREEN_WIDTH=1240
-SCREEN_HEIGHT=600
+SCREEN_HEIGHT=800
 SCREEN_WIDTH_HALF=SCREEN_WIDTH//2
 SCREEN_HEIGHT_HALF=SCREEN_HEIGHT//2
 SCREEN_SIZE=(SCREEN_WIDTH,SCREEN_HEIGHT)
@@ -111,6 +111,31 @@ ITEM_BOX_BORDER_COLOR=(0,0,0)
 ITEM_BOX_BORDER_COLOR_ACTIVE=(255,215,0)
 
 
+#COLORS for Changing the Settings.
+TEXT_COLOR='white'
+TEXT_COLOR_SELECTED='black'
+BG_COLOR=BUTTON_BACKGROUND_COLOR
+BG_COLOR_SELECTED='white'
+BG_BORDER_COLOR='black'
+BAR_COLOR='white'
+BAR_COLOR_SELECTED='black'
+
+
+#COST TO UPGRADE ANYTHING THAT IS UPGRADABLE.
+COST_TO_UPGRADE_SPEEDS={
+    "GAME_FPS":[30,60,10],
+    "PLAYER_SPEED":[8,20,50],
+    "ENEMY_SPEED":[4,15,20],
+    "KEYBOARD_CAMERA_SPEED":[15,35,40],
+    "MOUSE_CAMERA_SPEED":[15,35,40],
+    # "Weapon Cooldown":[],         #The other variable information(WEAPON_INFO, MAGIC_INFO) itself have these values.              
+    # "Wepon Damage":[],
+    # "Magic Strength":[],
+    # "Magic Cost":[],
+    # "Magic Cooldown":[]
+}
+
+
 
 #A method to continuously toggle between 0 and 255.
 def wave_value():
@@ -135,7 +160,7 @@ def display_textbox(display_surf,text_surf,text_rect,user_info,text_color,font):
     display_surf.blit(user_surf,(white_bgrect.centerx-user_surf.get_width()//2, white_bgrect.centery-user_surf.get_height()//2))
 
 #Function to get the required credentials from the user.
-def getRequiredInfo(textBoxNames,font,text_color='black'):
+def getRequiredInfo(textBoxNames,font,text_color='black',start_pos_y=50):
     display_surf=pygame.display.get_surface()
     user_strings=[]             #Holds the strings obtained from the user. This is what is returned by this function.
     textBoxSurfs=[]             #Hold the rendered surfaces for the textboxNames.
@@ -144,7 +169,7 @@ def getRequiredInfo(textBoxNames,font,text_color='black'):
     extra_box_space=20          #Used to maintain a bit more space in the textboxes.
     for index,textboxname in enumerate(textBoxNames):
         text_surf=font.render(textboxname,True,text_color)
-        text_box=pygame.rect.Rect(textBoxes_left,50+index*150, text_surf.get_width()+extra_box_space, text_surf.get_height()+extra_box_space)
+        text_box=pygame.rect.Rect(textBoxes_left,start_pos_y+index*100, text_surf.get_width()+extra_box_space, text_surf.get_height()+extra_box_space)
         textBoxSurfs.append(text_surf)
         textBoxCollideRects.append(text_box)
         user_strings.append("")
@@ -259,24 +284,31 @@ SUB_SURFACE.fill('green')
 #This class contains the variables that can be changed in the game.
 class Settings:
     def __init__(self):
+        self.my_Name=None
+        self.my_age=None
+
         #Speeds
-        self.GAME_FPS=30
-        self.PLAYER_SPEED=10
-        self.ENEMY_SPEED=5
-        self.KEYBOARD_CAMERA_SPEED=25
-        self.MOUSE_CAMERA_SPEED=25
+        self.GAME_FPS=GAME_FPS
+        self.PLAYER_SPEED=PLAYER_SPEED
+        self.ENEMY_SPEED=ENEMY_SPEED
+        self.KEYBOARD_CAMERA_SPEED=KEYBOARD_CAMERA_SPEED
+        self.MOUSE_CAMERA_SPEED=MOUSE_CAMERA_SPEED
+
+        # self.WEAPON_INFO=WEAPON_INFO
+        # self.MAGIC_INFO=MAGIC_INFO
+        # self.ZOMBIE_ENEMIES_INFO=ZOMBIE_ENEMIES_INFO
 
         #A dictionary of key(weapon name) and value(a dictionary containing {cooldown_time, damage})
-        self.WEAPON_INFO={
-            # 'whip': {'cooldown':150, 'damage': 15},
-            'sword':{'cooldown': 200, 'damage': 30},
-            'lance':{'cooldown': 100, 'damage': 20},
-            'axe':{'cooldown': 150, 'damage': 40},
-            # 'gun':{'cooldown': 200, 'damage': 30}
+        self.WEAPON_INFO={           #The last 3 attributes are list containing the said values for cooldown, damage respectively in the list.
+            # 'whip': {'cooldown':150, 'damage': 15, 'min_val': [100,10], 'max_val': [300,30], 'cost_to_upgrade_one_unit': [10,50]},     
+            'sword':{'cooldown': 200, 'damage': 30, 'min_val': [100,20], 'max_val': [300,50], 'cost_to_upgrade_one_unit': [10,40]},
+            'lance':{'cooldown': 100, 'damage': 20, 'min_val': [100,20], 'max_val': [200,40], 'cost_to_upgrade_one_unit': [10,40]},
+            'axe':{'cooldown': 150, 'damage': 40, 'min_val': [100,30], 'max_val': [200,70], 'cost_to_upgrade_one_unit': [10,40]},
+            # 'gun':{'cooldown': 200, 'damage': 30, 'min_val': [150,20], 'max_val': [300,40], 'cost_to_upgrade_one_unit': [10,50]}
         }
         self.MAGIC_INFO={
-            'flame':{'strength':15,'cost':30, 'cooldown':100},
-            'heal':{'strength':20,'cost':40, 'cooldown':150}
+            'flame':{'cooldown':100,'strength':15,'cost':30, 'min_val': [100,15,25], 'max_val': [250,50,40], 'cost_to_upgrade_one_unit': [20,50,70]},
+            'heal':{'cooldown':150,'strength':20,'cost':40, 'min_val': [100,15,25], 'max_val': [250,40,40], 'cost_to_upgrade_one_unit': [20,50,80]}
         }
         self.ZOMBIE_ENEMIES_INFO={
             'zombie1':{'health':100,'exp':20,'damage':10, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'claw', 'speed':ENEMY_SPEED},
@@ -285,4 +317,262 @@ class Settings:
             'zombie4':{'health':400,'exp':100,'damage':75, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+2, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'sparkle', 'speed':ENEMY_SPEED+2},
             'zombieBoss':{'health':1000,'exp':500,'damage':150, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+4, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'thunder', 'speed':ENEMY_SPEED+5}
         }
+
+
+        #Attributes you can change .
+        self.attributes_num=10         #To change the 5 speed attributes, WEAPON_INFO, MAGIC_INFO attributes.
+        self.attribute_names=[         #The list contains in order [min_val,max_val,cost_of_exp_for_increasing_by_one_unit]
+            "GAME_FPS",
+            "PLAYER_SPEED",
+            "ENEMY_SPEED",
+            "KEYBOARD_CAMERA_SPEED",
+            "MOUSE_CAMERA_SPEED",
+            "Weapon Cooldown",              
+            "Wepon Damage",
+            "Magic Cooldown",
+            "Magic Strength",
+            "Magic Cost",
+        ]
+
+        #Attributes for selecting the value you want to change.
+        self.selected_attr_index=0
+        self.selected_time=None
+        self.can_select_different=True
+        self.can_select_duration=400
+
+        #Value changer dimensions.
+        self.val_changer_height=int((3*SCREEN_HEIGHT)//9)
+        self.val_changer_width=int(SCREEN_WIDTH//6)
+        self.width_gap=35
+        self.height_gap=60
+        self.base_height=200
+
+        self.items=None
+        self.create_items()
+
+        self.info_font=pygame.font.Font(None,40)
+
+        pass
+
+    def reset_settings(self):
+        self.GAME_FPS=GAME_FPS
+        self.PLAYER_SPEED=PLAYER_SPEED
+        self.ENEMY_SPEED=ENEMY_SPEED
+        self.KEYBOARD_CAMERA_SPEED=KEYBOARD_CAMERA_SPEED
+        self.MOUSE_CAMERA_SPEED=MOUSE_CAMERA_SPEED
+
+        self.WEAPON_INFO={           #The last 3 attributes are list containing the said values for cooldown, damage respectively in the list.
+            # 'whip': {'cooldown':150, 'damage': 15, 'min_val': [100,10], 'max_val': [300,30], 'cost_to_upgrade_one_unit': [10,50]},     
+            'sword':{'cooldown': 200, 'damage': 30, 'min_val': [100,20], 'max_val': [300,50], 'cost_to_upgrade_one_unit': [10,40]},
+            'lance':{'cooldown': 100, 'damage': 20, 'min_val': [100,20], 'max_val': [200,40], 'cost_to_upgrade_one_unit': [10,40]},
+            'axe':{'cooldown': 150, 'damage': 40, 'min_val': [100,30], 'max_val': [200,70], 'cost_to_upgrade_one_unit': [10,40]},
+            # 'gun':{'cooldown': 200, 'damage': 30, 'min_val': [150,20], 'max_val': [300,40], 'cost_to_upgrade_one_unit': [10,50]}
+        }
+        self.MAGIC_INFO={
+            'flame':{'cooldown':100,'strength':15,'cost':30, 'min_val': [100,15,25], 'max_val': [250,50,40], 'cost_to_upgrade_one_unit': [20,50,70]},
+            'heal':{'cooldown':150,'strength':20,'cost':40, 'min_val': [100,15,25], 'max_val': [250,40,40], 'cost_to_upgrade_one_unit': [20,50,80]}
+        }
+        self.ZOMBIE_ENEMIES_INFO={
+            'zombie1':{'health':100,'exp':20,'damage':10, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'claw', 'speed':ENEMY_SPEED},
+            'zombie2':{'health':150,'exp':30,'damage':20, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'claw', 'speed':ENEMY_SPEED},
+            'zombie3':{'health':200,'exp':50,'damage':50, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+1, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'slash', 'speed':ENEMY_SPEED+1},
+            'zombie4':{'health':400,'exp':100,'damage':75, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+2, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'sparkle', 'speed':ENEMY_SPEED+2},
+            'zombieBoss':{'health':1000,'exp':500,'damage':150, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+4, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'thunder', 'speed':ENEMY_SPEED+5}
+        }
+        
+        for item in self.items:
+            item.has_been_selected=False
+        pass
+
+    def apply_cooldown(self):
+        if not self.can_select_different:
+            if pygame.time.get_ticks()-self.selected_time >= self.can_select_duration:
+                self.can_select_different=True
+
+    def select_the_item(self,can_change_values):
+        keys=pygame.key.get_pressed()
+        
+        if(self.can_select_different and can_change_values):
+            previous_index=self.selected_attr_index
+            if(keys[pygame.K_RIGHT]):
+                self.selected_attr_index+=1
+                self.can_select_different=False
+                self.selected_time=pygame.time.get_ticks()
+                pass
+            elif(keys[pygame.K_LEFT]):
+                self.selected_attr_index-=1
+                self.can_select_different=False
+                self.selected_time=pygame.time.get_ticks()
+                pass
+            elif(keys[pygame.K_UP]):
+                self.selected_attr_index-=5         #Assuming there are 5 value changers being displayed in one row.
+                self.can_select_different=False
+                self.selected_time=pygame.time.get_ticks()
+                pass
+            elif(keys[pygame.K_DOWN]):
+                self.selected_attr_index+=5         #Assuming there are 5 value changers being displayed in one row.
+                self.can_select_different=False
+                self.selected_time=pygame.time.get_ticks()
+                pass
+            
+            #Handling the cases when you go out of the index list and when you go to the end of a row/column.
+            if(self.selected_attr_index==5 and previous_index==4):
+                self.selected_attr_index=0
+            elif(self.selected_attr_index==-1 and previous_index==0):
+                self.selected_attr_index=4
+            elif(self.selected_attr_index==4 and previous_index==5):
+                self.selected_attr_index=9
+            elif(self.selected_attr_index==10 and previous_index==9):
+                self.selected_attr_index=5
+            
+            
+            if(self.selected_attr_index>=self.attributes_num):
+                self.selected_attr_index=self.selected_attr_index-self.attributes_num
+            if(self.selected_attr_index<0):
+                self.selected_attr_index=self.selected_attr_index+self.attributes_num
+            debug_print(self.selected_attr_index,(700,300))
+        pass
+
+    #A method to display the name, age.
+    def display_my_information(self,display_surf):
+        name_surf=self.info_font.render(self.my_Name,False,'black')
+        age_surf=self.info_font.render(self.my_age,False,'black')
+
+        display_surf.blit(name_surf,(SCREEN_WIDTH//3,20))
+        display_surf.blit(age_surf,(SCREEN_WIDTH//2 + SCREEN_WIDTH//6,20))
+        # print(self.my_Name,self.my_age)
+        pass
+
+    def display_settings(self,display_surf,Game,can_change_values=0):
+        self.display_my_information(display_surf)
+        self.select_the_item(can_change_values)
+        self.apply_cooldown()
+
+        for index,item in enumerate(self.items):
+            if(index<5):        #Displaying the speeds, so we select the current val by doing level.GameSettings.attr_name.
+                attr_name=self.attribute_names[index]
+                upgrading_costs=COST_TO_UPGRADE_SPEEDS[attr_name]
+
+                item.display_item(display_surf,attr_name,self.selected_attr_index,getattr(Game.GameSettings,attr_name),upgrading_costs[0],upgrading_costs[1],upgrading_costs[2])
+            elif(index<7):      #Displaying the WEAPON_INFO, so we select the values those of the current weapon.
+                weaponName=Game.player.weapon_name
+                curr_weapon=Game.GameSettings.WEAPON_INFO[weaponName]
+                curr_val=[curr_weapon['cooldown'],curr_weapon['damage']]
+                # print('curr_val for weapon: ',curr_val)
+                item.display_item(display_surf,weaponName,self.selected_attr_index,curr_val[index-5],curr_weapon['min_val'][index-5],curr_weapon['max_val'][index-5],curr_weapon['cost_to_upgrade_one_unit'][index-5])
+            else:
+                # print('index-7', index-7)
+                magicName=Game.player.magic_name
+                curr_magic=Game.GameSettings.MAGIC_INFO[magicName]
+                curr_val=[curr_magic['cooldown'],curr_magic['strength'],curr_magic['cost']]
+                # print('curr magic ', curr_val)
+                item.display_item(display_surf,magicName,self.selected_attr_index,curr_val[index-7],curr_magic['min_val'][index-7],curr_magic['max_val'][index-7],curr_magic['cost_to_upgrade_one_unit'][index-7])
+
+    def create_items(self):
+        self.items=[]
+        extra_attr_names=['(Cooldown)','(Damage)','(Cooldown)', '(Strength)','(Cost)']
+        for index,item_name in enumerate(self.attribute_names):
+            left=self.width_gap+(index%5)*self.val_changer_width+self.width_gap*(index%5)
+            top=self.base_height+int(index//5)*(self.val_changer_height + self.height_gap)
+            extra_attr=None
+            if(index>4):
+                extra_attr=extra_attr_names[index-5]
+            item=Item(left,top,self.val_changer_width,self.val_changer_height,index,UI_TEXT_FONT,extra_attr)
+            self.items.append(item)
+        pass
+
+class Item:
+    def __init__(self,left,top,width,height,index,font,extra_attr_name=None):
+        self.rect=pygame.rect.Rect(left,top,width,height)
+        self.index=index
+        self.font=font
+        self.extra_attr_name=extra_attr_name
+
+        self.top=self.rect.midtop+pygame.math.Vector2(0,35)
+        self.bottom=self.rect.midbottom-pygame.math.Vector2(0,40)
+        if(extra_attr_name!=None):
+            self.top=self.top + pygame.math.Vector2(0,20)
+
+        self.curr_rect=None
+        self.curr_from_bottom_pos=None
+        self.has_been_selected=False
+        self.cost_for_upgrading=None
+        self.mouse_collider_rect=pygame.rect.Rect(self.rect.centerx-10,self.top[1],20,self.bottom[1]-self.top[1])
+
+    def select_the_upgraded_val(self,is_selected,curr_val,min_val,max_val,cost_of_one_unit):
+        if(is_selected):
+            is_left_click=pygame.mouse.get_pressed()[0]
+            mouse_pos=pygame.mouse.get_pos()
+            if(is_left_click and self.mouse_collider_rect.collidepoint(mouse_pos)):
+                self.curr_from_bottom_pos=mouse_pos[1]
+                self.has_been_selected=True
+
+                height_of_line=self.bottom[1]-self.top[1]
+                curr_val_height_from_bottom=((curr_val-min_val)*height_of_line)//(max_val-min_val)
+                # print('new pos: from_bottom_pos: ', self.curr_from_bottom_pos)
+                # print('curr_val height from bottom', curr_val_height_from_bottom)
+                num_of_units=(abs(self.curr_from_bottom_pos-curr_val_height_from_bottom-self.bottom[1]))//(max_val-min_val)
+                # num_of_units=(abs(self.curr_from_bottom_pos-curr_val_height_from_bottom)*height_of_line)//(max_val-min_val)
+                self.cost_for_upgrading=(num_of_units)*cost_of_one_unit
+            pass
+        pass
+
+    def display_name(self,surface,name,cost,is_selected):
+        txt_color=TEXT_COLOR_SELECTED if is_selected else TEXT_COLOR
+        #Displaying attribute name
+        text_surf=self.font.render(str(name).capitalize(),True,txt_color)
+        text_rect=text_surf.get_rect(midtop=self.rect.midtop + pygame.math.Vector2(0,10))
+        surface.blit(text_surf,text_rect)
+
+        #Displaying the extra attribute name if any.
+        if(self.index>4):
+            extra_text_surf=self.font.render(str(self.extra_attr_name),True,txt_color)
+            surface.blit(extra_text_surf,(text_rect.centerx-extra_text_surf.get_width()//2, text_rect.bottom + 10))
+
+        #Displaying the cost.
+        cost_surf=self.font.render(f'upgrade cost: {cost}', False, txt_color)
+        surface.blit(cost_surf,(self.rect.centerx-cost_surf.get_width()//2, self.rect.bottom-cost_surf.get_height()-10))
+        pass
+
+    def display_bar(self,surface,curr_val,min_val,max_val,is_selected):
+        bar_color=BAR_COLOR_SELECTED if is_selected else BAR_COLOR
+        # pygame.draw.rect(surface,'blue',self.mouse_collider_rect)     #If you uncomment this, you will understand the need for the above dimensions of the self.mouse_collide_rect rectangle.
+        #Drawing the line.
+        pygame.draw.line(surface,bar_color,self.top,self.bottom,width=3)
+
+        #Drawing the curr_rect for curr_val
+        curr_pos=None
+        if(self.has_been_selected):
+            curr_pos=self.curr_from_bottom_pos
+            # self.curr_rect=pygame.rect.Rect(self.top[0]-10,self.curr_from_bottom_pos,20,5)
+            pass
+        else:
+            height_of_line=self.bottom[1]-self.top[1]
+            curr_val_height_from_bottom=((curr_val-min_val)*height_of_line)//(max_val-min_val)
+            curr_pos=self.bottom[1]-curr_val_height_from_bottom
+            # self.curr_rect=pygame.rect.Rect(self.top[0]-10,self.bottom[1]-curr_val_height_from_bottom,20,5)
+        self.curr_rect=pygame.rect.Rect(self.top[0]-10,curr_pos,20,5)
+        pygame.draw.rect(surface,bar_color,self.curr_rect)
+        pass
+
+    #Min val is bottom position. Max val is top position.
+    def display_item(self,display_surf,attr_name,selected_index,curr_val,min_val,max_val,cost_to_upgrade_by_one_unit,newly_selected_val=None):
+        is_selected=1 if (self.index==selected_index) else 0
+        # self.has_been_selected=False
+        # self.curr_rect=None
+        # self.curr_from_bottom_pos=None
+        if is_selected:
+            pygame.draw.rect(display_surf,BG_COLOR_SELECTED, self.rect,border_radius=3)
+        else:
+            pygame.draw.rect(display_surf,BG_COLOR, self.rect,border_radius=3)
+        pygame.draw.rect(display_surf,BG_BORDER_COLOR,self.rect,4,border_radius=3)
+
+        self.select_the_upgraded_val(is_selected,curr_val,min_val,max_val,cost_to_upgrade_by_one_unit)
+        # cost_to_upgrade=cost_to_upgrade_by_one_unit
+        cost_to_upgrade=0
+        if(self.has_been_selected):
+            cost_to_upgrade=self.cost_for_upgrading
+            pass
+        self.display_name(display_surf,attr_name,cost_to_upgrade,is_selected)
+        self.display_bar(display_surf,curr_val,min_val,max_val,is_selected)
         pass
