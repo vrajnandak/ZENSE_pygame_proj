@@ -60,6 +60,10 @@ class Game:
                 SaveGameScreen()
                 return "Pause"
             
+
+            #Setting the player's speed to the given speed.
+            self.player.speed=self.GameSettings.PLAYER_SPEED
+            
             #Running the Level logic.
             ret_val=self.curr_level.run(keys)
             pygame.display.flip()

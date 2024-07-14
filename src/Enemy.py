@@ -178,6 +178,7 @@ class Enemy(pygame.sprite.Sprite):
             self.img.set_alpha(255)
 
     def update(self,display_surf,offset,level):
+        self.speed=level.GameSettings.ENEMY_SPEED
 
         #Moving the enemy sprite if player within notice range.
         if(pygame.math.Vector2(level.player.rect.left-self.rect.left, level.player.rect.top-self.rect.top).magnitude()<=self.notice_radius):

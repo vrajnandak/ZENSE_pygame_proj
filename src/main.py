@@ -49,11 +49,12 @@ class MyGame:
         # for button in self.PauseButtons:                #This is because we don't want the animation on pausing the game.
         #     button.animation_phase=None
             #Settings Screen -
-        self.settingsResume=Button((120,100),200,60,"Resume",self.gui_font,-100)
-        self.settingsBackToHome=Button((480,100),200,60,"Back To Home",self.gui_font,-100)
-        self.settingsResetSettings=Button((820,100),200,60,"Reset Settings", self.gui_font,-100)
+        self.settingsResume=Button((80,100),200,60,"Resume",self.gui_font,-100)
+        self.settingsBackToHome=Button((300,100),200,60,"Back To Home",self.gui_font,-200)
+        self.settingsResetSettings=Button((520,100),200,60,"Reset Settings", self.gui_font,-300)
+        self.settingsApplyChanges=Button((740,100),200,60,"Apply Changes",self.gui_font,-400)
         # self.settingsChangeSpeeds=
-        self.SettingsButtons=[self.settingsResume,self.settingsBackToHome,self.settingsResetSettings]
+        self.SettingsButtons=[self.settingsResume,self.settingsBackToHome,self.settingsResetSettings,self.settingsApplyChanges]
             #Victory Screen -
         self.VictoryButtons=[]
             #Loss Screen -
@@ -131,7 +132,13 @@ class MyGame:
                             if(self.curr_Game==None and button.text=="Resume"):
                                 return "NOT_POSSIBLE"
                             else:
-                                return button.text
+                                if(button.text=="Apply Changes"):
+                                    # print('apply changes')
+                                    if(self.curr_Game!=None):
+                                        self.curr_Game.GameSettings.apply_changes(self.curr_Game)
+                                    pass
+                                else:
+                                    return button.text
             if(running==False):
                 return ""
 

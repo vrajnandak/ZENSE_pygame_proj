@@ -480,6 +480,24 @@ class Settings:
             item=Item(left,top,self.val_changer_width,self.val_changer_height,index,UI_TEXT_FONT,extra_attr)
             self.items.append(item)
         pass
+    
+    def apply_changes(self,game):
+        for index,item in enumerate(self.items):
+            if index<5:
+                item.apply_changes(self.selected_attr_index,self.attribute_names[index],game,COST_TO_UPGRADE_SPEEDS[self.attribute_names[index]][0],COST_TO_UPGRADE_SPEEDS[self.attribute_names[index]][1])
+            elif index<7:
+                weaponName=game.player.weapon_name
+                weapon=game.GameSettings.WEAPON_INFO[weaponName]
+                extra_attr_name=['cooldown','damage']
+                item.apply_changes(self.selected_attr_index,weaponName,game,weapon['min_val'][index-5],weapon['max_val'][index-5],extra_attr_name[index-5])
+                pass
+            elif index<10:
+                magicName=game.player.magic_name
+                magic=game.GameSettings.MAGIC_INFO[magicName]
+                extra_attr_name=['cooldown','strength','cost']
+                item.apply_changes(self.selected_attr_index,magicName,game,magic['min_val'][index-7],magic['max_val'][index-7],extra_attr_name[index-7])
+                pass
+        pass
 
 class Item:
     def __init__(self,left,top,width,height,index,font,extra_attr_name=None):
@@ -489,15 +507,44 @@ class Item:
         self.extra_attr_name=extra_attr_name
 
         self.top=self.rect.midtop+pygame.math.Vector2(0,35)
-        self.bottom=self.rect.midbottom-pygame.math.Vector2(0,40)
+        self.bottom=self.rect.midbottom-pygame.math.Vector2(0,55)
         if(extra_attr_name!=None):
             self.top=self.top + pygame.math.Vector2(0,20)
 
-        self.curr_rect=None
+        self.curr_rect=pygame.rect.Rect(self.top[0]-10,self.top[1],20,5)
         self.curr_from_bottom_pos=None
         self.has_been_selected=False
         self.cost_for_upgrading=None
         self.mouse_collider_rect=pygame.rect.Rect(self.rect.centerx-10,self.top[1],20,self.bottom[1]-self.top[1])
+
+    def apply_changes(self,selected_index,attr_name,game,min_val,max_val,extra_attr_name=None):
+        if selected_index==self.index:
+            #Find the curr_val value.
+            if(self.has_been_selected and game.player.exp >= self.cost_for_upgrading):
+                game.player.exp -= self.cost_for_upgrading
+                self.cost_for_upgrading=0
+                self.has_been_selected=False
+                #Based on mouse pos, get the curr_val.
+                #self.curr_from_bottom_pos is the selected position to change the value to.
+                height_of_line=self.bottom[1]-self.top[1]
+                distance_from_bottom=self.bottom[1]-self.curr_from_bottom_pos
+                curr_new_val=min_val+ (((max_val-min_val)*distance_from_bottom)//height_of_line)
+                pass
+            else:
+                return
+            
+            if self.index<5:
+                # curr_val=0
+                setattr(game.GameSettings,attr_name,curr_new_val)
+                pass
+            elif self.index<7:
+                # curr_val=0
+                game.GameSettings.WEAPON_INFO[attr_name][extra_attr_name]=curr_new_val
+                pass
+            elif self.index<10:
+                # curr_val=0
+                game.GameSettings.MAGIC_INFO[attr_name][extra_attr_name]=curr_new_val
+                pass
 
     def select_the_upgraded_val(self,is_selected,curr_val,min_val,max_val,cost_of_one_unit):
         if(is_selected):
@@ -509,15 +556,12 @@ class Item:
 
                 height_of_line=self.bottom[1]-self.top[1]
                 curr_val_height_from_bottom=((curr_val-min_val)*height_of_line)//(max_val-min_val)
-                # print('new pos: from_bottom_pos: ', self.curr_from_bottom_pos)
-                # print('curr_val height from bottom', curr_val_height_from_bottom)
-                num_of_units=(abs(self.curr_from_bottom_pos-curr_val_height_from_bottom-self.bottom[1]))//(max_val-min_val)
-                # num_of_units=(abs(self.curr_from_bottom_pos-curr_val_height_from_bottom)*height_of_line)//(max_val-min_val)
-                self.cost_for_upgrading=(num_of_units)*cost_of_one_unit
+                curr_pos=self.bottom[1]-curr_val_height_from_bottom
+                self.cost_for_upgrading=(abs(curr_pos-mouse_pos[1])*(cost_of_one_unit*(max_val-min_val)))//(height_of_line)
             pass
         pass
 
-    def display_name(self,surface,name,cost,is_selected):
+    def display_name(self,surface,name,cost,curr_val,is_selected):
         txt_color=TEXT_COLOR_SELECTED if is_selected else TEXT_COLOR
         #Displaying attribute name
         text_surf=self.font.render(str(name).capitalize(),True,txt_color)
@@ -528,6 +572,11 @@ class Item:
         if(self.index>4):
             extra_text_surf=self.font.render(str(self.extra_attr_name),True,txt_color)
             surface.blit(extra_text_surf,(text_rect.centerx-extra_text_surf.get_width()//2, text_rect.bottom + 10))
+
+        #Displaying the current value.
+        curr_val_surf=self.font.render(f'Current val: {curr_val}',False,txt_color)
+        surface.blit(curr_val_surf,(self.rect.centerx-curr_val_surf.get_width()//2,self.rect.bottom-2*curr_val_surf.get_height()-20))
+
 
         #Displaying the cost.
         cost_surf=self.font.render(f'upgrade cost: {cost}', False, txt_color)
@@ -573,6 +622,6 @@ class Item:
         if(self.has_been_selected):
             cost_to_upgrade=self.cost_for_upgrading
             pass
-        self.display_name(display_surf,attr_name,cost_to_upgrade,is_selected)
+        self.display_name(display_surf,attr_name,cost_to_upgrade,curr_val,is_selected)
         self.display_bar(display_surf,curr_val,min_val,max_val,is_selected)
         pass

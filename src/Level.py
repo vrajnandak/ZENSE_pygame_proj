@@ -403,6 +403,9 @@ class Level:
 
         #Displaying the magic selection.
         self.display_selection(display_surf,10,SCREEN_HEIGHT-2*ITEM_BOX_SIZE - 20, not self.player.can_switch_magic, self.curr_selected_magic)
+
+        debug_print(self.GameSettings.PLAYER_SPEED,(300,300))
+        debug_print(f'weapon damage: {self.GameSettings.WEAPON_INFO[self.player.weapon_name]["damage"]}',(500,300))
         # debug_print(self.enemy_counter,(600,500))
         # self.GameSettings.display_settings(can_change_values=1)
         #Blitting the detection tiles.
