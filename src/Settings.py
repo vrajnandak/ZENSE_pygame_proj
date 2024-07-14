@@ -243,17 +243,19 @@ def debug_print(text,pos,display_surf=None):
 
 # # Just realized this isn't needed as long as we follow the below format.
 # # #ALL_BLOCKS - Has 'elem_id' as key, the block 'img' as value. This will be initialized in the Level object's using 'load_ALL_BLOCKS()'.
-# #     #elem_id: 500      ==> 'Gate_being_revealed'              ==>"None". The image will have id of 500. Any elem having id of 500 will slowly appear once player has unlocked achievement.
+# #     #elem_id: 500      ==> 'Gate_being_revealed'              ==>"BROWN". The image will have id of 500. Any elem having id of 500 will slowly appear once player has unlocked achievement.
+# #     #elem_id: 300      ==> 'Scientist1'                       ==>"ORANGE" color in Tiled map.
+# #     #elem_id: 301      ==> 'Scientist2'                       ==>"MAGENTA" color in Tiled map.
+# #     #elem_id: 302      ==> 'Scientist3'                       ==>"WHITE" color in Tiled map.
+
 # #     #elem_id: 100      ==> 'zombie1 start position'           ==>"PINK" color in Tiled map.
 # #     #elem_id: 101      ==> 'zombie2 start position'           ==>"YELLOW" color in Tiled map.
-# #     #elem_id: 101      ==> 'zombie3 start position'           ==>"PURPLE" color in Tiled map.
-# #     #elem_id: 101      ==> 'zombie4 start position'           ==>"GOLD" color in Tiled map.
-# #     #elem_id: 101      ==> 'zombieBoss start position'        ==>"SILVER" color in Tiled map.
+# #     #elem_id: 102      ==> 'zombie3 start position'           ==>"PURPLE" color in Tiled map.
+# #     #elem_id: 103      ==> 'zombie4 start position'           ==>"BLUE" color in Tiled map.
+# #     #elem_id: 104      ==> 'zombieBoss start position'        ==>"SILVER" color in Tiled map.
 # #     #elem_id: 1000     ==> 'Invisible'                        ==>"RED" color in Tiled map.
-# #     #elem_id: 1001     ==> 'Player start position'            ==>"GREEN" color in Tiled map.
-# #************************REMOVED*******************#     #elem_id: 1002     ==> 'Enemy start position'             ==>"YELLOW" color in Tiled map.
+    ###################################################### elem_id: 1001     ==> 'Player start position'            ==>"GREEN" color in Tiled map.
 # #     #elem_id: 1003     ==> 'Transport gates'                  ==>"BLACK" color in Tiled map.
-# #     #elem_id: 1004     ==> 'Strong enemy start position'      ==>"BLUE" color in Tiled map.
 # # ALL_BLOCKS={}
 # # def load_ALL_BLOCKS():
 # #     ALL_BLOCKS[1000]=getSpriteFromSpriteSheet(BLOCKS_PATH,32,32,0,0,'Black')
@@ -530,7 +532,10 @@ class Item:
                 distance_from_bottom=self.bottom[1]-self.curr_from_bottom_pos
                 curr_new_val=min_val+ (((max_val-min_val)*distance_from_bottom)//height_of_line)
                 pass
-            else:
+            elif(self.has_been_selected):
+                self.cost_for_upgrading=0
+                self.has_been_selected=False
+                #DISPLAY A MESSAGE SAYING COULD NOT APPLY.
                 return
             
             if self.index<5:

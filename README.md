@@ -29,6 +29,7 @@ CONTROLS:
 5. Pause Screen: [esc]
 6. Switching weapons: [n] for next weapon, [p] for previous weapon.
 7. Switching Magic: [m] for next magic, [o] for previous magic.
+8. Start Dialog: [q] for starting the conversation or for getting the next dialog. The player has to face the character however.
 
 
 Naming formats:
@@ -36,9 +37,9 @@ Naming formats:
     ==>The 'invisible boundary' blocks that restrict the player's movement in the map must have the same id(will have id='1000'). This is to make the code easy to write. When you get the csv file from Tiled, it is best to manually change every occurance of the invisible tile to '1000' and '1001', etc as needed. This will make it easy to load graphics since different images in tiled can have same id's
     ==>The Portal images have a naming convention of <x> where 'x' represents the frame number in the portal's animation. The size of portals is fixed to 96x96.
     ==>The csv file should also have id '500' whenever an object is placed(in the Tiled map) having size more than one tile. This is to set the values of the detection tiles properly in the level instance.
-2. The additional hidden rooms or extra rooms will be named in the following format: 'Ruin<x>_<extra_type><num>'. The 'extra_type' can be from ['hidden', 'extension'] only where 'hidden' represents the map to be discovered (can be opened only after protagonist unlocks the room, like the treasure room), 'extension' represents the doorway to other rooms which are basically open and don't need a special lock(They are loaded when the level itself is loaded).
-    ex: 'Ruin2_hidden2', 'Ruin2_extension2'
-
+<!-- 2. The additional hidden rooms or extra rooms will be named in the following format: 'Ruin<x>_<extra_type><num>'. The 'extra_type' can be from ['hidden', 'extension','entrance'] only where 'hidden' represents the map to be discovered (can be opened only after protagonist unlocks the room, like the treasure room), 'extension' represents the doorway to other rooms which are basically open and don't need a special lock(They are loaded when the level itself is loaded).
+    ex: 'Ruin2_hidden2', 'Ruin2_extension2' -->
+2. The Rooms layout is maintained as '<curr_room_name>_<to_room_name>: [<rect_to_check_collision_with_in_curr_room> , <player_start_pos>]'.
 
 RUINS:
 1. Ruin0 - Is the main island.

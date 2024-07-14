@@ -23,6 +23,7 @@ class Level:
         self.transport_sprites=pygame.sprite.Group()
         self.attack_sprites=pygame.sprite.Group()
         self.hidden_sprites=pygame.sprite.Group()           #A sprite group for the hidden passages which appear on the completion of a task.
+        self.character_sprites=pygame.sprite.Group()
 
         self.curr_attack=None                               #The current weapon being used by player to attack.
         self.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,list(self.GameSettings.WEAPON_INFO.keys())[0],'full.png'))
@@ -142,27 +143,33 @@ class Level:
                                             self.detection_tiles[row_index-1+j][col_index-1+i]=0
                                 pass
                             
-                            elif(val==100 or val==1002):
+                            elif(val==100):
                                 Enemy(img_pos,'zombie1',[self.enemy_sprites])
                                 self.enemy_counter+=1
                                 pass
                             elif(val==101):
-                                Enemy(img_pos,'zombie2',[self.enemy_sprites])
-                                self.enemy_counter+=1
+                                # Enemy(img_pos,'zombie2',[self.enemy_sprites])
+                                # self.enemy_counter+=1
                                 pass
                             elif(val==102):
-                                Enemy(img_pos,'zombie3',[self.enemy_sprites])
-                                self.enemy_counter+=1
+                                # Enemy(img_pos,'zombie3',[self.enemy_sprites])
+                                # self.enemy_counter+=1
                                 pass
                             elif(val==103):
-                                Enemy(img_pos,'zombie4',[self.enemy_sprites])
-                                self.enemy_counter+=1
+                                # Enemy(img_pos,'zombie4',[self.enemy_sprites])
+                                # self.enemy_counter+=1
                                 pass
                             elif(val==104):
-                                Enemy(img_pos,'zombieBoss',[self.enemy_sprites])
-                                self.enemy_counter+=1
+                                # Enemy(img_pos,'zombieBoss',[self.enemy_sprites])
+                                # self.enemy_counter+=1
                                 pass
-                            elif(val==500):             #A dummy val to ensure that the self.level_tiles are made '0'.
+                            elif(val==300):     #Scientist1
+                                pass
+                            elif(val==301):     #Scientist2
+                                pass
+                            elif(val==302):     #Scientist3
+                                pass
+                            elif(val==500):             #A val which reveals the transportation portal.
                                 pass
                             elif(val==1000):
                                 Obstacle(img_pos,None,[self.obstacle_sprites])

@@ -11,6 +11,8 @@ class Game:
 
         self.GameSettings=Settings()
 
+        self.createTeleportationMap()
+
         #Get some credentials from the user, like the name, age etc.
         self.font=pygame.font.Font(None,32)
         information=getRequiredInfo(["Name","Age"],self.font)
@@ -27,6 +29,14 @@ class Game:
 
         self.esc_time_duration=100
         self.previous_esc_keydown=pygame.time.get_ticks()
+
+    def createTeleportationMap(self):
+        #For Ruin0
+        # Ruin0_entrance1
+        #For Ruin1
+        #For Ruin2
+        #For Ruin3
+        pass
 
     def changeMap(self):
         #Have to Transport the player
