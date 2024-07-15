@@ -450,6 +450,7 @@ class Level:
         self.display_selection(display_surf,10,SCREEN_HEIGHT-2*ITEM_BOX_SIZE - 20, not self.player.can_switch_magic, self.curr_selected_magic)
 
         #Displaying the level information if any.
+        pygame.image.save()
         self.level_information.update()
 
         # debug_print(self.GameSettings.PLAYER_SPEED,(300,300))

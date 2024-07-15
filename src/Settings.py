@@ -230,6 +230,35 @@ def SaveGameScreen(display_surf=None):
     pass
 
 
+#A function to save the current screen into the given filename.
+def SAVE_CURR_SCREEN(filename):
+    pass
+
+
+#A function which uses the DISPLAY_MSG to continuously display all the messages.
+def DISPLAY_DIALOGS(DialogBox,message_box_left,message_box_top,message_box_width,message_box_height,font=pygame.font.Font(None,30)):
+    if len(DialogBox)==0:
+        return
+    display_msg_index=0
+    dialogs=list(DialogBox)
+    num_of_msgs=len(dialogs)
+    while True:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type==pygame.KEYDOWN:
+                if event.key==pygame.K_RETURN:
+                    display_msg_index+=1
+
+        if display_msg_index >=num_of_msgs:
+            break
+        
+
+        DISPLAY_MSG(dialogs[display_msg_index],message_box_left,message_box_top,message_box_width,message_box_height,font)
+        pygame.display.flip()
+    pass
+
 #A function to display a message. The function splits the message into different lines if the message is long.
 def DISPLAY_MSG(message, message_box_left,message_box_top,message_box_width,message_box_height,font=pygame.font.Font(None,30)):
     display_surf=pygame.display.get_surface()
@@ -247,9 +276,15 @@ def DISPLAY_MSG(message, message_box_left,message_box_top,message_box_width,mess
                 x=message_box_left
                 y+=word_height+20
             display_surf.blit(word_surf,(x,y))
+
             x+=word_width+space
         x=message_box_left+20
         y+=word_height+20
+    
+    next_msg_prompt="'Enter' for next message"
+    next_msg_surf=font.render(next_msg_prompt,False,'white')
+    next_msg_rect=pygame.rect.Rect(message_box_width-next_msg_surf.get_width()-20,message_box_height-next_msg_surf.get_height()-20,next_msg_surf.get_width(),next_msg_surf.get_height())
+    display_surf.blit(next_msg_surf,next_msg_rect)
     pass
 
 

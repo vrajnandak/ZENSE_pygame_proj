@@ -5,8 +5,15 @@ from Settings import *
 class LEVEL_INFO:
     def __init__(self,level_id,has_displayed_basic_game_info):
         # self.start_msg=[]
-        # if(not has_displayed_basic_game_info):
-            # self.start_msg="Player Movement Controls."
+        self.game_info=[]
+        if(not has_displayed_basic_game_info):
+            print('has not displayed basic info')
+            self.game_info.append("Player Movement Controls: [w,a,s,d] or [up,left,down,right arrow keys]")
+            self.game_info.append("Player attack: [space bar]\n Player magic: [left_control]")
+            self.game_info.append("Switch weapon: [n,p] for next and previous weapon\nSwitch magic: [m,o] for next and previous magic")
+            self.game_info.append("Camera Movement: [b] for box camera, [i,j,k,l] for keyboard camera movement, hover mouse close to screen end for mouse camera movement")
+            self.game_info.append("Pause screen: [esc] for pause screen. Another esc to go back to the game from pause screen")
+            self.game_info.append("Settings: Current weapon, magic information is displayed. Can purchase upgrades only if you have sufficient exp.")
         if(level_id==0):
             self.start_msg='Find the code to save the scientist. \n"To the one who explores this island, the key shall reveal itself"\nFind the portal and press "9" to enter the code.\n(Enter "Enter" to return to game).'
             pass
@@ -46,6 +53,11 @@ class LEVEL_INFO:
             # self.apply_cooldown()
         pass
 
+    def display_game_info(self):
+        if len(self.game_info)>0:
+            DISPLAY_DIALOGS(self.game_info,60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2))
+
     def update(self):
         self.inputs()
+        self.display_game_info()
         self.display_start_msg()
