@@ -147,6 +147,19 @@ COST_TO_UPGRADE_SPEEDS={
 
 
 
+#######Game portal rectangles
+Ruin0_rect_enterCode=pygame.rect.Rect(1184-32,2528-32,5*BASE_SIZE,5*BASE_SIZE)            #Is the Entrance to Ruin1
+Ruin0_rect_Ruin2=pygame.rect.Rect(3424-32,1440-32,5*BASE_SIZE,5*BASE_SIZE)
+Ruin0_rect_Ruin3=pygame.rect.Rect(4224-32,3232-32,5*BASE_SIZE,5*BASE_SIZE)
+
+Ruin1_rect_Ruin0=pygame.rect.Rect(864,0,2*BASE_SIZE,2*BASE_SIZE)
+Ruin1_rect_Ruin1_Dummy=pygame.rect.Rect(3134,960,2*BASE_SIZE,2*BASE_SIZE)
+Ruin1_rect_Ruin1_hidden=pygame.rect.Rect(1056,2496,2*BASE_SIZE,2*BASE_SIZE)
+
+
+
+
+
 #A method to continuously toggle between 0 and 255.
 def wave_value():
     value=sin(pygame.time.get_ticks()//2)
@@ -240,7 +253,6 @@ def drawShadedBGScreen(display_surf,shaded_color=SCREEN_BG_SHADE_COLOR):
 
 #Function to save the image of the screen whenever a different screen is going to be displayed.
 def SaveGameScreen(display_surf=None,filename="Curr_Screen.png"):
-    print('in the save game screen function')
     if(display_surf==None):
         display_surf=pygame.display.get_surface()
     rect=pygame.rect.Rect(0,0,SCREEN_WIDTH,SCREEN_HEIGHT)

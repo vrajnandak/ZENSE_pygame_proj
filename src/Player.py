@@ -5,6 +5,9 @@ class Player(pygame.sprite.Sprite):
     def __init__(self,pos,settings):
         self.pos=pos
 
+        #Different unlocking event's variables.
+        self.has_entered_correct_code=False
+
         #Getting the game's settings.
         self.GameSettings=settings
 

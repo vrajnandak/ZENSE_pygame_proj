@@ -18,9 +18,7 @@ game_info=[
 
 EVENT_CODES=['BeforeKillingAnyEnemy','AfterKillingAllEnemy','PortalCollision']
 RUIN0_ENTRY_CODE=106
-Ruin0_rect_enterCode=pygame.rect.Rect(1184-32,2528-32,5*BASE_SIZE,5*BASE_SIZE)            #Is the Entrance to Ruin1
-Ruin0_rect_Ruin1=pygame.rect.Rect(3424-32,1440-32,5*BASE_SIZE,5*BASE_SIZE)
-Ruin0_rect_Ruin2=pygame.rect.Rect(4224-32,3232-32,5*BASE_SIZE,5*BASE_SIZE)
+
 start_msg={         #The key is the level id.
     '0':["Find the code to save the scientist.\n'To the one who explores this island, the key shall reveal itself'\nPress '9' near the portal to type the code."],              #Have to constantly check if the player is colliding with a particular rect and pressing 9.
     '1':["Save the Scientist by unlocking the cage.\nTalk with the scientist to get a clue where the key is."],                                                                 #Event handled when level's enemy counter reaches 0.
@@ -120,21 +118,22 @@ class LEVEL_INFO:
         elif event_code==EVENT_CODES[1]:
             pass
         elif event_code==EVENT_CODES[2]:
-            if self.level_id==0:
-                if level:
-                    if level.player.rect.colliderect(Ruin0_rect_enterCode) and pygame.key.get_pressed()[pygame.K_9]:
-                        # print('got the portal')
-                        code=self.getCorrectCodeFromPlayer()
-                        print('code obtained: ', code)
-                        if(code!=RUIN0_ENTRY_CODE):
-                            bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"GameScreen.png"))
-                            DISPLAY_DIALOGS(["You have entered the Wrong Code. Dash into the portal while pressing '9' and try again","Hint: The Seas are vast and have yet to be explored."],60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image=bg_image)
-                        else:
-                            print('You have successfully crossed over to Ruin1')
-                            return 1        #Indicates that the map should be changed. The map will be chosen in Game.py
-            else:
-                pass
-            return 0
+            if self.level_id==0 and level!=None and level.player.has_entered_correct_code==False:
+                # if level:
+                if level.player.rect.colliderect(Ruin0_rect_enterCode) and pygame.key.get_pressed()[pygame.K_9]:
+                    SaveGameScreen()
+                    code=self.getCorrectCodeFromPlayer()
+                    if(code!=RUIN0_ENTRY_CODE):
+                        bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"Curr_Screen.png"))
+                        DISPLAY_DIALOGS(["You have entered the Wrong Code. Dash into the portal while pressing '9' and try again","Hint: The Seas are vast and have yet to be explored."],60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image=bg_image)
+                        return 0
+                    else:
+                        level.player.has_entered_correct_code=True
+                        # print('You have successfully crossed over to Ruin1')
+                        return 1        #Indicates that the map should be changed. The map will be chosen in Game.py
+                else:
+                    return 0
+            return 1
         else:
             pass
         pass

@@ -12,7 +12,7 @@ class Game:
         self.clock=clock
         self.GameSettings=Settings()
 
-        self.createTeleportationMap()
+        # self.createTeleportationMap()
 
         #Displaying the game lore then, Get some credentials from the user, like the name, age etc.
         self.font=pygame.font.Font(None,32)
@@ -41,32 +41,58 @@ class Game:
         self.esc_time_duration=100
         self.previous_esc_keydown=pygame.time.get_ticks()
 
-    def createTeleportationMap(self):
+    # def createTeleportationMap(self):
         #For Ruin0
         # Ruin0_entrance1
         #For Ruin1
         #For Ruin2
         #For Ruin3
-        pass
+        # pass
     
     #A method to get the next level's ID.
     def get_next_level_id(self):
         #Have to check the player's positions and the collision between the created rects and then send the new level.
-        new_level=1
+        new_level=self.curr_level.level_id
+        if self.curr_level.level_id==0:
+            if self.player.rect.colliderect(Ruin0_rect_enterCode) and self.player.has_entered_correct_code==True:
+                new_level=1
+            if self.player.rect.colliderect(Ruin0_rect_Ruin2):
+                new_level=2
+            elif self.player.rect.colliderect(Ruin0_rect_Ruin3):
+                new_level=3
+            pass
+        elif self.curr_level.level_id==1:
+            if self.player.rect.colliderect(Ruin1_rect_Ruin0):
+                new_level=0
+            elif self.player.rect.colliderect(Ruin1_rect_Ruin1_Dummy):
+                pass
+            elif self.player.rect.colliderect(Ruin1_rect_Ruin1_hidden):
+                pass
+            pass
+        elif self.curr_level.level_id==2:
+            pass
+        elif self.curr_level.level_id==3:
+            pass
+        # new_level=1
         return new_level
 
     def changeMap(self):
         #Make a black screen and place it in 'bg_GameStartScreen.png' because the player has to go to the next screen. Or save the images to new maps beforehand.
 
         new_level_id=self.get_next_level_id()
+        if(new_level_id==self.curr_level.level_id):
+            return
+        
         if len(self.levels)>0:
             for level in self.levels:
                 if level.level_id == new_level_id:
                     self.curr_level=level
+                    self.player.rect.topleft=self.curr_level.player_pos
                     return
-        print('hello')
+        # print('hello')
+        # self.levels.append(self.curr_level)
+        self.curr_level=Level(new_level_id,self.player,self.GameSettings)
         self.levels.append(self.curr_level)
-        self.curr_level=Level(1,self.player,self.GameSettings)
         print('created the new level')
         pass
         #Have to Transport the player
@@ -113,9 +139,9 @@ class Game:
             # self.has_displayed_basic_game_info=True
 
             if(ret_val==1):     #Code for changing the map.
-                print('going to change map')
+                # print('going to change map')
                 self.changeMap()
-                print('after changing map.')
+                # print('after changing map.')
                 pass
             elif(ret_val==10):
                 return "Lose"

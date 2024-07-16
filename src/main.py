@@ -49,9 +49,14 @@ class MyGame:
         self.settingsApplyChanges=Button((740,100),200,60,"Apply Changes",self.gui_font,-400)
         self.SettingsButtons=[self.settingsResume,self.settingsBackToHome,self.settingsResetSettings,self.settingsApplyChanges]
             #Victory Or Loss Screen Buttons - "Play Again", "Quit"
-        self.victory_or_loss_text=["You have Won", "You have Lost"]
-        self.victory_or_loss_PlayAgain=Button((SCREEN_WIDTH_HALF,SCREEN_HEIGHT_HALF),200,60,"Play Again",self.gui_font,-100)
-        self.victory_or_loss_Quit=Button((SCREEN_WIDTH_HALF,(3*SCREEN_HEIGHT)//4),200,60,"Quit",self.gui_font,-100)
+        # self.victory_or_loss_text=["You have Won", "You have Lost"]
+        text_font=pygame.font.FontType(None,60)
+        self.victory_text_surf=text_font.render("You Have WON!!!", True, 60)
+        self.lose_text_surf=text_font.render("You Have LOST!!",True,60)
+        self.victory_or_lose_pos=(SCREEN_WIDTH_HALF-self.victory_text_surf.get_width()//2,100)
+        self.victory_or_loss_PlayAgain=Button((SCREEN_WIDTH_HALF-120,SCREEN_HEIGHT_HALF-100),200,60,"Play Again",self.gui_font,-100)
+        self.victory_or_loss_Quit=Button((SCREEN_WIDTH_HALF-120,((3*SCREEN_HEIGHT)//4)-100),200,60,"Quit",self.gui_font,-100)
+        self.victory_or_lose="Lose"
         self.Victory_or_lossButtons=[self.victory_or_loss_PlayAgain,self.victory_or_loss_Quit]
             #Are you sure you want to Quit Screen - "Yes", "No"
         self.AreYouSureYouWantToQuit_text=["Are you sure you want to Quit?"]
@@ -74,6 +79,7 @@ class MyGame:
         self.startGame()
 
     def chooseWhichButtons(self):
+        self.victory_or_lose=""
         if(self.curr_screen=="Start"):
             self.curr_buttons=self.StartButtons
             self.screen_shade_color=SCREEN_BG_DARK_COLOR
@@ -85,11 +91,14 @@ class MyGame:
             self.curr_buttons=self.SettingsButtons
             self.screen_shade_color=SCREEN_BG_DARK_COLOR
         elif(self.curr_screen=="Victory"):
+            self.path_to_screen_img=self.path_to_curr_screen
             self.curr_buttons=self.Victory_or_lossButtons
+            self.victory_or_lose="Victory"
             self.screen_shade_color=SCREEN_BG_SHADE_COLOR
         elif(self.curr_screen=="Lose"):
             self.path_to_screen_img=self.path_to_curr_screen
             self.curr_buttons=self.Victory_or_lossButtons
+            self.victory_or_lose="Lose"
             self.screen_shade_color=SCREEN_BG_SHADE_COLOR
         elif(self.curr_screen=="AreYouSureYouWantToQuit"):
             self.curr_buttons=self.AreYouSureYouWantToQuitButtons
@@ -141,6 +150,15 @@ class MyGame:
             #     self.screen.blit(gameScreen,(0,0))
             # else:
             #     drawShadedBGScreen(self.screen,screen_bg_shade)
+            if self.victory_or_lose=="Lose":
+                self.screen.blit(self.lose_text_surf,self.victory_or_lose_pos)
+                # DISPLAY_MSG(self.lose_text_surf,60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image)
+                pass
+            elif self.victory_or_lose=="Victory":
+                self.screen.blit(self.victory_text_surf,self.victory_or_lose_pos)
+                # DISPLAY_MSG(self.victory_text_surf,60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image)
+                pass
+
             for button in buttons:
                 button.draw(self.screen)
             if(self.curr_screen=="Settings"):

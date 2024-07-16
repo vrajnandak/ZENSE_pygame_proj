@@ -34,6 +34,7 @@ class Level:
         self.loot_drops=pygame.sprite.Group()
         self.hidden_sprites=pygame.sprite.Group()           #A sprite group for the hidden passages which appear on the completion of a task.
         self.character_sprites=pygame.sprite.Group()
+        self.level_scientist=None
 
         self.curr_attack=None                               #The current weapon being used by player to attack.
         self.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,list(self.GameSettings.WEAPON_INFO.keys())[0],'full.png'))
@@ -194,13 +195,13 @@ class Level:
                                 self.enemy_counter+=1
                                 pass
                             elif(val==300):     #Scientist1
-                                Scientist((x,y),[self.visible_sprites],1)
+                                self.level_scientist=Scientist((x,y),[self.visible_sprites],1)
                                 pass
                             elif(val==301):     #Scientist2
-                                Scientist((x,y),[self.visible_sprites],2)
+                                self.level_scientist=Scientist((x,y),[self.visible_sprites],2)
                                 pass
                             elif(val==302):     #Scientist3
-                                Scientist((x,y),[self.visible_sprites],3)
+                                self.level_scientist=Scientist((x,y),[self.visible_sprites],3)
                                 pass
                             elif(val==500):             #A val which reveals the transportation portal.
                                 pass
@@ -210,10 +211,12 @@ class Level:
                             elif(val==1001):
                                 #This is to update the detection tiles properly so that the player's tiles are marked as '0'.
                             #     self.player=Player(img_pos)
+                                print('player position, ', x, y)
                                 self.player.rect.left=x
                                 self.player.rect.top=y
                                 pass
                             elif(val==1003):
+                                print('portal dimensions: ', x,y)
                                 Portal(img_pos,[self.visible_sprites,self.transport_sprites], os.path.join(self.graphics_path,"Portals"))
                                 pass
                             elif(val==1004):
@@ -471,6 +474,7 @@ class Level:
         self.player_attack()
 
         if(self.player.health<=0):
+            SaveGameScreen()
             return 10
         self.player.draw(display_surf)
         self.player.display_ui(display_surf)
@@ -483,7 +487,7 @@ class Level:
         self.display_selection(display_surf,10,SCREEN_HEIGHT-2*ITEM_BOX_SIZE - 20, not self.player.can_switch_magic, self.curr_selected_magic)
 
         #Displaying the level information if any.
-        self.level_information.update(display_surf)
+        # self.level_information.update(display_surf)
         
         
         
