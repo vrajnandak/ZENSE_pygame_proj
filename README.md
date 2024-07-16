@@ -93,8 +93,7 @@ https://elthen.itch.io/2d-pixel-art-archaeologist
 
 
 
-CHATGPT DESCRIPTION BASED ON ABOVE DESCRIPTION:
-{
+The gist: 
 Title: Time Rift Rescue
 
 Game Overview:
@@ -125,4 +124,3 @@ Dynamic time loop mechanic that adds replayability and depth to the narrative.
 Mix of traditional adventure gameplay with modern crafting and survival elements.
 Conclusion:
 Time Rift Rescue offers players a thrilling adventure through ancient ruins filled with mystery, danger, and the potential to alter time itself. With its blend of exploration, puzzle-solving, combat, and narrative depth, the game promises an immersive experience where every decision matters in uncovering the secrets of the island and saving the scientists.
-}
