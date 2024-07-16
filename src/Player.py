@@ -7,6 +7,7 @@ class Player(pygame.sprite.Sprite):
 
         #Different unlocking event's variables.
         self.has_entered_correct_code=False
+        self.has_killed_all_enemies_in_ruin1_and_unlocked_gate=False
 
         #Getting the game's settings.
         self.GameSettings=settings

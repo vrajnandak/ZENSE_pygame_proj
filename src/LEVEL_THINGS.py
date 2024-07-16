@@ -108,7 +108,6 @@ class LEVEL_INFO:
             display_surf.blit(pass_code_surf,pass_code_rect.topleft)
             pygame.display.flip()
             
-        # return getRequiredInfo(['Enter the Code'],UI_TEXT_FONT,bg_image=bg)
         pass
 
     #A method to handle the different events that happen in the game.
@@ -116,6 +115,17 @@ class LEVEL_INFO:
         if event_code==EVENT_CODES[0]:
             pass
         elif event_code==EVENT_CODES[1]:
+            if level:
+                if level.level_id==1 and not level.player.has_killed_all_enemies_in_ruin1_and_unlocked_gate:
+                    #Display the message
+                    SaveGameScreen()
+                    bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"Curr_Screen.png"))
+                    DISPLAY_DIALOGS(["Hurray, You have Saved the Scientist1!!!!!",],60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image)
+                    if level.unlockable_gate_sprites:
+                        for sprite in level.unlockable_gate_sprites:
+                            sprite.kill()
+                        
+                    level.player.has_killed_all_enemies_in_ruin1_and_unlocked_gates=True
             pass
         elif event_code==EVENT_CODES[2]:
             if self.level_id==0 and level!=None and level.player.has_entered_correct_code==False:

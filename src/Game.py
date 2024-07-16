@@ -83,15 +83,23 @@ class Game:
         if(new_level_id==self.curr_level.level_id):
             return
         
+        curr_level_selected_weapon=self.curr_level.curr_selected_weapon
+        curr_level_selected_magic=self.curr_level.curr_selected_magic
+
         if len(self.levels)>0:
             for level in self.levels:
                 if level.level_id == new_level_id:
+                    
                     self.curr_level=level
                     self.player.rect.topleft=self.curr_level.player_pos
+                    self.curr_level.curr_selected_weapon=curr_level_selected_weapon
+                    self.curr_level.curr_selected_magic=curr_level_selected_magic
                     return
         # print('hello')
         # self.levels.append(self.curr_level)
         self.curr_level=Level(new_level_id,self.player,self.GameSettings)
+        self.curr_level.curr_selected_weapon=curr_level_selected_weapon
+        self.curr_level.curr_selected_magic=curr_level_selected_magic
         self.levels.append(self.curr_level)
         print('created the new level')
         pass

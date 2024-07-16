@@ -32,8 +32,7 @@ class Level:
         self.transport_sprites=pygame.sprite.Group()
         self.attack_sprites=pygame.sprite.Group()
         self.loot_drops=pygame.sprite.Group()
-        self.hidden_sprites=pygame.sprite.Group()           #A sprite group for the hidden passages which appear on the completion of a task.
-        self.character_sprites=pygame.sprite.Group()
+        self.unlockable_gate_sprites=pygame.sprite.Group()
         self.level_scientist=None
 
         self.curr_attack=None                               #The current weapon being used by player to attack.
@@ -118,8 +117,8 @@ class Level:
         #Load the different graphics in this folder. Since all the images have their id's, we can just parse the names of the files and then set the graphics.
         all_files_in_ruin=os.listdir(self.graphics_path)
         for file in all_files_in_ruin:
-            if '.png' in file and BASEMAP_NAME not in file:
-                use_file_name=file[:-4]
+            if '.png' in file and BASEMAP_NAME not in file and ('not_obstacle' not in file):
+                use_file_name=file[:-4]             #Getting rid of the '.png' from the file name
                 ind_strings=use_file_name.split('_',4)     #The ind_strings will be <name_of_obstacle>
                 ind_strings[1:]=[int(num) if num.isdigit() else num for num in ind_strings[1:]]
                 self.graphics[ind_strings[1]]=[pygame.image.load(os.path.join(self.graphics_path,file)),(ind_strings[2],ind_strings[3])]
@@ -175,6 +174,7 @@ class Level:
                                 pass
                             
                             elif(val==100):
+                                # if self.enemy_counter<=1:
                                 Enemy(img_pos,'zombie1',[self.enemy_sprites])
                                 self.enemy_counter+=1
                                 pass
@@ -203,7 +203,9 @@ class Level:
                             elif(val==302):     #Scientist3
                                 self.level_scientist=Scientist((x,y),[self.visible_sprites],3)
                                 pass
-                            elif(val==500):             #A val which reveals the transportation portal.
+                            elif(val==500):             #A val which reveals the locked gate of Ruin1.
+                                img=pygame.image.load(os.path.join(self.graphics_path,"not_obstacle_unlockable_gate.png"))
+                                Obstacle(img_pos,img,[self.unlockable_gate_sprites,self.obstacle_sprites,self.visible_sprites])
                                 pass
                             elif(val==1000):
                                 Obstacle(img_pos,None,[self.obstacle_sprites])
@@ -211,12 +213,12 @@ class Level:
                             elif(val==1001):
                                 #This is to update the detection tiles properly so that the player's tiles are marked as '0'.
                             #     self.player=Player(img_pos)
-                                print('player position, ', x, y)
+                                # print('player position, ', x, y)
                                 self.player.rect.left=x
                                 self.player.rect.top=y
                                 pass
                             elif(val==1003):
-                                print('portal dimensions: ', x,y)
+                                # print('portal dimensions: ', x,y)
                                 Portal(img_pos,[self.visible_sprites,self.transport_sprites], os.path.join(self.graphics_path,"Portals"))
                                 pass
                             elif(val==1004):
@@ -408,7 +410,7 @@ class Level:
                                     self.enemy_counter-=1
                                     self.random_loot_drop(target_sprite_pos,target_sprite.zombieType)
                                     if(self.enemy_counter==0):
-                                        self.level_information.handle_event(EVENT_CODES[0])
+                                        self.level_information.handle_event(EVENT_CODES[1],self)
 
         # if self.curr_attack:
         #     #Checking collision with player weapon
@@ -455,7 +457,6 @@ class Level:
         if(shd_transport==1):
             shd_use_portal_and_change_map=self.level_information.handle_event(EVENT_CODES[2],self)
             if(shd_use_portal_and_change_map):
-                print('should be teleported')
                 self.player_pos=self.player.rect.topleft
                 return shd_transport
         
