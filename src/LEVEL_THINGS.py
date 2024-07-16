@@ -126,6 +126,7 @@ class LEVEL_INFO:
                             sprite.kill()
                         
                     level.player.has_killed_all_enemies_in_ruin1_and_unlocked_gates=True
+                    # level.level_scientist=
             pass
         elif event_code==EVENT_CODES[2]:
             if self.level_id==0 and level!=None and level.player.has_entered_correct_code==False:
@@ -135,7 +136,7 @@ class LEVEL_INFO:
                     code=self.getCorrectCodeFromPlayer()
                     if(code!=RUIN0_ENTRY_CODE):
                         bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"Curr_Screen.png"))
-                        DISPLAY_DIALOGS(["You have entered the Wrong Code. Dash into the portal while pressing '9' and try again","Hint: The Seas are vast and have yet to be explored."],60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image=bg_image)
+                        DISPLAY_DIALOGS(["You have entered the Wrong Code. Dash into the portal while pressing '9' and try again\n(The code is a 3-digit code.)","Hint: The Seas are vast and have yet to be explored."],60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image=bg_image)
                         return 0
                     else:
                         level.player.has_entered_correct_code=True
@@ -168,6 +169,7 @@ class Scientist(pygame.sprite.Sprite):
         self.rect=self.img.get_rect(topleft=pos)
 
         self.dialogs={}
+        # self.dialog_index=0
         self.initialize_dialogs()
         pass
 
@@ -185,6 +187,7 @@ class Scientist(pygame.sprite.Sprite):
         display_surf.blit(self.img,newpos)
 
     def update(self,display_surf,offset):
+        #If player within proximity, play the EVENT_CODES[0] messages.
         self.draw(display_surf,offset)
         pass
     pass
