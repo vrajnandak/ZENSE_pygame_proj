@@ -435,5 +435,4 @@ class Player(pygame.sprite.Sprite):
         text_surf=UI_TEXT_FONT.render(f'Player Level: {self.player_level}',True,'black')
         display_surf.blit(text_surf,(self.player_level_text_surf_pos))
 
-        # debug_print(self.exp_cap,(500,500))
         pass

@@ -50,11 +50,11 @@ MAGIC_INFO={
     'heal':{'cooldown':150,'strength':20,'cost':40, 'min_val': [100,15,25], 'max_val': [250,40,40], 'cost_to_upgrade_one_unit': [20,50,80]}
 }
 ZOMBIE_ENEMIES_INFO={
-    'zombie1':{'health':100,'exp':20,'damage':10, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'claw', 'speed':ENEMY_SPEED},
-    'zombie2':{'health':150,'exp':30,'damage':20, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'claw', 'speed':ENEMY_SPEED},
-    'zombie3':{'health':200,'exp':50,'damage':50, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+1, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'slash', 'speed':ENEMY_SPEED+1},
-    'zombie4':{'health':400,'exp':100,'damage':75, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+2, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'sparkle', 'speed':ENEMY_SPEED+2},
-    'zombieBoss':{'health':1000,'exp':500,'damage':150, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+4, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'thunder', 'speed':ENEMY_SPEED+5}
+    'zombie1':{'health':100,'exp':50,'damage':10, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'claw', 'speed':ENEMY_SPEED},
+    'zombie2':{'health':150,'exp':100,'damage':20, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'claw', 'speed':ENEMY_SPEED},
+    'zombie3':{'health':200,'exp':200,'damage':50, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+1, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'slash', 'speed':ENEMY_SPEED+1},
+    'zombie4':{'health':400,'exp':500,'damage':75, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+2, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'sparkle', 'speed':ENEMY_SPEED+2},
+    'zombieBoss':{'health':1000,'exp':5000,'damage':150, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+4, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'thunder', 'speed':ENEMY_SPEED+5}
 }
 
 #Sizes
@@ -78,10 +78,6 @@ BUTTON_HOVER_COLOR=(83,83,83)
 BUTTON_CLICK_COLOR=(0,0,0)
 
 
-#The Background Shade when a Screen is active. These are the default values used.
-SCREEN_BG_SHADE_SURF=pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
-SCREEN_BG_SHAD_POS=(0,0)
-
 
 #Folder Paths
 WORKING_DIRECTORY_PATH=os.getcwd()
@@ -94,6 +90,14 @@ PLAYER_WEAPONS_DIRECTORY_PATH=os.path.join(GRAPHICS_DIR_PATH,"PLAYER_WEAPON")
 BASEMAP_NAME="BaseMap.png"                          #Name of Floor maps which are basically the 1st drawn image.
 FLOORINFO_DIR_NAME="FloorInfo"
 BLOCKS_PATH=os.path.join(GRAPHICS_DIR_PATH,"Blocks.png")
+
+
+
+#The Background Shade when a Screen is active. These are the default values used.
+bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"GameStartingScreen.png"))
+SCREEN_BG_SHADE_SURF=pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.SRCALPHA)
+SCREEN_BG_SHAD_POS=(0,0)
+
 
 
 #UI Information.
@@ -151,8 +155,6 @@ def wave_value():
     return 0
     pass
 
-
-
 #Function to display the textbox along with the value in the string.
 def display_textbox(display_surf,text_surf,text_rect,user_info,text_color,font):
     #Drawing the text_surf using text_rect.
@@ -166,12 +168,12 @@ def display_textbox(display_surf,text_surf,text_rect,user_info,text_color,font):
     display_surf.blit(user_surf,(white_bgrect.centerx-user_surf.get_width()//2, white_bgrect.centery-user_surf.get_height()//2))
 
 #Function to get the required credentials from the user.
-def getRequiredInfo(textBoxNames,font,text_color='black',start_pos_y=50):
+def getRequiredInfo(textBoxNames,font,text_color='black',start_pos_y=50,bg_image=None,display_this_msg_and_pos=None,textBoxes_left=100):
     display_surf=pygame.display.get_surface()
     user_strings=[]             #Holds the strings obtained from the user. This is what is returned by this function.
     textBoxSurfs=[]             #Hold the rendered surfaces for the textboxNames.
     textBoxCollideRects=[]      #The rectangles on these rendered surfaces to check for collision.
-    textBoxes_left=100          #The left position of all the textboxe names.
+    # textBoxes_left=100          #The left position of all the textboxe names.
     extra_box_space=20          #Used to maintain a bit more space in the textboxes.
     for index,textboxname in enumerate(textBoxNames):
         text_surf=font.render(textboxname,True,text_color)
@@ -182,8 +184,17 @@ def getRequiredInfo(textBoxNames,font,text_color='black',start_pos_y=50):
 
     #Submit button and surface.
     submit_surf=font.render("Submit",True,text_color)
-    submit_rect=pygame.rect.Rect(int((3*SCREEN_WIDTH)//4), int((3*SCREEN_HEIGHT)//8), submit_surf.get_width()+extra_box_space, submit_surf.get_height()+extra_box_space)
+    submit_rect=pygame.rect.Rect(int((3*SCREEN_WIDTH)//4), SCREEN_HEIGHT_HALF, submit_surf.get_width()+extra_box_space, submit_surf.get_height()+extra_box_space)
     submit_rect_pos=(submit_rect.centerx-submit_surf.get_width()//2,submit_rect.centery-submit_surf.get_height()//2)
+
+    display_msg=None
+    if(display_this_msg_and_pos!=None):
+        display_msg=display_this_msg_and_pos[0]
+        display_msg_pos=display_this_msg_and_pos[1]
+        display_msg_left=display_msg_pos[0]
+        display_msg_top=display_msg_pos[1]
+        display_msg_width=display_msg_pos[2]
+        display_msg_height=display_msg_pos[3]
 
     while True:
         for event in pygame.event.get():
@@ -200,48 +211,55 @@ def getRequiredInfo(textBoxNames,font,text_color='black',start_pos_y=50):
                 mouse_pos=pygame.mouse.get_pos()
                 for index,rect in enumerate(textBoxCollideRects):
                     if rect.collidepoint(mouse_pos):
-                        if event.type==pygame.K_BACKSPACE:
+                        if event.key==pygame.K_BACKSPACE:
                             user_strings[index]=user_strings[index][:-1]
                         else:
                             user_strings[index]+=event.unicode
         
         #Blitting all the textboxes and the submit button.
-        display_surf.fill('black')
+        if(bg_image!=None):
+            display_surf.blit(bg_image,(0,0))
+        else:
+            display_surf.fill('black')
+        
+        if(display_msg!=None):
+            DISPLAY_MSG(display_msg,display_msg_left,display_msg_top,display_msg_width,display_msg_height,shd_do_next_msg_prompt="")
+        
         for index,text_surf in enumerate(textBoxSurfs):
             display_textbox(display_surf,text_surf,textBoxCollideRects[index],user_strings[index],text_color,font)
         pygame.draw.rect(display_surf,'white',submit_rect,0,border_radius=3)
         display_surf.blit(submit_surf,submit_rect_pos)
+
         pygame.display.flip()
     pass
 
 #Function to draw a half-transparent background with a shade of the given color. Used only when displaying a screen.
 def drawShadedBGScreen(display_surf,shaded_color=SCREEN_BG_SHADE_COLOR):
-    pygame.draw.rect(SCREEN_BG_SHADE_SURF,shaded_color,[0,0,SCREEN_WIDTH,SCREEN_HEIGHT])       #Fills the rectangle with specified color and draws this on the surface.
-    display_surf.blit(SCREEN_BG_SHADE_SURF,SCREEN_BG_SHAD_POS)
+    pygame.draw.rect(bg_image,shaded_color,[0,0,SCREEN_WIDTH,SCREEN_HEIGHT])       #Fills the rectangle with specified color and draws this on the surface.
+    display_surf.blit(bg_image,SCREEN_BG_SHAD_POS)
 
 #Function to save the image of the screen whenever a different screen is going to be displayed.
-def SaveGameScreen(display_surf=None):
+def SaveGameScreen(display_surf=None,filename="Curr_Screen.png"):
+    print('in the save game screen function')
     if(display_surf==None):
         display_surf=pygame.display.get_surface()
     rect=pygame.rect.Rect(0,0,SCREEN_WIDTH,SCREEN_HEIGHT)
     screenshot=pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT))
     screenshot.blit(display_surf,rect.topleft,area=rect)
-    pygame.image.save(screenshot,os.path.join(GRAPHICS_DIR_PATH,"GameScreen.png"))
+    pygame.image.save(screenshot,os.path.join(GRAPHICS_DIR_PATH,filename))
     pass
-
-
-#A function to save the current screen into the given filename.
-def SAVE_CURR_SCREEN(filename):
-    pass
-
 
 #A function which uses the DISPLAY_MSG to continuously display all the messages.
-def DISPLAY_DIALOGS(DialogBox,message_box_left,message_box_top,message_box_width,message_box_height,font=pygame.font.Font(None,30)):
+def DISPLAY_DIALOGS(DialogBox,message_box_left,message_box_top,message_box_width,message_box_height,bg_image=None,font=pygame.font.Font(None,30)):
     if len(DialogBox)==0:
         return
+    if bg_image==None:
+        bg_image=pygame.surface(SCREEN_WIDTH,SCREEN_HEIGHT)
+        bg_image.fill('black')
     display_msg_index=0
     dialogs=list(DialogBox)
     num_of_msgs=len(dialogs)
+    # print('number of messages: ', num_of_msgs)
     while True:
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
@@ -250,17 +268,21 @@ def DISPLAY_DIALOGS(DialogBox,message_box_left,message_box_top,message_box_width
             if event.type==pygame.KEYDOWN:
                 if event.key==pygame.K_RETURN:
                     display_msg_index+=1
-
-        if display_msg_index >=num_of_msgs:
-            break
+                    if(display_msg_index>=num_of_msgs):
+                        return
+                elif event.key==pygame.K_BACKSPACE:
+                    display_msg_index-=1
+                    display_msg_index=0 if display_msg_index<=0 else display_msg_index
         
-
+        pygame.display.get_surface().blit(bg_image,(0,0))
         DISPLAY_MSG(dialogs[display_msg_index],message_box_left,message_box_top,message_box_width,message_box_height,font)
         pygame.display.flip()
     pass
 
 #A function to display a message. The function splits the message into different lines if the message is long.
-def DISPLAY_MSG(message, message_box_left,message_box_top,message_box_width,message_box_height,font=pygame.font.Font(None,30)):
+def DISPLAY_MSG(message, message_box_left,message_box_top,message_box_width,message_box_height,font=pygame.font.Font(None,30),shd_do_next_msg_prompt=None):
+    if(message==None):
+        return
     display_surf=pygame.display.get_surface()
     pygame.draw.rect(display_surf,BG_COLOR,(message_box_left,message_box_top,message_box_width,message_box_height),0,border_radius=10)
     pygame.draw.rect(display_surf,BG_BORDER_COLOR,(message_box_left,message_box_top,message_box_width,message_box_height),3,border_radius=10)
@@ -273,7 +295,7 @@ def DISPLAY_MSG(message, message_box_left,message_box_top,message_box_width,mess
             word_surf=font.render(words,True,'white')
             word_width, word_height=word_surf.get_size()
             if x+word_width>=message_box_width:
-                x=message_box_left
+                x=message_box_left+20
                 y+=word_height+20
             display_surf.blit(word_surf,(x,y))
 
@@ -281,21 +303,17 @@ def DISPLAY_MSG(message, message_box_left,message_box_top,message_box_width,mess
         x=message_box_left+20
         y+=word_height+20
     
-    next_msg_prompt="'Enter' for next message"
-    next_msg_surf=font.render(next_msg_prompt,False,'white')
-    next_msg_rect=pygame.rect.Rect(message_box_width-next_msg_surf.get_width()-20,message_box_height-next_msg_surf.get_height()-20,next_msg_surf.get_width(),next_msg_surf.get_height())
-    display_surf.blit(next_msg_surf,next_msg_rect)
+    if(shd_do_next_msg_prompt==None):
+        next_msg_prompt="'Enter' - next message,'Backspace' - previous message"
+        next_msg_surf=font.render(next_msg_prompt,False,'white')
+        next_msg_rect=pygame.rect.Rect(message_box_width-next_msg_surf.get_width()-20,message_box_height-next_msg_surf.get_height(),next_msg_surf.get_width(),next_msg_surf.get_height())
+        display_surf.blit(next_msg_surf,next_msg_rect)
+    elif(shd_do_next_msg_prompt!=""):
+        next_msg_surf=font.render(next_msg_prompt,False,'white')
+        next_msg_rect=pygame.rect.Rect(message_box_width-next_msg_surf.get_width()-20,message_box_height-next_msg_surf.get_height(),next_msg_surf.get_width(),next_msg_surf.get_height())
+        display_surf.blit(next_msg_surf,next_msg_rect)
     pass
 
-
-# #Function to get a single sprite from the given spritesheet.
-# def getSpriteFromSpriteSheet(spritesheet_path,sprite_width,sprite_height,sprite_location_left,sprite_location_top,colorKey=None):
-#     spritesheet=pygame.image.load(spritesheet_path)
-#     sprite=pygame.Surface((sprite_width,sprite_height)).convert_alpha()
-#     sprite.blit(spritesheet,(0,0),(sprite_location_left,sprite_location_top,sprite_width,sprite_height))
-#     if(colorKey==None):
-#         sprite.set_colorkey(colorKey)
-#     return sprite
 
 #A function to display the given text on the screen.
 debug_font=pygame.font.Font(None,30)
@@ -308,7 +326,7 @@ def debug_print(text,pos,display_surf=None):
 
 # # Just realized this isn't needed as long as we follow the below format.
 # # #ALL_BLOCKS - Has 'elem_id' as key, the block 'img' as value. This will be initialized in the Level object's using 'load_ALL_BLOCKS()'.
-# #     #elem_id: 500      ==> 'Gate_being_revealed'              ==>"BROWN". The image will have id of 500. Any elem having id of 500 will slowly appear once player has unlocked achievement.
+# #     #elem_id: 500      ==> 'Gate_being_opened'              ==>"BROWN". The image will have id of 500. When player kills all zombies, this sprite will be killed so that player can move to original gate.
 # #     #elem_id: 300      ==> 'Scientist1'                       ==>"ORANGE" color in Tiled map.
 # #     #elem_id: 301      ==> 'Scientist2'                       ==>"MAGENTA" color in Tiled map.
 # #     #elem_id: 302      ==> 'Scientist3'                       ==>"WHITE" color in Tiled map.
@@ -378,11 +396,11 @@ class Settings:
             'heal':{'cooldown':150,'strength':20,'cost':40, 'min_val': [100,15,25], 'max_val': [250,40,40], 'cost_to_upgrade_one_unit': [20,50,80]}
         }
         self.ZOMBIE_ENEMIES_INFO={
-            'zombie1':{'health':100,'exp':20,'damage':10, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'claw', 'speed':ENEMY_SPEED},
-            'zombie2':{'health':150,'exp':30,'damage':20, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'claw', 'speed':ENEMY_SPEED},
-            'zombie3':{'health':200,'exp':50,'damage':50, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+1, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'slash', 'speed':ENEMY_SPEED+1},
-            'zombie4':{'health':400,'exp':100,'damage':75, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+2, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'sparkle', 'speed':ENEMY_SPEED+2},
-            'zombieBoss':{'health':1000,'exp':500,'damage':150, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+4, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'thunder', 'speed':ENEMY_SPEED+5}
+            'zombie1':{'health':100,'exp':50,'damage':10, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'claw', 'speed':ENEMY_SPEED},
+            'zombie2':{'health':150,'exp':100,'damage':20, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'claw', 'speed':ENEMY_SPEED},
+            'zombie3':{'health':200,'exp':200,'damage':50, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+1, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'slash', 'speed':ENEMY_SPEED+1},
+            'zombie4':{'health':400,'exp':500,'damage':75, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+2, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'sparkle', 'speed':ENEMY_SPEED+2},
+            'zombieBoss':{'health':1000,'exp':5000,'damage':150, 'resistance':2, 'attack_radius': ENEMY_ATTACK_RADIUS+4, 'notice_radius':ENEMY_NOTICE_RADIUS, 'attack_type': 'thunder', 'speed':ENEMY_SPEED+5}
         }
 
 
@@ -405,7 +423,7 @@ class Settings:
         self.selected_attr_index=0
         self.selected_time=None
         self.can_select_different=True
-        self.can_select_duration=400
+        self.can_select_duration=300
 
         #Value changer dimensions.
         self.val_changer_height=int((3*SCREEN_HEIGHT)//9)
@@ -551,7 +569,12 @@ class Settings:
     def apply_changes(self,game):
         for index,item in enumerate(self.items):
             if index<5:
-                item.apply_changes(self.selected_attr_index,self.attribute_names[index],game,COST_TO_UPGRADE_SPEEDS[self.attribute_names[index]][0],COST_TO_UPGRADE_SPEEDS[self.attribute_names[index]][1])
+                if(item.apply_changes(self.selected_attr_index,self.attribute_names[index],game,COST_TO_UPGRADE_SPEEDS[self.attribute_names[index]][0],COST_TO_UPGRADE_SPEEDS[self.attribute_names[index]][1])=="Applied"):
+                    if index==1:
+                        game.player.speed=self.PLAYER_SPEED
+                    elif index==2:
+                        game.player.speed=self.ENEMY_SPEED
+                    pass
             elif index<7:
                 weaponName=game.player.weapon_name
                 weapon=game.GameSettings.WEAPON_INFO[weaponName]
@@ -596,25 +619,25 @@ class Item:
                 height_of_line=self.bottom[1]-self.top[1]
                 distance_from_bottom=self.bottom[1]-self.curr_from_bottom_pos
                 curr_new_val=min_val+ (((max_val-min_val)*distance_from_bottom)//height_of_line)
-                pass
+
+                if self.index<5:
+                    # curr_val=0
+                    setattr(game.GameSettings,attr_name,curr_new_val)
+                    pass
+                elif self.index<7:
+                    # curr_val=0
+                    game.GameSettings.WEAPON_INFO[attr_name][extra_attr_name]=curr_new_val
+                    pass
+                elif self.index<10:
+                    # curr_val=0
+                    game.GameSettings.MAGIC_INFO[attr_name][extra_attr_name]=curr_new_val
+                    pass
+                return "Applied"
             elif(self.has_been_selected):
                 self.cost_for_upgrading=0
                 self.has_been_selected=False
                 #DISPLAY A MESSAGE SAYING COULD NOT APPLY.
                 return
-            
-            if self.index<5:
-                # curr_val=0
-                setattr(game.GameSettings,attr_name,curr_new_val)
-                pass
-            elif self.index<7:
-                # curr_val=0
-                game.GameSettings.WEAPON_INFO[attr_name][extra_attr_name]=curr_new_val
-                pass
-            elif self.index<10:
-                # curr_val=0
-                game.GameSettings.MAGIC_INFO[attr_name][extra_attr_name]=curr_new_val
-                pass
 
     def select_the_upgraded_val(self,is_selected,curr_val,min_val,max_val,cost_of_one_unit):
         if(is_selected):

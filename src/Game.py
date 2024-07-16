@@ -4,28 +4,38 @@ from Level import Level
 from Button import Button
 from Player import Player
 import re       #Imported for removing the last letter from a string.
+from LEVEL_THINGS import game_info
+from LEVEL_THINGS import game_lore
 
 class Game:
     def __init__(self,clock):
         self.clock=clock
-
         self.GameSettings=Settings()
 
         self.createTeleportationMap()
 
-        #Get some credentials from the user, like the name, age etc.
+        #Displaying the game lore then, Get some credentials from the user, like the name, age etc.
         self.font=pygame.font.Font(None,32)
-        information=getRequiredInfo(["Name","Age"],self.font)
+        display_surf=pygame.display.get_surface()
+        bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"GameStartingScreen.png"))
+            #Displaying the game lore.
+        DISPLAY_DIALOGS(game_lore,60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image)
+        display_surf.blit(bg_image,(0,0))
+            #Getting the credentaials
+        information=getRequiredInfo(["Name","Age"],self.font,start_pos_y=SCREEN_HEIGHT_HALF,bg_image=bg_image,display_this_msg_and_pos=["Hover the mouse over the textbox and type the appropriate credential. Press 'Enter' or the submit button to submit the credentials.",[60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2)]])
         self.GameSettings.my_Name=information[0]
         self.GameSettings.my_age=information[1]
+        display_surf.blit(bg_image,(0,0))
+            #Displaying the game info.
+        DISPLAY_DIALOGS(game_info,60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image)
+        display_surf.blit(bg_image,(0,0))
 
         #The player for the Game.
         self.player=Player(GAME_START_PLAYER_POS,self.GameSettings)
 
         #All the levels unlocked till now
-        self.has_displayed_basic_game_info=False
         self.levels=[]
-        self.curr_level=Level(STARTING_LEVEL_ID,self.player,self.GameSettings,self.has_displayed_basic_game_info)
+        self.curr_level=Level(STARTING_LEVEL_ID,self.player,self.GameSettings)
         self.levels.append(self.curr_level)
 
         self.esc_time_duration=100
@@ -38,8 +48,27 @@ class Game:
         #For Ruin2
         #For Ruin3
         pass
+    
+    #A method to get the next level's ID.
+    def get_next_level_id(self):
+        #Have to check the player's positions and the collision between the created rects and then send the new level.
+        new_level=1
+        return new_level
 
     def changeMap(self):
+        #Make a black screen and place it in 'bg_GameStartScreen.png' because the player has to go to the next screen. Or save the images to new maps beforehand.
+
+        new_level_id=self.get_next_level_id()
+        if len(self.levels)>0:
+            for level in self.levels:
+                if level.level_id == new_level_id:
+                    self.curr_level=level
+                    return
+        print('hello')
+        self.levels.append(self.curr_level)
+        self.curr_level=Level(1,self.player,self.GameSettings)
+        print('created the new level')
+        pass
         #Have to Transport the player
             #If the level to teleport to doesn't exist in the self.levels.
                 #Create the New Level.
@@ -60,6 +89,7 @@ class Game:
                 if event.type==pygame.QUIT:
                     running=False
                     pygame.quit()
+                    sys.exit()
                     break
 
             if(running==False):
@@ -71,20 +101,24 @@ class Game:
                 SaveGameScreen()
                 return "Pause"
             
-
-            #Setting the player's speed to the given speed.
-            self.player.speed=self.GameSettings.PLAYER_SPEED
+            #This is set when the change is applied itself.
+            # #Setting the player's speed to the given speed.
+            # self.player.speed=self.GameSettings.PLAYER_SPEED
             
             #Running the Level logic.
             ret_val=self.curr_level.run(keys)
             pygame.display.flip()
             self.clock.tick(self.GameSettings.GAME_FPS)
 
-            self.has_displayed_basic_game_info=True
+            # self.has_displayed_basic_game_info=True
 
             if(ret_val==1):     #Code for changing the map.
+                print('going to change map')
                 self.changeMap()
+                print('after changing map.')
                 pass
             elif(ret_val==10):
                 return "Lose"
+            elif(ret_val==11):
+                return "Victory"
         pass

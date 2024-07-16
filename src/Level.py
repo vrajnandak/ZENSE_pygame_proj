@@ -10,16 +10,19 @@ from Weapon import Weapon
 from Particles import Animations
 from PlayerMagic import *
 from RandomLoot import RandomLoot
-from LEVEL_THINGS import LEVEL_INFO
+from LEVEL_THINGS import *
 
 class Level:
-    def __init__(self,level_id,player,settings,has_displayed_basic_game_info):
+    def __init__(self,level_id,player,settings):
         self.level_id=level_id
         self.GameSettings=settings
-        self.has_displayed_basic_game_info=has_displayed_basic_game_info
 
         #Getting the level information.
-        self.level_information=LEVEL_INFO(self.level_id,self.has_displayed_basic_game_info)
+        self.level_information=LEVEL_INFO(self.level_id)
+        bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"STARTSCREEN_IMAGES",f'Ruin{self.level_id}.png'))
+        display_surf=pygame.display.get_surface()
+        DISPLAY_DIALOGS(self.level_information.start_msg,60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image)
+        display_surf.blit(bg_image,(0,0))
 
         #Sprite groups of the level.
         self.enemy_sprites=pygame.sprite.Group()
@@ -40,6 +43,7 @@ class Level:
         self.player=player
         self.player.getAttackFunctions(self.create_attack,self.destroy_attack)
         self.player.getMagicFunctions(self.create_magic)
+        self.player_pos=None
 
         #Graphics of the level.
         self.graphics_path=os.path.join(MAPS_DIRECTORY_PATH,f'Ruin{self.level_id}')
@@ -118,6 +122,7 @@ class Level:
                 ind_strings=use_file_name.split('_',4)     #The ind_strings will be <name_of_obstacle>
                 ind_strings[1:]=[int(num) if num.isdigit() else num for num in ind_strings[1:]]
                 self.graphics[ind_strings[1]]=[pygame.image.load(os.path.join(self.graphics_path,file)),(ind_strings[2],ind_strings[3])]
+                # print('loaded the file: ', file)
             pass
         pass
 
@@ -128,7 +133,6 @@ class Level:
         width_tiles=self.baseFloorRect.width//BASE_SIZE
         height_tiles=self.baseFloorRect.height//BASE_SIZE
         self.detection_tiles=[[1 for _ in range(width_tiles)] for _ in range(height_tiles)]
-        # print(len(self.detection_tiles), len(self.detection_tiles[0]))
         pass
 
     #A method to create the map.
@@ -146,6 +150,7 @@ class Level:
             with open(os.path.join(FloorinfoPath,file)) as map:
                 layout=reader(map,delimiter=',')
                 for row_index,row in enumerate(layout):
+                    # print(row)
                     for col_index,val in enumerate(row):
                         x=col_index*BASE_SIZE
                         y=row_index*BASE_SIZE
@@ -158,10 +163,14 @@ class Level:
                                 Obstacle(img_pos,img,[self.visible_sprites,self.obstacle_sprites])      #The instance of this class created is added to the given spriteGroups.
                                 img_width=int(img.get_rect().width//BASE_SIZE)
                                 img_height=int(img.get_rect().height//BASE_SIZE)
+                                detection_tiles_row=len(self.detection_tiles)
+                                detection_tiles_cols=len(self.detection_tiles[0])
                                 for i in range(img_width+2):
                                     for j in range(img_height+2):
-                                        if ((row_index-1+j<len(self.detection_tiles)) and (col_index-1+j < len(self.detection_tiles[0]))):
-                                            self.detection_tiles[row_index-1+j][col_index-1+i]=0
+                                        new_row_index=row_index-1+j
+                                        new_col_index=col_index-1+i
+                                        if((new_row_index>=0 and new_row_index<detection_tiles_row) and (new_col_index>=0 and new_col_index<detection_tiles_cols)):
+                                            self.detection_tiles[new_row_index][new_col_index]=0
                                 pass
                             
                             elif(val==100):
@@ -185,10 +194,13 @@ class Level:
                                 self.enemy_counter+=1
                                 pass
                             elif(val==300):     #Scientist1
+                                Scientist((x,y),[self.visible_sprites],1)
                                 pass
                             elif(val==301):     #Scientist2
+                                Scientist((x,y),[self.visible_sprites],2)
                                 pass
                             elif(val==302):     #Scientist3
+                                Scientist((x,y),[self.visible_sprites],3)
                                 pass
                             elif(val==500):             #A val which reveals the transportation portal.
                                 pass
@@ -198,6 +210,8 @@ class Level:
                             elif(val==1001):
                                 #This is to update the detection tiles properly so that the player's tiles are marked as '0'.
                             #     self.player=Player(img_pos)
+                                self.player.rect.left=x
+                                self.player.rect.top=y
                                 pass
                             elif(val==1003):
                                 Portal(img_pos,[self.visible_sprites,self.transport_sprites], os.path.join(self.graphics_path,"Portals"))
@@ -377,29 +391,45 @@ class Level:
 
     #A method to check if the player has attacked any sprite by checking the weapon sprite collision with the sprite groups.
     def player_attack(self):
-        if self.curr_attack:
-            #Checking collision with player weapon
-            collision_sprites=pygame.sprite.spritecollide(self.curr_attack, self.enemy_sprites, False)
-            if collision_sprites:
-                for target_sprite in collision_sprites:
-                    target_sprite_pos=target_sprite.rect.topleft
-                    ret_val=target_sprite.reduce_health(self.player,is_weapon=1)
-                    if(ret_val==1):
-                        self.enemy_counter-=1
-                        self.random_loot_drop(target_sprite_pos,target_sprite.zombieType)
+        attacking_sprites=[self.attack_sprites,[self.curr_attack]]
+        for index,sprite_group in enumerate(attacking_sprites):
+            if sprite_group:
+                for sprite in sprite_group:
+                    if sprite:
+                        collision_sprites=pygame.sprite.spritecollide(sprite,self.enemy_sprites,False)
+                        if collision_sprites:
+                            for target_sprite in collision_sprites:
+                                target_sprite_pos=target_sprite.rect.topleft
+                                ret_val=target_sprite.reduce_health(self.player,index)
+                                if(ret_val==1):
+                                    self.enemy_counter-=1
+                                    self.random_loot_drop(target_sprite_pos,target_sprite.zombieType)
+                                    if(self.enemy_counter==0):
+                                        self.level_information.handle_event(EVENT_CODES[0])
 
-        if self.attack_sprites:
-            #Checking collision with player magic.
-            # print('lksdjflksdjf')
-            for sprite in self.attack_sprites:
-                collision_sprites=pygame.sprite.spritecollide(sprite,self.enemy_sprites,False)
-                if collision_sprites:
-                    for target_sprite in collision_sprites:
-                        target_sprite_pos=target_sprite.rect.topleft
-                        ret_val=target_sprite.reduce_health(self.player,0)
-                        if(ret_val==1):
-                            self.enemy_counter-=1
-                            self.random_loot_drop(target_sprite_pos,target_sprite.zombieType)
+        # if self.curr_attack:
+        #     #Checking collision with player weapon
+        #     collision_sprites=pygame.sprite.spritecollide(self.curr_attack, self.enemy_sprites, False)
+        #     if collision_sprites:
+        #         for target_sprite in collision_sprites:
+        #             target_sprite_pos=target_sprite.rect.topleft
+        #             ret_val=target_sprite.reduce_health(self.player,is_weapon=1)
+        #             if(ret_val==1):
+        #                 self.enemy_counter-=1
+        #                 self.random_loot_drop(target_sprite_pos,target_sprite.zombieType)
+
+        # if self.attack_sprites:
+        #     #Checking collision with player magic.
+        #     # print('lksdjflksdjf')
+        #     for sprite in self.attack_sprites:
+        #         collision_sprites=pygame.sprite.spritecollide(sprite,self.enemy_sprites,False)
+        #         if collision_sprites:
+        #             for target_sprite in collision_sprites:
+        #                 target_sprite_pos=target_sprite.rect.topleft
+        #                 ret_val=target_sprite.reduce_health(self.player,0)
+        #                 if(ret_val==1):
+        #                     self.enemy_counter-=1
+        #                     self.random_loot_drop(target_sprite_pos,target_sprite.zombieType)
 
         pass
     
@@ -410,7 +440,6 @@ class Level:
             self.player.can_get_hit=False
             self.player.hit_time=pygame.time.get_ticks()
             self.animation_player.create_particles(attack_type,self.player.rect.center,[self.visible_sprites])
-            #Spawn the particles.
         pass
 
     def run(self,keys):
@@ -421,7 +450,11 @@ class Level:
         #Move the Player
         shd_transport=self.player.move(keys,self)
         if(shd_transport==1):
-            return shd_transport
+            shd_use_portal_and_change_map=self.level_information.handle_event(EVENT_CODES[2],self)
+            if(shd_use_portal_and_change_map):
+                print('should be teleported')
+                self.player_pos=self.player.rect.topleft
+                return shd_transport
         
         #Get the Offset
         self.get_offset(keys)
@@ -450,8 +483,14 @@ class Level:
         self.display_selection(display_surf,10,SCREEN_HEIGHT-2*ITEM_BOX_SIZE - 20, not self.player.can_switch_magic, self.curr_selected_magic)
 
         #Displaying the level information if any.
-        pygame.image.save()
-        self.level_information.update()
+        self.level_information.update(display_surf)
+        
+        
+        
+        
+        
+        # SaveGameScreen(display_surf,"Before_playing_dialog_box.png")
+        # debug_print(self.player.rect.topleft,(500,500))
 
         # debug_print(self.GameSettings.PLAYER_SPEED,(300,300))
         # debug_print(f'weapon damage: {self.GameSettings.WEAPON_INFO[self.player.weapon_name]["damage"]}',(500,300))

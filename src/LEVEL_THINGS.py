@@ -2,62 +2,180 @@ from Settings import *
 
 #This map contains the information related to each level that has to be displayed or shown.
 
+#This is used only when the game is started.
+game_lore=[
+    "In a world with advanced technology, evil organizations, adventurers and more, 3 scientists are curious about the recently discovered ruins which are rumored to hold an ancient device, capable of travelling through space and time.", "Intrigued by these rumors, the scientists decide to explore the ruins before anyone else and try to unlock the secrets to time-travelling. They bring with them a famous adventurer, who has survived all by himself in many islands and discovered hidden treasures.", "To their surprise however, they lose each other while exploring the island and each gets sent to a different ruin entrance. The protagonist, an old friend of theirs and the number one adventurer in the world(who's now retired), gets a call from one of these scientist's colleagues asking him to rescue to them.", "The protagonist, with no hesitation, sets out to the island in hopes of rescuing them."
+]
+game_info=[
+    "Player Movement Controls: [w,a,s,d] or [up,left,down,right arrow keys]",
+    "Player attack: [space bar]\n Player magic: [left_control]",
+    "Switch weapon: [n,p] for next and previous weapon\nSwitch magic: [m,o] for next and previous magic",
+    "Camera Movement: [b] for box camera, [i,j,k,l] for keyboard camera movement, hover mouse close to screen end for mouse camera movement",
+    "Pause screen: [esc] for pause screen. Another esc to go back to the game from pause screen",
+    "Settings: Current weapon, magic information is displayed. Can purchase upgrades only if you have sufficient exp."
+]
+
+
+EVENT_CODES=['BeforeKillingAnyEnemy','AfterKillingAllEnemy','PortalCollision']
+RUIN0_ENTRY_CODE=106
+Ruin0_rect_enterCode=pygame.rect.Rect(1184-32,2528-32,5*BASE_SIZE,5*BASE_SIZE)            #Is the Entrance to Ruin1
+Ruin0_rect_Ruin1=pygame.rect.Rect(3424-32,1440-32,5*BASE_SIZE,5*BASE_SIZE)
+Ruin0_rect_Ruin2=pygame.rect.Rect(4224-32,3232-32,5*BASE_SIZE,5*BASE_SIZE)
+start_msg={         #The key is the level id.
+    '0':["Find the code to save the scientist.\n'To the one who explores this island, the key shall reveal itself'\nPress '9' near the portal to type the code."],              #Have to constantly check if the player is colliding with a particular rect and pressing 9.
+    '1':["Save the Scientist by unlocking the cage.\nTalk with the scientist to get a clue where the key is."],                                                                 #Event handled when level's enemy counter reaches 0.
+    '2':[""],
+    '3':[""],
+}
+
+Scientist1={    #Is Stuck in Ruin1
+    'dialog':{ EVENT_CODES[0]: ['Please Find the key to this cell.',
+                                'I Think the key should be somewhere here. Can you check around',
+                                'Hmmm, Maybe the cage will unlock if you destroy all the enemies in this room.',
+                                'Can you please help me.'
+                            ],
+                EVENT_CODES[1]: ['Thank you so much for saving me.',
+                                'Can you also save the other 2.',
+                                'I think each of us got taken into different ruins',
+                                'I wish you best of luck'
+                            ]
+            }
+}
+
+#Conditions to display the messages.
+#->Ruin0    ==> Start_msg,
+
+
 class LEVEL_INFO:
-    def __init__(self,level_id,has_displayed_basic_game_info):
-        # self.start_msg=[]
-        self.game_info=[]
-        if(not has_displayed_basic_game_info):
-            print('has not displayed basic info')
-            self.game_info.append("Player Movement Controls: [w,a,s,d] or [up,left,down,right arrow keys]")
-            self.game_info.append("Player attack: [space bar]\n Player magic: [left_control]")
-            self.game_info.append("Switch weapon: [n,p] for next and previous weapon\nSwitch magic: [m,o] for next and previous magic")
-            self.game_info.append("Camera Movement: [b] for box camera, [i,j,k,l] for keyboard camera movement, hover mouse close to screen end for mouse camera movement")
-            self.game_info.append("Pause screen: [esc] for pause screen. Another esc to go back to the game from pause screen")
-            self.game_info.append("Settings: Current weapon, magic information is displayed. Can purchase upgrades only if you have sufficient exp.")
-        if(level_id==0):
-            self.start_msg='Find the code to save the scientist. \n"To the one who explores this island, the key shall reveal itself"\nFind the portal and press "9" to enter the code.\n(Enter "Enter" to return to game).'
-            pass
-        elif(level_id==1):
-            pass
-        elif(level_id==2):
-            pass
-        elif(level_id==3):
-            pass
-        
+    def __init__(self,level_id):
+        self.level_id=level_id
+        self.start_msg=start_msg[str(level_id)]
 
-        self.has_displayed_start_msg=False
-        #FOR SHOWING THE MESSAGE AS A TIMER BASED THING, USE THESE VARIABLES.
-        self.display_start_msg_timer=10000
-        self.display_start_msg_time=None
-        pass
-    
-    #A method to get the inputs.
-    def inputs(self):
-        keys=pygame.key.get_pressed()
-        if(keys[pygame.K_RETURN]):
-            self.has_displayed_start_msg=True
+        self.codeEnterImg=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"Code_Enter_image.png"))
+        self.codeEnterImg_rect=self.codeEnterImg.get_rect(topleft=(200,200))
         pass
 
-    #A method to apply cooldowns.
-    def apply_cooldown(self):
-        curr_time=pygame.time.get_ticks()
-        if curr_time-self.display_start_msg_time>=self.display_start_msg_timer:
-            self.has_displayed_start_msg=True
+    #A method to get the correct code from the player.
+    def getCorrectCodeFromPlayer(self):
+        # SaveGameScreen(filename=os.path.join(GRAPHICS_DIR_PATH,"GameScreen.png"))
+        # bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"GameScreen.png"))
+        bg=pygame.Surface((SCREEN_WIDTH,SCREEN_HEIGHT))
+        bg.fill('black')
+        bg.blit(self.codeEnterImg,self.codeEnterImg_rect.topleft)
+        display_surf=pygame.display.get_surface()
+        rectangles=[]
+        rectangles_left=[278,568,860]
+        rectangle_top=[325,413,499]
+        rectangle_sizes=60
+        for top in rectangle_top:
+            for left in rectangles_left:
+                rectangle=pygame.rect.Rect(left,top,rectangle_sizes,rectangle_sizes)
+                rectangles.append(rectangle)
+        rectangles.append(pygame.rect.Rect(568,582,rectangle_sizes,rectangle_sizes))
+
+        enter_button=pygame.rect.Rect(860,582,rectangle_sizes,rectangle_sizes)
+        clear_button=pygame.rect.Rect(278,582,rectangle_sizes,rectangle_sizes)
+        pass_code=""
+        font=pygame.font.Font(None,60)
+
+        while True:
+            for event in pygame.event.get():
+                if event.type==pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type==pygame.KEYDOWN:
+                    if event.key==pygame.K_RETURN:
+                        if(pass_code==""):
+                            return 1
+                        return int(pass_code)
+                if event.type==pygame.MOUSEBUTTONDOWN:
+                    mouse_pos=pygame.mouse.get_pos()
+                    for index,rect in enumerate(rectangles):
+                        if rect.collidepoint(mouse_pos):
+                            index+=1
+                            if(index==10):
+                                index=0
+                            pass_code+=str(index)
+                    if clear_button.collidepoint(mouse_pos):
+                        pass_code=pass_code[:-1]
+                    if enter_button.collidepoint(mouse_pos):
+                        if(pass_code==""):
+                            return 1
+                        return int(pass_code)
+                    pass
+            display_surf.blit(bg,(0,0))
+            # print(pygame.mouse.get_pos())
+            pass_code_surf=font.render(pass_code,True,'black')
+            pass_code_rect=pass_code_surf.get_rect(topright=(932,228)) #pygame.rect.Rect(932,228,pass)
+            display_surf.blit(pass_code_surf,pass_code_rect.topleft)
+            pygame.display.flip()
+            
+        # return getRequiredInfo(['Enter the Code'],UI_TEXT_FONT,bg_image=bg)
         pass
 
-    def display_start_msg(self):
-        if not self.has_displayed_start_msg:
-            if(self.display_start_msg_time==None):
-                self.display_start_msg_time=pygame.time.get_ticks()
-            DISPLAY_MSG(self.start_msg,60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2))
-            # self.apply_cooldown()
+    #A method to handle the different events that happen in the game.
+    def handle_event(self,event_code,level=None):
+        if event_code==EVENT_CODES[0]:
+            pass
+        elif event_code==EVENT_CODES[1]:
+            pass
+        elif event_code==EVENT_CODES[2]:
+            if self.level_id==0:
+                if level:
+                    if level.player.rect.colliderect(Ruin0_rect_enterCode) and pygame.key.get_pressed()[pygame.K_9]:
+                        # print('got the portal')
+                        code=self.getCorrectCodeFromPlayer()
+                        print('code obtained: ', code)
+                        if(code!=RUIN0_ENTRY_CODE):
+                            bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"GameScreen.png"))
+                            DISPLAY_DIALOGS(["You have entered the Wrong Code. Dash into the portal while pressing '9' and try again","Hint: The Seas are vast and have yet to be explored."],60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image=bg_image)
+                        else:
+                            print('You have successfully crossed over to Ruin1')
+                            return 1        #Indicates that the map should be changed. The map will be chosen in Game.py
+            else:
+                pass
+            return 0
+        else:
+            pass
         pass
 
-    def display_game_info(self):
-        if len(self.game_info)>0:
-            DISPLAY_DIALOGS(self.game_info,60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2))
+    def update(self,display_surf):
+        pass
+        # if (not self.has_displayed_basic_game_info) or (self.has_displayed_start_msg):
+        # self.inputs()
+        # self.display_game_info(display_surf)
+        # self.display_start_msg(display_surf)
+        # self.apply_cooldown()
 
-    def update(self):
-        self.inputs()
-        self.display_game_info()
-        self.display_start_msg()
+
+class Scientist(pygame.sprite.Sprite):
+    def __init__(self,pos,groups,scientist_id):
+        super().__init__(groups)
+        self.pos=pos
+        self.scientist_id=scientist_id
+        self.graphics_path=os.path.join(GRAPHICS_DIR_PATH,"SCIENTISTS",f'Scientist{self.scientist_id}')
+
+        self.img=pygame.image.load(os.path.join(self.graphics_path,f'Scientist{self.scientist_id}.png'))
+        self.rect=self.img.get_rect(topleft=pos)
+
+        self.dialogs={}
+        self.initialize_dialogs()
+        pass
+
+    def initialize_dialogs(self):
+        if self.scientist_id==1:
+            self.dialogs=Scientist1["dialog"]
+        elif self.scientist_id==2:
+            pass
+        elif self.scientist_id==3:
+            pass
+        pass
+
+    def draw(self,display_surf,offset):
+        newpos=self.rect.topleft-offset
+        display_surf.blit(self.img,newpos)
+
+    def update(self,display_surf,offset):
+        self.draw(display_surf,offset)
+        pass
+    pass

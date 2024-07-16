@@ -133,7 +133,6 @@ class Enemy(pygame.sprite.Sprite):
                 self.health-=player.get_full_weapon_damage()
             else:
                 self.health-=player.get_full_magic_damage()
-                #Deal magic damage.
                 pass
             if(self.chk_death()==1):
                 player.exp+=self.exp_gained_on_killing
@@ -143,7 +142,6 @@ class Enemy(pygame.sprite.Sprite):
         pass
     def chk_death(self):
         if self.health<=0:
-
             self.kill()
             return 1
         return 0
@@ -235,8 +233,5 @@ class Enemy(pygame.sprite.Sprite):
     def draw(self,display_surf,offset):
         newpos=self.rect.topleft-offset
         display_surf.blit(self.img,newpos)
-
-        if(self.health>0):
-            self.draw_health_bar(display_surf,offset)
-        # debug_print(self.status,self.rect.topleft-offset,display_surf)
+        self.draw_health_bar(display_surf,offset)
         pass
