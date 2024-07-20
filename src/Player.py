@@ -206,7 +206,7 @@ class Player(pygame.sprite.Sprite):
 
         #Using the Attack Moves
         if(keys[pygame.K_SPACE] and not(self.attacking)):
-            print('attacking')
+            # print('attacking')
             self.attacking=True
             self.attack_time=pygame.time.get_ticks()
             self.createAttack()

@@ -16,14 +16,14 @@ game_info=[
 ]
 
 
-EVENT_CODES=['BeforeKillingAnyEnemy','AfterKillingAllEnemy','PortalCollision']
+EVENT_CODES=['BeforeKillingAnyEnemy','AfterKillingAllEnemy','PortalCollision','FoundKeyPressingE']
 RUIN0_ENTRY_CODE=106
 
 start_msg={         #The key is the level id.
     '0':["Find the code to save the scientist.\n'To the one who explores this island, the key shall reveal itself'\nPress '9' near the portal to type the code."],              #Have to constantly check if the player is colliding with a particular rect and pressing 9.
     '1':["Save the Scientist by unlocking the cage.\nTalk with the scientist to get a clue where the key is."],                                                                 #Event handled when level's enemy counter reaches 0.
-    '2':[""],
-    '3':[""],
+    '2':["Save the scientist from the ruins.\nTalk with the scientist to help him escape."],
+    '3':["Save the scientist and leave these ruins."],
 }
 
 Scientist1={    #Is Stuck in Ruin1
@@ -38,6 +38,19 @@ Scientist1={    #Is Stuck in Ruin1
                                 'I wish you best of luck'
                             ]
             }
+}
+
+Scientist2={
+    'dialog':{
+        EVENT_CODES[0]:['Please save me from these Ruins.',
+                        'I Think you need to find the hidden Key.',
+                        "I don't know the exact location but press 'E' when near it."
+        ],
+        EVENT_CODES[1]:['Wow, You have already killed all the zombies.'],
+        EVENT_CODES[3]:['Finally, You have found the key.',
+                        'Thank you so much for saving me'
+        ]
+    }
 }
 
 #Conditions to display the messages.
