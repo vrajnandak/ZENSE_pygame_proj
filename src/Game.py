@@ -56,7 +56,8 @@ class Game:
         if self.curr_level.level_id==0:
             if self.player.rect.colliderect(Ruin0_rect_enterCode) and self.player.has_entered_correct_code==True:
                 new_level=1
-            if self.player.rect.colliderect(Ruin0_rect_Ruin2):
+            elif self.player.rect.colliderect(Ruin0_rect_Ruin2):
+                print('going to Ruin2')
                 new_level=2
             elif self.player.rect.colliderect(Ruin0_rect_Ruin3):
                 new_level=3
@@ -70,6 +71,13 @@ class Game:
                 pass
             pass
         elif self.curr_level.level_id==2:
+            if self.player.rect.colliderect(Ruin2_rect_Ruin0):
+                new_level=0
+                pass
+            elif self.player.rect.colliderect(Ruin2_rect_Ruin2_Dummy):
+                pass
+            elif self.player.rect.colliderect(Ruin2_rect_Ruin2_hidden):
+                pass
             pass
         elif self.curr_level.level_id==3:
             pass

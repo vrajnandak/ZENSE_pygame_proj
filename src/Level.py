@@ -20,6 +20,7 @@ class Level:
         #Getting the level information.
         self.level_information=LEVEL_INFO(self.level_id)
         bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"STARTSCREEN_IMAGES",f'Ruin{self.level_id}.png'))
+        # bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"STARTSCREEN_IMAGES",f'Ruin{0}.png'))
         display_surf=pygame.display.get_surface()
         DISPLAY_DIALOGS(self.level_information.start_msg,60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image)
         display_surf.blit(bg_image,(0,0))
@@ -218,7 +219,7 @@ class Level:
                                 self.player.rect.top=y
                                 pass
                             elif(val==1003):
-                                # print('portal dimensions: ', x,y)
+                                print('portal dimensions: ', x,y)
                                 Portal(img_pos,[self.visible_sprites,self.transport_sprites], os.path.join(self.graphics_path,"Portals"))
                                 pass
                             elif(val==1004):
@@ -490,7 +491,7 @@ class Level:
         #Displaying the level information if any.
         # self.level_information.update(display_surf)
         
-        
+        debug_print(self.player.rect.topleft,(500,500))
         
         
         

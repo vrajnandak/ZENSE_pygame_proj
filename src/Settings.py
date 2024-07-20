@@ -148,13 +148,19 @@ COST_TO_UPGRADE_SPEEDS={
 
 
 #######Game portal rectangles
-Ruin0_rect_enterCode=pygame.rect.Rect(1184-32,2528-32,5*BASE_SIZE,5*BASE_SIZE)            #Is the Entrance to Ruin1
-Ruin0_rect_Ruin2=pygame.rect.Rect(3424-32,1440-32,5*BASE_SIZE,5*BASE_SIZE)
-Ruin0_rect_Ruin3=pygame.rect.Rect(4224-32,3232-32,5*BASE_SIZE,5*BASE_SIZE)
+Ruin0_rect_enterCode=pygame.rect.Rect(1184-BASE_SIZE,2528-BASE_SIZE,5*BASE_SIZE,5*BASE_SIZE)            #Is the Entrance to Ruin1
+Ruin0_rect_Ruin2=pygame.rect.Rect(3424-BASE_SIZE,1440-BASE_SIZE,5*BASE_SIZE,5*BASE_SIZE)
+Ruin0_rect_Ruin3=pygame.rect.Rect(4224-BASE_SIZE,3232-BASE_SIZE,5*BASE_SIZE,5*BASE_SIZE)
 
 Ruin1_rect_Ruin0=pygame.rect.Rect(864,0,2*BASE_SIZE,2*BASE_SIZE)
 Ruin1_rect_Ruin1_Dummy=pygame.rect.Rect(3134,960,2*BASE_SIZE,2*BASE_SIZE)
 Ruin1_rect_Ruin1_hidden=pygame.rect.Rect(1056,2496,2*BASE_SIZE,2*BASE_SIZE)
+
+Ruin2_rect_Ruin0=pygame.rect.Rect(2112,0,2*BASE_SIZE,2*BASE_SIZE)
+Ruin2_rect_Ruin2_Dummy=pygame.rect.Rect(0,1632,2*BASE_SIZE,2*BASE_SIZE)
+Ruin2_rect_Ruin2_hidden=pygame.rect.Rect(3168-BASE_SIZE,896,2*BASE_SIZE,2*BASE_SIZE)
+
+# Ruin3_rect_Ruin0=pygame.rect.Rect()
 
 
 
