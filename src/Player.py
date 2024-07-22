@@ -64,7 +64,7 @@ class Player(pygame.sprite.Sprite):
         self.stats={'health':1000,'energy':100,'attack':10,'magic':4,'speed':self.GameSettings.PLAYER_SPEED}        #These are the default or caps on player stats.
         self.health=self.stats['health']
         self.energy=self.stats['energy']
-        self.exp=1
+        self.exp=10000
         self.exp_cap=100                        #This will be updated to a new cap whenever the self.exp >= self.exp_cap.
         self.speed=self.stats['speed']
         self.player_level=0

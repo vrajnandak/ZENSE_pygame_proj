@@ -51,7 +51,7 @@ class MyGame:
         self.scroll_settings_screen=0
         self.accumulated_scroll=0
         self.SETTINGS_SCREEN_TOP=0
-        self.SETTINGS_SCREEN_BOTTOM=0
+        self.SETTINGS_SCREEN_BOTTOM=-SCREEN_HEIGHT+120
             #Victory Or Loss Screen Buttons - "Play Again", "Quit"
         # self.victory_or_loss_text=["You have Won", "You have Lost"]
         text_font=pygame.font.FontType(None,60)
@@ -117,12 +117,19 @@ class MyGame:
 
     #A method to clamp the scroll settings variable so that the page doesn't scroll out of bounds
     def configure_scroll_settings_screen(self):
-        if self.accumulated_scroll<self.SETTINGS_SCREEN_TOP:
+        if self.accumulated_scroll>self.SETTINGS_SCREEN_TOP:
             self.accumulated_scroll-=self.scroll_settings_screen
             self.scroll_settings_screen=0
-        elif self.accumulated_scroll>self.SETTINGS_SCREEN_BOTTOM:
+        elif self.accumulated_scroll<self.SETTINGS_SCREEN_BOTTOM:
             self.accumulated_scroll-=self.scroll_settings_screen
             self.scroll_settings_screen=0
+        # if self.accumulated_scroll<self.SETTINGS_SCREEN_TOP:
+        #     self.accumulated_scroll-=self.scroll_settings_screen
+        #     self.scroll_settings_screen=0
+        # elif self.accumulated_scroll>self.SETTINGS_SCREEN_BOTTOM:
+        #     self.accumulated_scroll-=self.scroll_settings_screen
+        #     self.scroll_settings_screen=0
+        pass
 
     #A method to display the given screen. Returns the text of the button on which the mouse is released on.
     def displayScreen(self,screen_bg_shade,buttons):
@@ -166,6 +173,7 @@ class MyGame:
             
             self.configure_scroll_settings_screen()
             self.screen.blit(gameScreen,(0,0))
+            
             # if(gameScreen):
             #     self.screen.blit(gameScreen,(0,0))
             # else:
@@ -188,6 +196,8 @@ class MyGame:
                     # print('returning not possible')
                     # self.OriginalSettings.display_settings(self.screen,self.Temporary_Game,can_change_values=0)
                     return "NOT POSSIBLE"
+            # if(self.curr_Game!=None):
+            #     debug_print(self.curr_Game.GameSettings.selected_attr_index,(SCREEN_WIDTH_HALF,SCREEN_HEIGHT_HALF))
             self.scroll_settings_screen=0
             pygame.display.flip()
         return "NOT POSSIBLE"

@@ -151,19 +151,59 @@
 # for index,name in enumerate(my_dictionary.keys()):
 #     print(name,index)
 
-import pygame
-pygame.init()
-# print(pygame.K_0)
-# print(pygame.K_9)
-screen=pygame.display.set_mode((500,500))
-while True:
-    for event in pygame.event.get():
-        if event.type==pygame.QUIT:
-            pygame.quit()
-            # sys.exit()
-        # if event.type==pygame.KEYDOWN:
-            # print('event key: ', event.key)
-        if event.type == pygame.MOUSEWHEEL:
-            print(event.x, event.y)
-            #event.y is 1 for scrolling up.
-            #event.y is -1 for scrolling down.
+# import pygame
+# pygame.init()
+# # print(pygame.K_0)
+# # print(pygame.K_9)
+# screen=pygame.display.set_mode((500,500))
+# while True:
+#     for event in pygame.event.get():
+#         if event.type==pygame.QUIT:
+#             pygame.quit()
+#             # sys.exit()
+#         # if event.type==pygame.KEYDOWN:
+#             # print('event key: ', event.key)
+#         if event.type == pygame.MOUSEWHEEL:
+#             print(event.x, event.y)
+#             #event.y is 1 for scrolling up.
+#             #event.y is -1 for scrolling down.
+
+
+# extra_attr_names=['(Cooldown)','(Damage)']*3 + ['(Cooldown)','(Strength)','(Cost)']*2
+# print(extra_attr_names)
+
+extra_attr_names=['(Cooldown)','(Damage)']*3 + ['(Cooldown)','(Strength)','(Cost)']*2
+SCREEN_WIDTH=1240
+SCREEN_HEIGHT=800
+val_changer_height=int((3*SCREEN_HEIGHT)//9)
+val_changer_width=int(SCREEN_WIDTH//6)
+width_gap=35
+height_gap=60
+base_height=200
+attribute_names=[         #The list contains in order [min_val,max_val,cost_of_exp_for_increasing_by_one_unit]
+            "GAME_FPS",
+            "PLAYER_SPEED",
+            "ENEMY_SPEED",
+            "KEYBOARD_CAMERA_SPEED",
+            "MOUSE_CAMERA_SPEED",
+            "Weapon1 Cooldown",              
+            "Weapon1 Damage",
+            "Weapon2 Cooldown",              
+            "Weapon2 Damage",
+            "Weapon3 Cooldown",              
+            "Weapon3 Damage",
+            # "Weapon4 Cooldown",              
+            # "Wepon4 Damage",
+            # "Weapon5 Cooldown",              
+            # "Wepon5 Damage",
+            "Magic1 Cooldown",
+            "Magic1 Strength",
+            "Magic1 Cost",
+            "Magic2 Cooldown",
+            "Magic2 Strength",
+            "Magic2 Cost",
+        ]
+for index,item_name in enumerate(attribute_names):
+    left=width_gap+(index%5)*val_changer_width+width_gap*(index%5)
+    top=base_height+int(index//5)*(val_changer_height + height_gap)
+    print(left,top)

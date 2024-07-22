@@ -16,7 +16,7 @@ PLAYER_SPEED=10
 ENEMY_SPEED=5
 KEYBOARD_CAMERA_SPEED=20
 MOUSE_CAMERA_SPEED=20
-SCROLL_SETTINGS_SPEED=5
+SCROLL_SETTINGS_SPEED=15
 
 
 #Potion values
@@ -434,10 +434,10 @@ class Settings:
             "MOUSE_CAMERA_SPEED",
             "Weapon1 Cooldown",              
             "Weapon1 Damage",
-            # "Weapon2 Cooldown",              
-            # "Weapon2 Damage",
-            # "Weapon3 Cooldown",              
-            # "Weapon3 Damage",
+            "Weapon2 Cooldown",              
+            "Weapon2 Damage",
+            "Weapon3 Cooldown",              
+            "Weapon3 Damage",
             # "Weapon4 Cooldown",              
             # "Wepon4 Damage",
             # "Weapon5 Cooldown",              
@@ -445,10 +445,18 @@ class Settings:
             "Magic1 Cooldown",
             "Magic1 Strength",
             "Magic1 Cost",
-            # "Magic2 Cooldown",
-            # "Magic2 Strength",
-            # "Magic2 Cost",
+            "Magic2 Cooldown",
+            "Magic2 Strength",
+            "Magic2 Cost",
         ]
+
+        #Player information variables.
+        self.NamePos=[SCREEN_WIDTH//3,20]
+        self.AgePos=[SCREEN_WIDTH//2 + SCREEN_WIDTH//6,20]
+
+        #The weapon and magic names
+        self.Names=[key for key in WEAPON_INFO for _ in range(2)] + [key for key in MAGIC_INFO for _ in range(3)]
+        # print(self.Names)
 
         #Attributes for selecting the value you want to change.
         self.selected_attr_index=0
@@ -464,7 +472,12 @@ class Settings:
         self.base_height=200
 
         self.items=None
+        self.item_count=0
         self.create_items()
+        self.total_rows=(self.item_count-1)//5
+        self.extra_cols=self.item_count-((self.total_rows)*5)
+        print('extra cols: ', self.extra_cols)
+        print('total rows: ', self.total_rows)
 
         self.info_font=pygame.font.Font(None,40)
 
@@ -510,42 +523,67 @@ class Settings:
         
         if(self.can_select_different and can_change_values):
             previous_index=self.selected_attr_index
+            previous_row=previous_index//5
+            previous_col=previous_index%5
+            
             if(keys[pygame.K_RIGHT]):
                 self.selected_attr_index+=1
                 self.can_select_different=False
                 self.selected_time=pygame.time.get_ticks()
+                if(self.selected_attr_index>self.item_count-1):
+                    self.selected_attr_index=(previous_row)*5
+                    pass
+                elif(self.selected_attr_index//5!=previous_index//5):
+                    self.selected_attr_index=(previous_index//5)*5
                 pass
             elif(keys[pygame.K_LEFT]):
                 self.selected_attr_index-=1
                 self.can_select_different=False
                 self.selected_time=pygame.time.get_ticks()
+                if(previous_row==self.total_rows and previous_col==0):
+                    self.selected_attr_index=self.item_count-1
+                elif(self.selected_attr_index//5!=previous_index//5):
+                    self.selected_attr_index=((previous_index//5)*5)+4
                 pass
             elif(keys[pygame.K_UP]):
                 self.selected_attr_index-=5         #Assuming there are 5 value changers being displayed in one row.
                 self.can_select_different=False
                 self.selected_time=pygame.time.get_ticks()
+                if(self.selected_attr_index<0):
+                    if(previous_col>(self.extra_cols-1)):
+                        self.selected_attr_index=((self.total_rows-1)*5)+previous_col
+                    else:
+                        self.selected_attr_index=(self.total_rows*5)+previous_col
+                    pass
                 pass
             elif(keys[pygame.K_DOWN]):
                 self.selected_attr_index+=5         #Assuming there are 5 value changers being displayed in one row.
                 self.can_select_different=False
                 self.selected_time=pygame.time.get_ticks()
+                if(self.selected_attr_index>self.item_count-1):
+                    self.selected_attr_index=previous_index%5
+                    pass
                 pass
+
             
             #Handling the cases when you go out of the index list and when you go to the end of a row/column.
-            if(self.selected_attr_index==5 and previous_index==4):
-                self.selected_attr_index=0
-            elif(self.selected_attr_index==-1 and previous_index==0):
-                self.selected_attr_index=4
-            elif(self.selected_attr_index==4 and previous_index==5):
-                self.selected_attr_index=9
-            elif(self.selected_attr_index==10 and previous_index==9):
-                self.selected_attr_index=5
+            # if(self.selected_attr_index%5!=previous_index%5):
+
+            #     pass
+            # if(self.selected_attr_index==5 and previous_index==4):
+            #     self.selected_attr_index=0
+            # elif(self.selected_attr_index==-1 and previous_index==0):
+            #     self.selected_attr_index=4
+            # elif(self.selected_attr_index==4 and previous_index==5):
+            #     self.selected_attr_index=9
+            # elif(self.selected_attr_index==10 and previous_index==9):
+            #     self.selected_attr_index=5
             
             
-            if(self.selected_attr_index>=self.attributes_num):
-                self.selected_attr_index=self.selected_attr_index-self.attributes_num
-            if(self.selected_attr_index<0):
-                self.selected_attr_index=self.selected_attr_index+self.attributes_num
+            # if(self.selected_attr_index>=self.attributes_num):
+            #     self.selected_attr_index=self.selected_attr_index-self.attributes_num
+            # if(self.selected_attr_index<0):
+            #     self.selected_attr_index=self.selected_attr_index+self.attributes_num
             # debug_print(self.selected_attr_index,(700,300))
         pass
 
@@ -554,12 +592,16 @@ class Settings:
         name_surf=self.info_font.render(self.my_Name,False,'black')
         age_surf=self.info_font.render(self.my_age,False,'black')
 
-        display_surf.blit(name_surf,(SCREEN_WIDTH//3,20+scroll_settings_screen))
-        display_surf.blit(age_surf,(SCREEN_WIDTH//2 + SCREEN_WIDTH//6,20+scroll_settings_screen))
+        display_surf.blit(name_surf,self.NamePos)
+        display_surf.blit(age_surf,self.AgePos)
+        # display_surf.blit(name_surf,(SCREEN_WIDTH//3,20+scroll_settings_screen))
+        # display_surf.blit(age_surf,(SCREEN_WIDTH//2 + SCREEN_WIDTH//6,20+scroll_settings_screen))
         # print(self.my_Name,self.my_age)
         pass
 
     def display_settings(self,display_surf,Game,can_change_values=0,scroll_settings_screen=0):
+        self.NamePos[1]+=scroll_settings_screen
+        self.AgePos[1]+=scroll_settings_screen
         self.display_my_information(display_surf,scroll_settings_screen)
         self.select_the_item(can_change_values)
         self.apply_cooldown()
@@ -570,25 +612,39 @@ class Settings:
                 upgrading_costs=COST_TO_UPGRADE_SPEEDS[attr_name]
 
                 item.display_item(display_surf,attr_name,self.selected_attr_index,getattr(Game.GameSettings,attr_name),upgrading_costs[0],upgrading_costs[1],upgrading_costs[2],scroll_settings_screen)
-            elif(index<7):      #Displaying the WEAPON_INFO, so we select the values those of the current weapon.
-                weaponName=Game.player.weapon_name
-                curr_weapon=Game.GameSettings.WEAPON_INFO[weaponName]
-                curr_val=[curr_weapon['cooldown'],curr_weapon['damage']]
-                # print('curr_val for weapon: ',curr_val)
-                item.display_item(display_surf,weaponName,self.selected_attr_index,curr_val[index-5],curr_weapon['min_val'][index-5],curr_weapon['max_val'][index-5],curr_weapon['cost_to_upgrade_one_unit'][index-5],scroll_settings_screen)
+            elif(index<11):
+                WeaponName=self.Names[index-5]
+                curr_weapon=Game.GameSettings.WEAPON_INFO[WeaponName]
+                curr_vals=[curr_weapon['cooldown'],curr_weapon['damage']]
+                index_to_use=(index-1)%2
+                item.display_item(display_surf,WeaponName,self.selected_attr_index,curr_vals[index_to_use],curr_weapon['min_val'][index_to_use],curr_weapon['max_val'][index_to_use],curr_weapon['cost_to_upgrade_one_unit'][index_to_use],scroll_settings_screen)
             else:
-                # print('index-7', index-7)
-                magicName=Game.player.magic_name
-                curr_magic=Game.GameSettings.MAGIC_INFO[magicName]
-                curr_val=[curr_magic['cooldown'],curr_magic['strength'],curr_magic['cost']]
-                # print('curr magic ', curr_val)
-                item.display_item(display_surf,magicName,self.selected_attr_index,curr_val[index-7],curr_magic['min_val'][index-7],curr_magic['max_val'][index-7],curr_magic['cost_to_upgrade_one_unit'][index-7],scroll_settings_screen)
+                MagicName=self.Names[index+6-11]
+                curr_magic=Game.GameSettings.MAGIC_INFO[MagicName]
+                curr_vals=[curr_magic['cooldown'],curr_magic['strength'],curr_magic['cost']]
+                index_to_use=(index-2)%3
+                item.display_item(display_surf,MagicName,self.selected_attr_index,curr_vals[index_to_use],curr_magic['min_val'][index_to_use],curr_magic['max_val'][index_to_use],curr_magic['cost_to_upgrade_one_unit'][index_to_use],scroll_settings_screen)
+                pass
+            # elif(index<7):      #Displaying the WEAPON_INFO, so we select the values those of the current weapon.
+            #     weaponName=Game.player.weapon_name
+            #     curr_weapon=Game.GameSettings.WEAPON_INFO[weaponName]
+            #     curr_val=[curr_weapon['cooldown'],curr_weapon['damage']]
+            #     # print('curr_val for weapon: ',curr_val)
+            #     item.display_item(display_surf,weaponName,self.selected_attr_index,curr_val[index-5],curr_weapon['min_val'][index-5],curr_weapon['max_val'][index-5],curr_weapon['cost_to_upgrade_one_unit'][index-5],scroll_settings_screen)
+            # elif(index<10):
+            #     # print('index-7', index-7)
+            #     magicName=Game.player.magic_name
+            #     curr_magic=Game.GameSettings.MAGIC_INFO[magicName]
+            #     curr_val=[curr_magic['cooldown'],curr_magic['strength'],curr_magic['cost']]
+            #     # print('curr magic ', curr_val)
+            #     item.display_item(display_surf,magicName,self.selected_attr_index,curr_val[index-7],curr_magic['min_val'][index-7],curr_magic['max_val'][index-7],curr_magic['cost_to_upgrade_one_unit'][index-7],scroll_settings_screen)
 
     def create_items(self):
         self.items=[]
-        extra_attr_names=['(Cooldown)','(Damage)','(Cooldown)', '(Strength)','(Cost)']
-
-        # extra_attr_names=['(Cooldown)','(Damage)']
+        # extra_attr_names=['(Cooldown)','(Damage)','(Cooldown)', '(Strength)','(Cost)']
+        
+        #########The first list being multiplied is for the attacks, with the number of attack available. The second list being multiplied is for the magic, with the number of magic available.
+        extra_attr_names=['(Cooldown)','(Damage)']*3 + ['(Cooldown)','(Strength)','(Cost)']*2
         for index,item_name in enumerate(self.attribute_names):
             left=self.width_gap+(index%5)*self.val_changer_width+self.width_gap*(index%5)
             top=self.base_height+int(index//5)*(self.val_changer_height + self.height_gap)
@@ -597,6 +653,7 @@ class Settings:
                 extra_attr=extra_attr_names[index-5]
             item=Item(left,top,self.val_changer_width,self.val_changer_height,index,UI_TEXT_FONT,extra_attr)
             self.items.append(item)
+            self.item_count+=1
         pass
     
     def apply_changes(self,game):
@@ -608,18 +665,33 @@ class Settings:
                     elif index==2:
                         game.player.speed=self.ENEMY_SPEED
                     pass
-            elif index<7:
-                weaponName=game.player.weapon_name
-                weapon=game.GameSettings.WEAPON_INFO[weaponName]
+            elif(index<11):
+                WeaponName=self.Names[index-5]
+                curr_weapon=game.GameSettings.WEAPON_INFO[WeaponName]
+                index_to_use=(index-1)%2
                 extra_attr_name=['cooldown','damage']
-                item.apply_changes(self.selected_attr_index,weaponName,game,weapon['min_val'][index-5],weapon['max_val'][index-5],extra_attr_name[index-5])
-                pass
-            elif index<10:
-                magicName=game.player.magic_name
-                magic=game.GameSettings.MAGIC_INFO[magicName]
+                print('apply change to the weapon')
+                item.apply_changes(self.selected_attr_index,WeaponName,game,curr_weapon['min_val'][index_to_use],curr_weapon['max_val'][index_to_use],extra_attr_name[index_to_use])
+            else:
+                MagicName=self.Names[index+6-11]
+                curr_magic=game.GameSettings.MAGIC_INFO[MagicName]
                 extra_attr_name=['cooldown','strength','cost']
-                item.apply_changes(self.selected_attr_index,magicName,game,magic['min_val'][index-7],magic['max_val'][index-7],extra_attr_name[index-7])
+                index_to_use=(index-2)%3
+                print('applying change to the magic')
+                item.apply_changes(self.selected_attr_index,MagicName,game,curr_magic['min_val'][index_to_use],curr_magic['max_val'][index_to_use],extra_attr_name[index_to_use])
                 pass
+            # elif index<7:
+            #     weaponName=game.player.weapon_name
+            #     weapon=game.GameSettings.WEAPON_INFO[weaponName]
+            #     extra_attr_name=['cooldown','damage']
+            #     item.apply_changes(self.selected_attr_index,weaponName,game,weapon['min_val'][index-5],weapon['max_val'][index-5],extra_attr_name[index-5])
+            #     pass
+            # elif index<10:
+            #     magicName=game.player.magic_name
+            #     magic=game.GameSettings.MAGIC_INFO[magicName]
+            #     extra_attr_name=['cooldown','strength','cost']
+            #     item.apply_changes(self.selected_attr_index,magicName,game,magic['min_val'][index-7],magic['max_val'][index-7],extra_attr_name[index-7])
+            #     pass
         pass
 
 class Item:
@@ -659,22 +731,30 @@ class Item:
 
                 if self.index<5:
                     # curr_val=0
+                    orig_val=getattr(game.GameSettings,attr_name)
                     setattr(game.GameSettings,attr_name,curr_new_val)
+                    print('settings the ', attr_name, 'attribute from ', orig_val,' to' ,getattr(game.GameSettings,attr_name))
                     pass
-                elif self.index<7:
+                elif self.index<11:
                     # curr_val=0
+                    orig_val=game.GameSettings.WEAPON_INFO[attr_name][extra_attr_name]
                     game.GameSettings.WEAPON_INFO[attr_name][extra_attr_name]=curr_new_val
+                    print(f'Settings weaopn[{attr_name}][{extra_attr_name}] from {orig_val} to {game.GameSettings.WEAPON_INFO[attr_name][extra_attr_name]}')
                     pass
-                elif self.index<10:
+                else:
+                # elif self.index<:
                     # curr_val=0
+                    orig_val=game.GameSettings.MAGIC_INFO[attr_name][extra_attr_name]
                     game.GameSettings.MAGIC_INFO[attr_name][extra_attr_name]=curr_new_val
+                    print(f'Settings magic[{attr_name}][{extra_attr_name}] from {orig_val} to {game.GameSettings.MAGIC_INFO[attr_name][extra_attr_name]}')
                     pass
                 return "Applied"
             elif(self.has_been_selected):
                 self.cost_for_upgrading=0
                 self.has_been_selected=False
                 #DISPLAY A MESSAGE SAYING COULD NOT APPLY.
-                return
+                return "Could Not Apply, NOT ENOUGH EXP"
+        return ""
 
     def select_the_upgraded_val(self,is_selected,curr_val,min_val,max_val,cost_of_one_unit):
         if(is_selected):
