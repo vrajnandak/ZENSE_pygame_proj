@@ -45,6 +45,7 @@ class Level:
         self.player.getAttackFunctions(self.create_attack,self.destroy_attack)
         self.player.getMagicFunctions(self.create_magic)
         self.player_pos=None
+        self.visible_sprites.add(self.player)
 
         #Graphics of the level.
         self.graphics_path=os.path.join(MAPS_DIRECTORY_PATH,f'Ruin{self.level_id}')
@@ -145,7 +146,7 @@ class Level:
         #Figure out the layout using csv. User 'self.graphics' to create the objects
         FloorinfoPath=os.path.join(self.graphics_path,FLOORINFO_DIR_NAME)
         floorinfo_files=os.listdir(FloorinfoPath)
-
+        print('Current level being created: ', self.level_id)
         #You now have the .csv files. Iterate through all of them and then create the objects. Use the comments in the settings to figure out where to place enemies, player, invisible_blocks based on id's.
         for file in floorinfo_files:
             with open(os.path.join(FloorinfoPath,file)) as map:
@@ -448,6 +449,13 @@ class Level:
             self.animation_player.create_particles(attack_type,self.player.rect.center,[self.visible_sprites])
         pass
 
+    # #A method to draw the sprites in sorted order of their y positions for better aesthetics. This would be useful only for some sprites which don't have a mask.
+    # def draw_visible_sprites(self):
+    #     display_surf=pygame.display.get_surface()
+    #     for sprite in sorted(self.visible_sprites,key= lambda sprite: sprite.rect.centery):
+    #         sprite.update(display_surf,self.offset)
+    #     pass
+
     def run(self,keys):
         # if(self.enemy_sprites==None):
         # if(self.enemy_counter==0):
@@ -455,10 +463,11 @@ class Level:
             # return 5
         #Move the Player
         shd_transport=self.player.move(keys,self)
+
         if(shd_transport==1):
             shd_use_portal_and_change_map=self.level_information.handle_event(EVENT_CODES[2],self)
             if(shd_use_portal_and_change_map):
-                self.player_pos=self.player.rect.topleft
+                self.player_pos=self.player.rect.topleft        #Saving the player's position so that the next time player comes back to this level, he starts from here.
                 return shd_transport
         
         #Get the Offset
@@ -470,15 +479,15 @@ class Level:
         display_surf.blit(self.baseFloorImg,baseFloor_offset)
 
         #Draw the visible sprites after considering offset
-        self.visible_sprites.update(display_surf,self.offset)
-        self.transport_sprites.update(display_surf,self.offset)
         self.enemy_sprites.update(display_surf,self.offset,self)
+        self.visible_sprites.update(display_surf,self.offset)
+        # self.draw_visible_sprites()
+        
         self.player_attack()
-
         if(self.player.health<=0):
             SaveGameScreen()
             return 10
-        self.player.draw(display_surf)
+        # self.player.draw(display_surf)
         self.player.display_ui(display_surf)
         # debug_print(self.player.status,(10,10),display_surf)
 
@@ -490,9 +499,7 @@ class Level:
 
         #Displaying the level information if any.
         # self.level_information.update(display_surf)
-        
-        debug_print(self.player.rect.topleft,(500,500))
-        
+        # debug_print('(0,0)',-self.offset)
         
         
         # SaveGameScreen(display_surf,"Before_playing_dialog_box.png")

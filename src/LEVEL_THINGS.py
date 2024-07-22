@@ -99,6 +99,11 @@ class LEVEL_INFO:
                         if(pass_code==""):
                             return 1
                         return int(pass_code)
+                    elif event.key==pygame.K_BACKSPACE:
+                        pass_code=pass_code[:-1]
+                    elif event.key>=pygame.K_0 and event.key<=pygame.K_9:
+                        num_entered=str(event.key-pygame.K_0)
+                        pass_code+=num_entered
                 if event.type==pygame.MOUSEBUTTONDOWN:
                     mouse_pos=pygame.mouse.get_pos()
                     for index,rect in enumerate(rectangles):
@@ -144,19 +149,25 @@ class LEVEL_INFO:
         elif event_code==EVENT_CODES[2]:
             if self.level_id==0 and level!=None and level.player.has_entered_correct_code==False:
                 # if level:
+                SaveGameScreen()
+                bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"Curr_Screen.png"))
                 if level.player.rect.colliderect(Ruin0_rect_enterCode) and pygame.key.get_pressed()[pygame.K_9]:
-                    SaveGameScreen()
+                    # SaveGameScreen()
+                    # bg_image=pygame.image.load(os.path.join())
                     code=self.getCorrectCodeFromPlayer()
                     if(code!=RUIN0_ENTRY_CODE):
-                        bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"Curr_Screen.png"))
+                        # bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"Curr_Screen.png"))
                         DISPLAY_DIALOGS(["You have entered the Wrong Code. Dash into the portal while pressing '9' and try again\n(The code is a 3-digit code.)","Hint: The Seas are vast and have yet to be explored."],60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image=bg_image)
                         return 0
                     else:
                         level.player.has_entered_correct_code=True
                         # print('You have successfully crossed over to Ruin1')
                         return 1        #Indicates that the map should be changed. The map will be chosen in Game.py
-                else:
+                elif not level.player.rect.colliderect(Ruin0_rect_enterCode):
+                    # SaveGameScreen()
+                    DISPLAY_DIALOGS(["Please Clear Ruin1 Before entering this Ruin."],60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image=bg_image)
                     return 0
+                # pass
             return 1
         else:
             pass

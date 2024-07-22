@@ -38,8 +38,14 @@ class Game:
         self.curr_level=Level(STARTING_LEVEL_ID,self.player,self.GameSettings)
         self.levels.append(self.curr_level)
 
+        #A timer for pause screen.
         self.esc_time_duration=100
         self.previous_esc_keydown=pygame.time.get_ticks()
+
+        #A timer for using the portals.
+        self.can_teleport=True
+        self.teleport_cooldown=1000
+        self.previous_teleported_time=None
 
     # def createTeleportationMap(self):
         #For Ruin0
@@ -80,6 +86,10 @@ class Game:
                 pass
             pass
         elif self.curr_level.level_id==3:
+            if self.player.rect.colliderect(Ruin3_rect_Ruin0):
+                new_level=0
+            elif self.player.rect.colliderect(Ruin3_rect_Ruin3_hidden):
+                pass
             pass
         # new_level=1
         return new_level
@@ -94,15 +104,19 @@ class Game:
         curr_level_selected_weapon=self.curr_level.curr_selected_weapon
         curr_level_selected_magic=self.curr_level.curr_selected_magic
 
-        if len(self.levels)>0:
-            for level in self.levels:
-                if level.level_id == new_level_id:
-                    
-                    self.curr_level=level
-                    self.player.rect.topleft=self.curr_level.player_pos
-                    self.curr_level.curr_selected_weapon=curr_level_selected_weapon
-                    self.curr_level.curr_selected_magic=curr_level_selected_magic
-                    return
+        # if len(self.levels)>0:
+        for level in self.levels:
+            if level.level_id == new_level_id:
+                print('the map already exists.')
+                self.curr_level=level
+                self.player.rect.topleft=self.curr_level.player_pos
+                self.curr_level.curr_selected_weapon=curr_level_selected_weapon
+                self.curr_level.curr_selected_magic=curr_level_selected_magic
+
+                #Passing the player, the create and destroy functions for attack,magic which are specific to the level. Without these, the attacks would work on only the recently created level.
+                self.player.getAttackFunctions(self.curr_level.create_attack,self.curr_level.destroy_attack)
+                self.player.getMagicFunctions(self.curr_level.create_magic)
+                return
         # print('hello')
         # self.levels.append(self.curr_level)
         self.curr_level=Level(new_level_id,self.player,self.GameSettings)
@@ -122,6 +136,12 @@ class Game:
                 #self.curr_level=level_found
                 #put 'continue'
         pass
+
+    def apply_cooldown(self):
+        curr_time=pygame.time.get_ticks()
+        if self.can_teleport==False:
+            if curr_time-self.previous_teleported_time>=self.teleport_cooldown:
+                self.can_teleport=True
 
     def run(self,previous_esc_time):
         running=True
@@ -150,17 +170,22 @@ class Game:
             #Running the Level logic.
             ret_val=self.curr_level.run(keys)
             pygame.display.flip()
-            self.clock.tick(self.GameSettings.GAME_FPS)
+            self.apply_cooldown()
 
             # self.has_displayed_basic_game_info=True
 
             if(ret_val==1):     #Code for changing the map.
                 # print('going to change map')
-                self.changeMap()
+                if self.can_teleport:
+                    self.previous_teleported_time=pygame.time.get_ticks()
+                    self.can_teleport=False
+                    self.changeMap()
                 # print('after changing map.')
                 pass
             elif(ret_val==10):
                 return "Lose"
             elif(ret_val==11):
                 return "Victory"
+            
+            self.clock.tick(self.GameSettings.GAME_FPS)
         pass

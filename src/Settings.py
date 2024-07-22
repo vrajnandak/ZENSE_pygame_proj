@@ -16,6 +16,7 @@ PLAYER_SPEED=10
 ENEMY_SPEED=5
 KEYBOARD_CAMERA_SPEED=20
 MOUSE_CAMERA_SPEED=20
+SCROLL_SETTINGS_SPEED=5
 
 
 #Potion values
@@ -160,7 +161,8 @@ Ruin2_rect_Ruin0=pygame.rect.Rect(2112,0,2*BASE_SIZE,2*BASE_SIZE)
 Ruin2_rect_Ruin2_Dummy=pygame.rect.Rect(0,1632,2*BASE_SIZE,2*BASE_SIZE)
 Ruin2_rect_Ruin2_hidden=pygame.rect.Rect(3168-BASE_SIZE,896,2*BASE_SIZE,2*BASE_SIZE)
 
-# Ruin3_rect_Ruin0=pygame.rect.Rect()
+Ruin3_rect_Ruin0=pygame.rect.Rect(704,2528-32,2*BASE_SIZE,2*BASE_SIZE)
+Ruin3_rect_Ruin3_hidden=pygame.rect.Rect(0,672,2*BASE_SIZE,2*BASE_SIZE)
 
 
 
@@ -430,11 +432,22 @@ class Settings:
             "ENEMY_SPEED",
             "KEYBOARD_CAMERA_SPEED",
             "MOUSE_CAMERA_SPEED",
-            "Weapon Cooldown",              
-            "Wepon Damage",
-            "Magic Cooldown",
-            "Magic Strength",
-            "Magic Cost",
+            "Weapon1 Cooldown",              
+            "Weapon1 Damage",
+            # "Weapon2 Cooldown",              
+            # "Weapon2 Damage",
+            # "Weapon3 Cooldown",              
+            # "Weapon3 Damage",
+            # "Weapon4 Cooldown",              
+            # "Wepon4 Damage",
+            # "Weapon5 Cooldown",              
+            # "Wepon5 Damage",
+            "Magic1 Cooldown",
+            "Magic1 Strength",
+            "Magic1 Cost",
+            # "Magic2 Cooldown",
+            # "Magic2 Strength",
+            # "Magic2 Cost",
         ]
 
         #Attributes for selecting the value you want to change.
@@ -533,21 +546,21 @@ class Settings:
                 self.selected_attr_index=self.selected_attr_index-self.attributes_num
             if(self.selected_attr_index<0):
                 self.selected_attr_index=self.selected_attr_index+self.attributes_num
-            debug_print(self.selected_attr_index,(700,300))
+            # debug_print(self.selected_attr_index,(700,300))
         pass
 
     #A method to display the name, age.
-    def display_my_information(self,display_surf):
+    def display_my_information(self,display_surf,scroll_settings_screen):
         name_surf=self.info_font.render(self.my_Name,False,'black')
         age_surf=self.info_font.render(self.my_age,False,'black')
 
-        display_surf.blit(name_surf,(SCREEN_WIDTH//3,20))
-        display_surf.blit(age_surf,(SCREEN_WIDTH//2 + SCREEN_WIDTH//6,20))
+        display_surf.blit(name_surf,(SCREEN_WIDTH//3,20+scroll_settings_screen))
+        display_surf.blit(age_surf,(SCREEN_WIDTH//2 + SCREEN_WIDTH//6,20+scroll_settings_screen))
         # print(self.my_Name,self.my_age)
         pass
 
-    def display_settings(self,display_surf,Game,can_change_values=0):
-        self.display_my_information(display_surf)
+    def display_settings(self,display_surf,Game,can_change_values=0,scroll_settings_screen=0):
+        self.display_my_information(display_surf,scroll_settings_screen)
         self.select_the_item(can_change_values)
         self.apply_cooldown()
 
@@ -556,24 +569,26 @@ class Settings:
                 attr_name=self.attribute_names[index]
                 upgrading_costs=COST_TO_UPGRADE_SPEEDS[attr_name]
 
-                item.display_item(display_surf,attr_name,self.selected_attr_index,getattr(Game.GameSettings,attr_name),upgrading_costs[0],upgrading_costs[1],upgrading_costs[2])
+                item.display_item(display_surf,attr_name,self.selected_attr_index,getattr(Game.GameSettings,attr_name),upgrading_costs[0],upgrading_costs[1],upgrading_costs[2],scroll_settings_screen)
             elif(index<7):      #Displaying the WEAPON_INFO, so we select the values those of the current weapon.
                 weaponName=Game.player.weapon_name
                 curr_weapon=Game.GameSettings.WEAPON_INFO[weaponName]
                 curr_val=[curr_weapon['cooldown'],curr_weapon['damage']]
                 # print('curr_val for weapon: ',curr_val)
-                item.display_item(display_surf,weaponName,self.selected_attr_index,curr_val[index-5],curr_weapon['min_val'][index-5],curr_weapon['max_val'][index-5],curr_weapon['cost_to_upgrade_one_unit'][index-5])
+                item.display_item(display_surf,weaponName,self.selected_attr_index,curr_val[index-5],curr_weapon['min_val'][index-5],curr_weapon['max_val'][index-5],curr_weapon['cost_to_upgrade_one_unit'][index-5],scroll_settings_screen)
             else:
                 # print('index-7', index-7)
                 magicName=Game.player.magic_name
                 curr_magic=Game.GameSettings.MAGIC_INFO[magicName]
                 curr_val=[curr_magic['cooldown'],curr_magic['strength'],curr_magic['cost']]
                 # print('curr magic ', curr_val)
-                item.display_item(display_surf,magicName,self.selected_attr_index,curr_val[index-7],curr_magic['min_val'][index-7],curr_magic['max_val'][index-7],curr_magic['cost_to_upgrade_one_unit'][index-7])
+                item.display_item(display_surf,magicName,self.selected_attr_index,curr_val[index-7],curr_magic['min_val'][index-7],curr_magic['max_val'][index-7],curr_magic['cost_to_upgrade_one_unit'][index-7],scroll_settings_screen)
 
     def create_items(self):
         self.items=[]
         extra_attr_names=['(Cooldown)','(Damage)','(Cooldown)', '(Strength)','(Cost)']
+
+        # extra_attr_names=['(Cooldown)','(Damage)']
         for index,item_name in enumerate(self.attribute_names):
             left=self.width_gap+(index%5)*self.val_changer_width+self.width_gap*(index%5)
             top=self.base_height+int(index//5)*(self.val_changer_height + self.height_gap)
@@ -609,6 +624,7 @@ class Settings:
 
 class Item:
     def __init__(self,left,top,width,height,index,font,extra_attr_name=None):
+        self.scroll_top_limit=top
         self.rect=pygame.rect.Rect(left,top,width,height)
         self.index=index
         self.font=font
@@ -616,8 +632,11 @@ class Item:
 
         self.top=self.rect.midtop+pygame.math.Vector2(0,35)
         self.bottom=self.rect.midbottom-pygame.math.Vector2(0,55)
+        self.has_extra_attr=False
         if(extra_attr_name!=None):
+            self.has_extra_attr=True
             self.top=self.top + pygame.math.Vector2(0,20)
+        
 
         self.curr_rect=pygame.rect.Rect(self.top[0]-10,self.top[1],20,5)
         self.curr_from_bottom_pos=None
@@ -694,7 +713,7 @@ class Item:
         surface.blit(cost_surf,(self.rect.centerx-cost_surf.get_width()//2, self.rect.bottom-cost_surf.get_height()-10))
         pass
 
-    def display_bar(self,surface,curr_val,min_val,max_val,is_selected):
+    def display_bar(self,surface,curr_val,min_val,max_val,is_selected,scroll_settings_screen):
         bar_color=BAR_COLOR_SELECTED if is_selected else BAR_COLOR
         # pygame.draw.rect(surface,'blue',self.mouse_collider_rect)     #If you uncomment this, you will understand the need for the above dimensions of the self.mouse_collide_rect rectangle.
         #Drawing the line.
@@ -705,34 +724,54 @@ class Item:
         if(self.has_been_selected):
             curr_pos=self.curr_from_bottom_pos
             # self.curr_rect=pygame.rect.Rect(self.top[0]-10,self.curr_from_bottom_pos,20,5)
+            # print('curr_pos: ', curr_pos)
             pass
         else:
             height_of_line=self.bottom[1]-self.top[1]
             curr_val_height_from_bottom=((curr_val-min_val)*height_of_line)//(max_val-min_val)
             curr_pos=self.bottom[1]-curr_val_height_from_bottom
+            curr_pos+=scroll_settings_screen
+        # debug_print(curr_pos,(self.rect.left,self.rect.top))
             # self.curr_rect=pygame.rect.Rect(self.top[0]-10,self.bottom[1]-curr_val_height_from_bottom,20,5)
         self.curr_rect=pygame.rect.Rect(self.top[0]-10,curr_pos,20,5)
         pygame.draw.rect(surface,bar_color,self.curr_rect)
         pass
+    
+    def scroll(self,scroll_settings_screen):
+        self.rect.top+=scroll_settings_screen
+        self.top=self.rect.midtop+pygame.math.Vector2(0,35)
+        self.bottom=self.rect.midbottom-pygame.math.Vector2(0,55)
+        if(self.has_extra_attr):
+            self.top=self.top + pygame.math.Vector2(0,20)
+        self.mouse_collider_rect.top+=scroll_settings_screen
+        # print('new scroll position: ', self.rect.top)
+        # if(self.rect.top<self.scroll_top_limit):
+        #     self.rect.top-=scroll_settings_screen
 
     #Min val is bottom position. Max val is top position.
-    def display_item(self,display_surf,attr_name,selected_index,curr_val,min_val,max_val,cost_to_upgrade_by_one_unit,newly_selected_val=None):
+    def display_item(self,display_surf,attr_name,selected_index,curr_val,min_val,max_val,cost_to_upgrade_by_one_unit,scroll_settings_screen=0):
+        #Scrolling the item.
+        self.scroll(scroll_settings_screen)
+
         is_selected=1 if (self.index==selected_index) else 0
         # self.has_been_selected=False
         # self.curr_rect=None
         # self.curr_from_bottom_pos=None
         if is_selected:
             pygame.draw.rect(display_surf,BG_COLOR_SELECTED, self.rect,border_radius=3)
+            # print('new scroll position: ', self.rect.top)
         else:
             pygame.draw.rect(display_surf,BG_COLOR, self.rect,border_radius=3)
         pygame.draw.rect(display_surf,BG_BORDER_COLOR,self.rect,4,border_radius=3)
 
         self.select_the_upgraded_val(is_selected,curr_val,min_val,max_val,cost_to_upgrade_by_one_unit)
+        if(self.curr_from_bottom_pos!=None):
+            self.curr_from_bottom_pos+=scroll_settings_screen           #To account for when you select a value and so that it continues to scroll wrt to the item box in the page.
         # cost_to_upgrade=cost_to_upgrade_by_one_unit
         cost_to_upgrade=0
         if(self.has_been_selected):
             cost_to_upgrade=self.cost_for_upgrading
             pass
         self.display_name(display_surf,attr_name,cost_to_upgrade,curr_val,is_selected)
-        self.display_bar(display_surf,curr_val,min_val,max_val,is_selected)
+        self.display_bar(display_surf,curr_val,min_val,max_val,is_selected,scroll_settings_screen)
         pass

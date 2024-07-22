@@ -3,6 +3,7 @@ from Settings import *
 
 class Player(pygame.sprite.Sprite):
     def __init__(self,pos,settings):
+        pygame.sprite.Sprite.__init__(self)          #Calling the constructor of the sprite class so that we can add the player to the visible_sprites spriteGroup.
         self.pos=pos
 
         #Different unlocking event's variables.
@@ -373,7 +374,7 @@ class Player(pygame.sprite.Sprite):
         self.animate()
         pass
 
-    def draw(self,display_surf):
+    def update(self,display_surf,offset=None):
         newpos=self.rect.topleft-self.offset
         display_surf.blit(self.img,newpos)
 

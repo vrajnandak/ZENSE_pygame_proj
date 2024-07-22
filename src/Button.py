@@ -85,7 +85,10 @@ class Button:
         else:
             self.top_color=self.normal_bg_color
     
-    def draw(self,display_surf):
+    def draw(self,display_surf,scroll_settings_screen):
+        #Applying the scroll
+        self.scroll(scroll_settings_screen)
+
         self.starting_button_animation()
 
         #Setting the top color based on mouse position (Color for hover, click, or normal background color)
@@ -98,4 +101,14 @@ class Button:
         display_surf.blit(self.text_surf,(self.top_rect.centerx-self.text_width//2,self.top_rect.centery-self.text_height//3))
         pygame.draw.rect(display_surf,(0,0,0),self.bottom_rect,self.border_thickness,self.border_radius)   #The '2'(is >0) means to draw a border with the color (0,0,0) i.e., black.
 
+        pass
+
+    def scroll(self,scroll_settings_screen):
+        for rect in [self.bottom_rect,self.top_rect]:
+            rect.top+=scroll_settings_screen
+            # if(rect.top<self.pos[1]):
+            #     rect.top-=scroll_settings_screen
+        # self.rect.top+=scroll_settings_screen
+        # if(self.top<self.pos[1]):
+        #     self.rect.top-=scroll_settings_screen
         pass

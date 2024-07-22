@@ -48,6 +48,10 @@ class MyGame:
         self.settingsResetSettings=Button((520,100),200,60,"Reset Settings", self.gui_font,-300)
         self.settingsApplyChanges=Button((740,100),200,60,"Apply Changes",self.gui_font,-400)
         self.SettingsButtons=[self.settingsResume,self.settingsBackToHome,self.settingsResetSettings,self.settingsApplyChanges]
+        self.scroll_settings_screen=0
+        self.accumulated_scroll=0
+        self.SETTINGS_SCREEN_TOP=0
+        self.SETTINGS_SCREEN_BOTTOM=0
             #Victory Or Loss Screen Buttons - "Play Again", "Quit"
         # self.victory_or_loss_text=["You have Won", "You have Lost"]
         text_font=pygame.font.FontType(None,60)
@@ -111,6 +115,15 @@ class MyGame:
             button.animation_phase=1
             button.curr_left=button.start_left_pos
 
+    #A method to clamp the scroll settings variable so that the page doesn't scroll out of bounds
+    def configure_scroll_settings_screen(self):
+        if self.accumulated_scroll<self.SETTINGS_SCREEN_TOP:
+            self.accumulated_scroll-=self.scroll_settings_screen
+            self.scroll_settings_screen=0
+        elif self.accumulated_scroll>self.SETTINGS_SCREEN_BOTTOM:
+            self.accumulated_scroll-=self.scroll_settings_screen
+            self.scroll_settings_screen=0
+
     #A method to display the given screen. Returns the text of the button on which the mouse is released on.
     def displayScreen(self,screen_bg_shade,buttons):
 
@@ -124,6 +137,12 @@ class MyGame:
                 if event.type==pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == pygame.MOUSEWHEEL:
+                    if (self.curr_screen=="Settings"):
+                        self.scroll_settings_screen=event.y*SCROLL_SETTINGS_SPEED
+                        self.accumulated_scroll+=self.scroll_settings_screen
+                        pass
+                    pass
                 if(event.type==pygame.KEYDOWN):
                     if event.key==pygame.K_ESCAPE and self.curr_screen=="Pause":
                         self.previous_esc_applied=pygame.time.get_ticks()
@@ -145,6 +164,7 @@ class MyGame:
                                 else:
                                     return button.text
             
+            self.configure_scroll_settings_screen()
             self.screen.blit(gameScreen,(0,0))
             # if(gameScreen):
             #     self.screen.blit(gameScreen,(0,0))
@@ -160,15 +180,15 @@ class MyGame:
                 pass
 
             for button in buttons:
-                button.draw(self.screen)
+                button.draw(self.screen,self.scroll_settings_screen)
             if(self.curr_screen=="Settings"):
                 if(self.curr_Game!=None):
-                    self.curr_Game.GameSettings.display_settings(self.screen,self.curr_Game,can_change_values=1)
+                    self.curr_Game.GameSettings.display_settings(self.screen,self.curr_Game,can_change_values=1,scroll_settings_screen=self.scroll_settings_screen)
                 else:
                     # print('returning not possible')
                     # self.OriginalSettings.display_settings(self.screen,self.Temporary_Game,can_change_values=0)
                     return "NOT POSSIBLE"
-
+            self.scroll_settings_screen=0
             pygame.display.flip()
         return "NOT POSSIBLE"
     
@@ -237,6 +257,7 @@ class MyGame:
                     self.curr_Game.GameSettings.reset_settings()
                 else:
                     pass
+                
                     # for button in self.curr_buttons:
                     #     button.animation_phase=None
             else:

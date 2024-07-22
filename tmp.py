@@ -143,10 +143,27 @@
 # ]
 # print(len(matrix))
 
-my_dictionary={
-    'attr_name':['hi','bye'],
-    'attr_name2':['hi2','bye2']
-}
+# my_dictionary={
+#     'attr_name':['hi','bye'],
+#     'attr_name2':['hi2','bye2']
+# }
 
-for index,name in enumerate(my_dictionary.keys()):
-    print(name,index)
+# for index,name in enumerate(my_dictionary.keys()):
+#     print(name,index)
+
+import pygame
+pygame.init()
+# print(pygame.K_0)
+# print(pygame.K_9)
+screen=pygame.display.set_mode((500,500))
+while True:
+    for event in pygame.event.get():
+        if event.type==pygame.QUIT:
+            pygame.quit()
+            # sys.exit()
+        # if event.type==pygame.KEYDOWN:
+            # print('event key: ', event.key)
+        if event.type == pygame.MOUSEWHEEL:
+            print(event.x, event.y)
+            #event.y is 1 for scrolling up.
+            #event.y is -1 for scrolling down.
