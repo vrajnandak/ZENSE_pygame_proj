@@ -8,7 +8,7 @@ class Player(pygame.sprite.Sprite):
 
         #Different unlocking event's variables.
         self.has_entered_correct_code=False
-        # self.has_killed_all_enemies_in_ruin1_and_unlocked_gate=False
+        self.has_killed_all_enemies_in_ruin1_and_unlocked_gate=False
 
         #Getting the game's settings.
         self.GameSettings=settings
@@ -61,7 +61,7 @@ class Player(pygame.sprite.Sprite):
         self.magic_switch_time=None
 
         #Player stats.
-        self.stats={'health':1000,'energy':100,'attack':10000,'magic':40000,'speed':self.GameSettings.PLAYER_SPEED}        #These are the default or caps on player stats.
+        self.stats={'health':1000,'energy':100,'attack':10,'magic':4,'speed':self.GameSettings.PLAYER_SPEED}        #These are the default or caps on player stats.
         self.health=self.stats['health']
         self.energy=self.stats['energy']
         self.exp=10000

@@ -167,16 +167,6 @@ Ruin3_rect_Ruin3_hidden=pygame.rect.Rect(0,672,2*BASE_SIZE,2*BASE_SIZE)
 
 
 
-#########SCIENTIST DIALOG RECTANGELS, are filled when the scientists are created.
-SCIENTIST_DIALOG_COLLIDE_RECTS={
-    '0':None,           #This value won't be changed and is simply going to get ignored. To remove this you would have to add an additional if statement in display_dialog_box_by_scientist method of Level
-    '1':None,
-    '2':None,
-    '3':None
-}
-
-
-
 
 #A method to continuously toggle between 0 and 255.
 def wave_value():
@@ -278,6 +268,10 @@ def SaveGameScreen(display_surf=None,filename="Curr_Screen.png"):
     screenshot.blit(display_surf,rect.topleft,area=rect)
     pygame.image.save(screenshot,os.path.join(GRAPHICS_DIR_PATH,filename))
     pass
+
+#Function to return the curr screen image.
+def LoadCurrScreen():
+    return pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"Curr_Screen.png"))
 
 #A function which uses the DISPLAY_MSG to continuously display all the messages.
 def DISPLAY_DIALOGS(DialogBox,message_box_left,message_box_top,message_box_width,message_box_height,bg_image=None,font=pygame.font.Font(None,30)):
