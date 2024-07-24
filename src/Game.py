@@ -94,9 +94,9 @@ class Game:
         # new_level=1
         return new_level
 
-    def changeToMap(self,new_level_id):
+    def changeToMap(self):
         #Make a black screen and place it in 'bg_GameStartScreen.png' because the player has to go to the next screen. Or save the images to new maps beforehand.
-
+        new_level_id=self.get_next_level_id()
         if(new_level_id==self.curr_level.level_id):
             return
         
@@ -172,18 +172,20 @@ class Game:
             self.apply_cooldown()
 
             # self.has_displayed_basic_game_info=True
-            if(ret_val==-20):
-                print('continuing')
-                continue
+            if(ret_val==1):
+                if self.can_teleport:
+                    self.previous_teleported_time=pygame.time.get_ticks()
+                    self.can_teleport=False
+                    self.changeToMap()
             elif(ret_val==100):
                 return "Victory"
             elif(ret_val==101):
                 return "Lose"
             else:     #Code for changing the map.
-                if self.can_teleport:
-                    self.previous_teleported_time=pygame.time.get_ticks()
-                    self.can_teleport=False
-                    self.changeToMap(ret_val)
+                # if self.can_teleport:
+                #     self.previous_teleported_time=pygame.time.get_ticks()
+                #     self.can_teleport=False
+                #     self.changeToMap(ret_val)
                 # print('after changing map.')
                 pass
             
