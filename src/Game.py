@@ -66,6 +66,7 @@ class Game:
                 print('going to Ruin2')
                 new_level=2
             elif self.player.rect.colliderect(Ruin0_rect_Ruin3):
+                print('colliding with ruin3')
                 new_level=3
             pass
         elif self.curr_level.level_id==1:

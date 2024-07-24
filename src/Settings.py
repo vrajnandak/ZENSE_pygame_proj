@@ -167,6 +167,16 @@ Ruin3_rect_Ruin3_hidden=pygame.rect.Rect(0,672,2*BASE_SIZE,2*BASE_SIZE)
 
 
 
+#########SCIENTIST DIALOG RECTANGELS, are filled when the scientists are created.
+SCIENTIST_DIALOG_COLLIDE_RECTS={
+    '0':None,           #This value won't be changed and is simply going to get ignored. To remove this you would have to add an additional if statement in display_dialog_box_by_scientist method of Level
+    '1':None,
+    '2':None,
+    '3':None
+}
+
+
+
 
 #A method to continuously toggle between 0 and 255.
 def wave_value():

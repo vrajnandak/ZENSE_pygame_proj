@@ -46,9 +46,24 @@ Scientist2={
                         'I Think you need to find the hidden Key.',
                         "I don't know the exact location but press 'E' when near it."
         ],
-        EVENT_CODES[1]:['Wow, You have already killed all the zombies.'],
+        EVENT_CODES[1]:['Wow, You killed all the zombies.'],
         EVENT_CODES[3]:['Finally, You have found the key.',
                         'Thank you so much for saving me'
+        ]
+    }
+}
+
+Scientist3={
+    'dialog':{
+        EVENT_CODES[0]:["WELL, WELL, WELL... Look who's here\nLooks like you've saved the other 2.",
+                        "I really wished you didn't make it this far.",
+                        "I guess it is what it is.",
+                        "Time for you to die.",
+                        "Kill All The Enemies within the Time Limit."
+        ],
+        EVENT_CODES[1]:["AGGHHHHHHH... You have foiled my plans.",
+                        "But.....",
+                        "You must know that I am overly cautious and obviously would've had backups in place.",
         ]
     }
 }
@@ -134,16 +149,18 @@ class LEVEL_INFO:
             pass
         elif event_code==EVENT_CODES[1]:
             if level:
-                if level.level_id==1 and not level.player.has_killed_all_enemies_in_ruin1_and_unlocked_gate:
+                if not level.has_triggered_event1:#not level.player.has_killed_all_enemies_in_ruin1_and_unlocked_gate:
                     #Display the message
+                    print(level.level_scientist.dialogs[EVENT_CODES[1]])
                     SaveGameScreen()
                     bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"Curr_Screen.png"))
-                    DISPLAY_DIALOGS(["Hurray, You have Saved the Scientist1!!!!!",],60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image)
+                    DISPLAY_DIALOGS(level.level_scientist.dialogs[EVENT_CODES[1]],60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image)
                     if level.unlockable_gate_sprites:
                         for sprite in level.unlockable_gate_sprites:
                             sprite.kill()
+                            print('killed the unlockable gate sprite.')
                         
-                    level.player.has_killed_all_enemies_in_ruin1_and_unlocked_gates=True
+                    # level.player.has_killed_all_enemies_in_ruin1_and_unlocked_gates=True
                     # level.level_scientist=
             pass
         elif event_code==EVENT_CODES[2]:
@@ -201,8 +218,10 @@ class Scientist(pygame.sprite.Sprite):
         if self.scientist_id==1:
             self.dialogs=Scientist1["dialog"]
         elif self.scientist_id==2:
+            self.dialogs=Scientist2["dialog"]
             pass
         elif self.scientist_id==3:
+            self.dialogs=Scientist3["dialog"]
             pass
         pass
 

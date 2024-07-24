@@ -40,6 +40,12 @@ class Level:
         self.curr_selected_weapon=pygame.image.load(os.path.join(PLAYER_WEAPONS_DIRECTORY_PATH,list(self.GameSettings.WEAPON_INFO.keys())[0],'full.png'))
         self.curr_selected_magic=pygame.image.load(os.path.join(PLAYER_MAGIC_DIRECTORY_PATH,f'{list(self.GameSettings.MAGIC_INFO.keys())[0]}.png'))
 
+        #Some Event handlers
+        self.has_triggered_event0=False
+        self.has_triggered_event1=False
+        self.has_triggered_event2=False
+        self.has_triggered_event3=False
+
         #Player of the level.
         self.player=player
         self.player.getAttackFunctions(self.create_attack,self.destroy_attack)
@@ -174,8 +180,8 @@ class Level:
                                         if((new_row_index>=0 and new_row_index<detection_tiles_row) and (new_col_index>=0 and new_col_index<detection_tiles_cols)):
                                             self.detection_tiles[new_row_index][new_col_index]=0
                                 pass
-                            
-                            elif(val==100):
+                            # if(self.enemy_counter<5):
+                            if(val==100):
                                 # if self.enemy_counter<=1:
                                 Enemy(img_pos,'zombie1',[self.enemy_sprites])
                                 self.enemy_counter+=1
@@ -198,12 +204,15 @@ class Level:
                                 pass
                             elif(val==300):     #Scientist1
                                 self.level_scientist=Scientist((x,y),[self.visible_sprites],1)
+                                SCIENTIST_DIALOG_COLLIDE_RECTS['1']=pygame.rect.Rect(x-10*BASE_SIZE,y-10*BASE_SIZE,24*BASE_SIZE,24*BASE_SIZE)
                                 pass
                             elif(val==301):     #Scientist2
                                 self.level_scientist=Scientist((x,y),[self.visible_sprites],2)
+                                SCIENTIST_DIALOG_COLLIDE_RECTS['2']=pygame.rect.Rect(x-10*BASE_SIZE,y-10*BASE_SIZE,24*BASE_SIZE,24*BASE_SIZE)
                                 pass
                             elif(val==302):     #Scientist3
                                 self.level_scientist=Scientist((x,y),[self.visible_sprites],3)
+                                SCIENTIST_DIALOG_COLLIDE_RECTS['3']=pygame.rect.Rect(x-10*BASE_SIZE,y-10*BASE_SIZE,24*BASE_SIZE,24*BASE_SIZE)
                                 pass
                             elif(val==500):             #A val which reveals the locked gate of Ruin1.
                                 img=pygame.image.load(os.path.join(self.graphics_path,"not_obstacle_unlockable_gate.png"))
@@ -411,8 +420,11 @@ class Level:
                                 if(ret_val==1):
                                     self.enemy_counter-=1
                                     self.random_loot_drop(target_sprite_pos,target_sprite.zombieType)
-                                    if(self.enemy_counter==0):
+                                    print('current enemy counter: ', self.enemy_counter)
+                                    if(self.enemy_counter==0 and self.level_scientist!=None):
                                         self.level_information.handle_event(EVENT_CODES[1],self)
+                                        self.has_triggered_event1=True
+                                        # print('handled killing all enemies event.')
 
         # if self.curr_attack:
         #     #Checking collision with player weapon
@@ -456,6 +468,16 @@ class Level:
     #         sprite.update(display_surf,self.offset)
     #     pass
 
+    def display_dialog_box_by_scientist(self):
+        scientist_collide_rect=SCIENTIST_DIALOG_COLLIDE_RECTS[f'{self.level_id}']
+        if scientist_collide_rect!=None:
+            if self.player.rect.colliderect(scientist_collide_rect) and not self.has_triggered_event0:
+                print('self.level_scientist id: ', self.level_scientist.scientist_id)
+                SaveGameScreen()
+                bg_image=pygame.image.load(os.path.join(GRAPHICS_DIR_PATH,"Curr_Screen.png"))
+                DISPLAY_DIALOGS(self.level_scientist.dialogs[EVENT_CODES[0]],60,40,SCREEN_WIDTH-100,int(SCREEN_HEIGHT_HALF//2),bg_image)
+                self.has_triggered_event0=True
+
     def run(self,keys):
         # if(self.enemy_sprites==None):
         # if(self.enemy_counter==0):
@@ -469,6 +491,9 @@ class Level:
             if(shd_use_portal_and_change_map):
                 self.player_pos=self.player.rect.topleft        #Saving the player's position so that the next time player comes back to this level, he starts from here.
                 return shd_transport
+        
+        #Checking player collision with scientist's dialog box.
+        self.display_dialog_box_by_scientist()
         
         #Get the Offset
         self.get_offset(keys)
